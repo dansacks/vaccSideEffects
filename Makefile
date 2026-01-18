@@ -37,7 +37,7 @@ OUT_FIGURES := $(OUTPUT)/figures
 #-------------------------------------------------------------------------------
 .PHONY: all prescreen main followup merge prolific counts balance analysis dirs clean-data clean-all help
 
-all: prescreen main followup prolific
+all: prescreen main followup prolific counts balance
 
 help:
 	@echo "Available targets:"

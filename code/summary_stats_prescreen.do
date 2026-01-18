@@ -77,15 +77,15 @@ global n_valid = `n_valid'
 
 * loop over variables, writing out stats
 # delimit ;
-local vars 
-	flu_vacc_lastyear prior_vaccines vacc_intent had_prior_covid had_prior_covid 
-	had_prior_flu covid_reaction flu_reaction
+local vars
+	flu_vacc_lastyear prior_vaccines vacc_intent
+	had_prior_covid_vacc had_prior_flu_vacc covid_vacc_reaction flu_vacc_reaction
 	cond_none cond_asthma cond_diabetes cond_heart cond_lung cond_kidney cond_rather_not_say
 	has_insurance trust_govt trust_govt_prior follow_doctor
 	info_source_main source_doctor source_sm source_podcasts source_cdc source_news source_none
 	info_doctor info_sm info_podcasts info_cdc info_news info_university
 	reliable_doctor reliable_sm reliable_podcasts reliable_cdc reliable_news reliable_university
-	incomplete pid_mismatch duplicate_pid
+	incomplete pid_mismatch duplicate_pid first_attempt
 ;
 # delimit cr  
 	

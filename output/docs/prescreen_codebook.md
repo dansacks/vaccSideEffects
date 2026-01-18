@@ -52,13 +52,13 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 ### `duration_sec`
 - **Type:** Numeric (continuous)
 - **Label:** Survey duration (seconds)
-- **Summary Statistics (N=7,961):**
+- **Summary Statistics (N=8,003):**
 
 | Statistic | Value |
 |-----------|-------|
-| Mean | 259.1 |
-| SD | 847.3 |
-| Min | 11 |
+| Mean | 258.5 |
+| SD | 845.2 |
+| Min | 10 |
 | Median | 188 |
 | Max | 55,342 |
 - **Summary Statistics (N=7,873):**
@@ -173,8 +173,8 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | Complete  | 7,892 (99.13%) |
-| 1 | Incomplete  | 69 (0.87%) |
+| 0 | Complete  | 7,933 (99.13%) |
+| 1 | Incomplete  | 70 (0.87%) |
 
 ### `failed_attn`
 - **Type:** Binary
@@ -195,8 +195,8 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | Match  | 7,955 (99.92%) |
-| 1 | Mismatch  | 6 (0.08%) |
+| 0 | Match  | 7,997 (99.93%) |
+| 1 | Mismatch  | 6 (0.07%) |
 
 ### `duplicate_pid`
 - **Type:** Binary
@@ -206,8 +206,8 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | Unique  | 7,961 (100.00%) |
-| 1 | Duplicate  | - |
+| 0 | Unique  | 7,961 (99.48%) |
+| 1 | Duplicate  | 42 (0.52%) |
 
 ### `favorite_number`
 - **Type:** Numeric
@@ -226,8 +226,8 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No  | 3,448 (43.55%) |
-| 1 | Yes  | 4,470 (56.45%) |
+| 0 | No  | 3,455 (43.53%) |
+| 1 | Yes  | 4,482 (56.47%) |
 
 ### `prior_vaccines`
 - **Type:** Categorical
@@ -237,10 +237,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Neither vaccine  | 869 (10.97%) |
-| 2 | Flu only  | 968 (12.23%) |
-| 3 | COVID only  | 989 (12.49%) |
-| 4 | Both vaccines  | 5,092 (64.31%) |
+| 1 | Neither vaccine  | 872 (10.99%) |
+| 2 | Flu only  | 970 (12.22%) |
+| 3 | COVID only  | 991 (12.49%) |
+| 4 | Both vaccines  | 5,104 (64.31%) |
 
 ### `vacc_intent`
 - **Type:** Categorical (ordered)
@@ -250,10 +250,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | No, do not intend  | 2,998 (37.86%) |
-| 2 | May or may not  | 1,517 (19.16%) |
-| 3 | Intend to get  | 1,139 (14.38%) |
-| 4 | Already got  | 2,264 (28.59%) |
+| 1 | No, do not intend  | 3,005 (37.86%) |
+| 2 | May or may not  | 1,520 (19.15%) |
+| 3 | Intend to get  | 1,141 (14.38%) |
+| 4 | Already got  | 2,271 (28.61%) |
 
 ### `had_prior_covid`
 - **Type:** Binary (derived)
@@ -261,10 +261,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 - **Description:** Derived from `prior_vaccines`; 1 if prior_vaccines in {3, 4}
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No prior COVID vaccine  | 1,837 (23.20%) |
-| 1 | Had prior COVID vaccine  | 6,081 (76.80%) |
+| Code | Label |
+|------|-------|
+| 0 | No prior COVID vaccine  |
+| 1 | Had prior COVID vaccine  |
 
 ### `had_prior_flu`
 - **Type:** Binary (derived)
@@ -272,10 +272,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 - **Description:** Derived from `prior_vaccines`; 1 if prior_vaccines in {2, 4}
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No prior flu vaccine  | 1,858 (23.47%) |
-| 1 | Had prior flu vaccine  | 6,060 (76.53%) |
+| Code | Label |
+|------|-------|
+| 0 | No prior flu vaccine  |
+| 1 | Had prior flu vaccine  |
 
 ---
 
@@ -290,12 +290,12 @@ These variables consolidate responses from multiple survey questions that were s
 - **Skip Logic:** Asked only if `prior_vaccines` in {3, 4} (had COVID vaccine)
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No prior vaccine  | 1,837 (23.22%) |
-| 1 | None/don't remember  | 2,701 (34.14%) |
-| 2 | Mild (not severe)  | 2,591 (32.75%) |
-| 3 | Severe  | 783 (9.90%) |
+| Code | Label |
+|------|-------|
+| 0 | No prior vaccine  |
+| 1 | None/don't remember  |
+| 2 | Mild (not severe)  |
+| 3 | Severe  |
 
 ### `flu_reaction`
 - **Type:** Categorical
@@ -304,12 +304,12 @@ These variables consolidate responses from multiple survey questions that were s
 - **Skip Logic:** Asked only if `prior_vaccines` in {2, 4} (had flu vaccine)
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No prior vaccine  | 1,858 (23.49%) |
-| 1 | None/don't remember  | 3,507 (44.34%) |
-| 2 | Mild (not severe)  | 2,184 (27.61%) |
-| 3 | Severe  | 361 (4.56%) |
+| Code | Label |
+|------|-------|
+| 0 | No prior vaccine  |
+| 1 | None/don't remember  |
+| 2 | Mild (not severe)  |
+| 3 | Severe  |
 
 ---
 
@@ -323,9 +323,9 @@ These variables consolidate responses from multiple survey questions that were s
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| -1 | Not sure  | 871 (11.03%) |
+| -1 | Not sure  | 871 (11.00%) |
 | 0 | No  | 76 (0.96%) |
-| 1 | Yes  | 6,953 (88.01%) |
+| 1 | Yes  | 6,972 (88.04%) |
 
 ### `health_conditions`
 - **Type:** String
@@ -380,11 +380,11 @@ These variables consolidate responses from multiple survey questions that were s
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Strongly disagree  | 688 (8.71%) |
-| 2 | Somewhat disagree  | 1,118 (14.16%) |
-| 3 | Neither agree nor disagree  | 1,691 (21.41%) |
-| 4 | Somewhat agree  | 3,038 (38.47%) |
-| 5 | Strongly agree  | 1,362 (17.25%) |
+| 1 | Strongly disagree  | 690 (8.72%) |
+| 2 | Somewhat disagree  | 1,121 (14.16%) |
+| 3 | Neither agree nor disagree  | 1,694 (21.40%) |
+| 4 | Somewhat agree  | 3,044 (38.45%) |
+| 5 | Strongly agree  | 1,367 (17.27%) |
 
 ### `trust_govt_prior`
 - **Type:** Categorical (Likert 5-point)
@@ -394,11 +394,11 @@ These variables consolidate responses from multiple survey questions that were s
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Strongly disagree  | 468 (5.93%) |
-| 2 | Somewhat disagree  | 783 (9.92%) |
-| 3 | Neither agree nor disagree  | 1,234 (15.63%) |
-| 4 | Somewhat agree  | 2,707 (34.29%) |
-| 5 | Strongly agree  | 2,703 (34.24%) |
+| 1 | Strongly disagree  | 469 (5.93%) |
+| 2 | Somewhat disagree  | 786 (9.93%) |
+| 3 | Neither agree nor disagree  | 1,237 (15.63%) |
+| 4 | Somewhat agree  | 2,711 (34.26%) |
+| 5 | Strongly agree  | 2,711 (34.26%) |
 
 ### `follow_doctor`
 - **Type:** Categorical (Likert 5-point)
@@ -408,11 +408,11 @@ These variables consolidate responses from multiple survey questions that were s
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Strongly disagree  | 481 (6.09%) |
-| 2 | Somewhat disagree  | 738 (9.35%) |
-| 3 | Neither agree nor disagree  | 967 (12.25%) |
-| 4 | Somewhat agree  | 2,737 (34.66%) |
-| 5 | Strongly agree  | 2,974 (37.66%) |
+| 1 | Strongly disagree  | 482 (6.09%) |
+| 2 | Somewhat disagree  | 740 (9.35%) |
+| 3 | Neither agree nor disagree  | 967 (12.22%) |
+| 4 | Somewhat agree  | 2,746 (34.69%) |
+| 5 | Strongly agree  | 2,981 (37.66%) |
 
 ---
 
@@ -426,12 +426,12 @@ These variables consolidate responses from multiple survey questions that were s
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Doctor  | 5,572 (70.65%) |
-| 2 | Social media  | 400 (5.07%) |
-| 3 | Podcasts  | 130 (1.65%) |
-| 4 | CDC  | 769 (9.75%) |
-| 5 | News organizations  | 253 (3.21%) |
-| 6 | None of the above  | 763 (9.67%) |
+| 1 | Doctor  | 5,585 (70.65%) |
+| 2 | Social media  | 400 (5.06%) |
+| 3 | Podcasts  | 132 (1.67%) |
+| 4 | CDC  | 769 (9.73%) |
+| 5 | News organizations  | 254 (3.21%) |
+| 6 | None of the above  | 765 (9.68%) |
 
 ### Binary Indicators (derived from `info_source_main`)
 
@@ -458,11 +458,11 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| -1 | No doctor  | 414 (5.26%) |
-| 1 | Never  | 65 (0.83%) |
-| 2 | Rarely  | 752 (9.55%) |
-| 3 | Sometimes  | 3,888 (49.37%) |
-| 4 | Often  | 2,757 (35.01%) |
+| -1 | No doctor  | 414 (5.24%) |
+| 1 | Never  | 65 (0.82%) |
+| 2 | Rarely  | 753 (9.54%) |
+| 3 | Sometimes  | 3,899 (49.39%) |
+| 4 | Often  | 2,763 (35.00%) |
 
 ### `info_sm`
 - **Type:** Categorical (frequency)
@@ -472,10 +472,10 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Never  | 2,237 (28.40%) |
-| 2 | Rarely  | 2,898 (36.80%) |
-| 3 | Sometimes  | 2,276 (28.90%) |
-| 4 | Often  | 465 (5.90%) |
+| 1 | Never  | 2,243 (28.41%) |
+| 2 | Rarely  | 2,906 (36.81%) |
+| 3 | Sometimes  | 2,279 (28.87%) |
+| 4 | Often  | 466 (5.90%) |
 
 ### `info_podcasts`
 - **Type:** Categorical (frequency)
@@ -485,10 +485,10 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Never  | 4,324 (54.90%) |
-| 2 | Rarely  | 2,117 (26.88%) |
-| 3 | Sometimes  | 1,257 (15.96%) |
-| 4 | Often  | 178 (2.26%) |
+| 1 | Never  | 4,332 (54.88%) |
+| 2 | Rarely  | 2,122 (26.88%) |
+| 3 | Sometimes  | 1,261 (15.97%) |
+| 4 | Often  | 179 (2.27%) |
 
 ### `info_cdc`
 - **Type:** Categorical (frequency)
@@ -498,10 +498,10 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Never  | 946 (12.01%) |
-| 2 | Rarely  | 2,337 (29.67%) |
-| 3 | Sometimes  | 3,703 (47.02%) |
-| 4 | Often  | 890 (11.30%) |
+| 1 | Never  | 948 (12.01%) |
+| 2 | Rarely  | 2,347 (29.73%) |
+| 3 | Sometimes  | 3,709 (46.99%) |
+| 4 | Often  | 890 (11.27%) |
 
 ### `info_news`
 - **Type:** Categorical (frequency)
@@ -511,10 +511,10 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Never  | 2,111 (26.80%) |
-| 2 | Rarely  | 2,875 (36.50%) |
-| 3 | Sometimes  | 2,507 (31.83%) |
-| 4 | Often  | 383 (4.86%) |
+| 1 | Never  | 2,120 (26.86%) |
+| 2 | Rarely  | 2,882 (36.51%) |
+| 3 | Sometimes  | 2,509 (31.78%) |
+| 4 | Often  | 383 (4.85%) |
 
 ### `info_university`
 - **Type:** Categorical (frequency)
@@ -524,10 +524,10 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Never  | 1,842 (23.42%) |
-| 2 | Rarely  | 2,313 (29.41%) |
-| 3 | Sometimes  | 3,076 (39.11%) |
-| 4 | Often  | 635 (8.07%) |
+| 1 | Never  | 1,846 (23.41%) |
+| 2 | Rarely  | 2,321 (29.44%) |
+| 3 | Sometimes  | 3,080 (39.07%) |
+| 4 | Often  | 637 (8.08%) |
 
 ---
 
@@ -542,8 +542,8 @@ All binary indicators: 0 = No, 1 = Yes
 | Code | Label | N (%) |
 |------|-------|-------|
 | 1 | Not reliable  | 27 (0.41%) |
-| 2 | Somewhat reliable  | 1,673 (25.18%) |
-| 3 | Yes, reliable  | 4,943 (74.41%) |
+| 2 | Somewhat reliable  | 1,677 (25.18%) |
+| 3 | Yes, reliable  | 4,956 (74.41%) |
 
 ### `reliable_sm`
 - **Type:** Categorical
@@ -553,9 +553,9 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Not reliable  | 406 (14.81%) |
-| 2 | Somewhat reliable  | 2,047 (74.68%) |
-| 3 | Yes, reliable  | 288 (10.51%) |
+| 1 | Not reliable  | 408 (14.86%) |
+| 2 | Somewhat reliable  | 2,049 (74.64%) |
+| 3 | Yes, reliable  | 288 (10.49%) |
 
 ### `reliable_podcasts`
 - **Type:** Categorical
@@ -565,9 +565,9 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Not reliable  | 63 (4.39%) |
-| 2 | Somewhat reliable  | 1,125 (78.40%) |
-| 3 | Yes, reliable  | 247 (17.21%) |
+| 1 | Not reliable  | 63 (4.38%) |
+| 2 | Somewhat reliable  | 1,129 (78.40%) |
+| 3 | Yes, reliable  | 248 (17.22%) |
 
 ### `reliable_cdc`
 - **Type:** Categorical
@@ -578,8 +578,8 @@ All binary indicators: 0 = No, 1 = Yes
 | Code | Label | N (%) |
 |------|-------|-------|
 | 1 | Not reliable  | 137 (2.98%) |
-| 2 | Somewhat reliable  | 1,965 (42.78%) |
-| 3 | Yes, reliable  | 2,491 (54.23%) |
+| 2 | Somewhat reliable  | 1,969 (42.81%) |
+| 3 | Yes, reliable  | 2,493 (54.21%) |
 
 ### `reliable_news`
 - **Type:** Categorical
@@ -589,9 +589,9 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Not reliable  | 147 (5.09%) |
-| 2 | Somewhat reliable  | 2,152 (74.46%) |
-| 3 | Yes, reliable  | 591 (20.45%) |
+| 1 | Not reliable  | 147 (5.08%) |
+| 2 | Somewhat reliable  | 2,153 (74.45%) |
+| 3 | Yes, reliable  | 592 (20.47%) |
 
 ### `reliable_university`
 - **Type:** Categorical
@@ -601,9 +601,9 @@ All binary indicators: 0 = No, 1 = Yes
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Not reliable  | 414 (5.26%) |
-| 2 | Somewhat reliable  | 3,951 (50.23%) |
-| 3 | Yes, reliable  | 3,501 (44.51%) |
+| 1 | Not reliable  | 414 (5.25%) |
+| 2 | Somewhat reliable  | 3,960 (50.23%) |
+| 3 | Yes, reliable  | 3,510 (44.52%) |
 
 ---
 

@@ -1,21 +1,19 @@
-Condition, count
-Prescreen survey
-started, 8198
-consent, 8093
-attention, 8052
-single, 7961
-hesitant, 4515
+Survey,Condition,Count
+Prescreen,Started (non-preview),8198
+Prescreen,Consented,8093
+Prescreen,Passed attention check,8052
+Prescreen,First attempt only,8003
+Prescreen,Hesitant (final prescreen sample),4525
 
-Main survey
-started, 3629
-consent, 3627
-attention, 3611
-outcome, 3538
-single, 3508
+Main,Started (non-preview),3651
+Main,Linked to prescreen final,3637
+Main,Consented,3635
+Main,Passed attention check,3619
+Main,Non-missing delta (valid posteriors),3547
+Main,First attempt only (final main sample),3526
 
-Followup survey
-started, 3160
-consent, 3102
-attention, 3065
-outcome, 3006
-single, 2975
+Followup,Started (non-preview),3210
+Followup,Linked to main final,3178
+Followup,Passed attention check,3134
+Followup,Has non-missing outcome,3074
+Followup,First attempt only (final followup sample),3046

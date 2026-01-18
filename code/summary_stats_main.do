@@ -83,7 +83,7 @@ local cat_vars
     arm_n
     prior_self_placebo prior_self_vacc
     trust_trial relevant_trial trust_academic relevant_academic
-    vacc_intentions maybe
+    vacc_intent maybe first_attempt
     link_click link1_clicked link2_clicked link3_clicked link4_clicked
     age gender education income race ethnicity polviews
     incomplete failed_attn pid_mismatch duplicate_pid

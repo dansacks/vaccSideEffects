@@ -1,8 +1,100 @@
+
+  ___  ____  ____  ____  ____ ©
+ /__    /   ____/   /   ____/      17.0
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-STATA-PC        https://www.stata.com
+                                   979-696-4600        stata@stata.com
+
+Stata license: Single-user 4-core  perpetual
+Serial number: 501709220187
+  Licensed to: Dan Sacks
+               Indiana University
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+
+. do code/clean_followup.do 
+
+. /*===========================================================================
+> ===
+>     Clean Follow-up Survey Data
+> 
+>     Input:  data/flu_vacc_se_followup_*.sav (SPSS export from Qualtrics)
+>     Output: data/followup_clean.dta
+> 
+>     This do-file cleans the raw Qualtrics SPSS export from the follow-up surv
+> ey.
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "clean_followup"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory
+. local usr `c(username)'
+
+. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+
+. cd "$projdir"
+C:\Users\sacks\Box\VaccSideEffects
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. * Conditional logging: only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_followup.log
   log type:  text
- opened on:   9 Jan 2026, 20:57:06
+ opened on:  18 Jan 2026, 10:55:22
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_followup ===
 .     di "Log: output/logs/$scriptname.log"
@@ -21,8 +113,8 @@ end of do-file
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. import spss using "data/flu_vacc_se_followup_January+9,+2026_19.43.sav", clea
-> r
+. import spss using "raw_data/flu_vacc_se_followup_January+9,+2026_19.43.sav", 
+> clear
 (76 vars, 3,211 obs)
 
 . 
@@ -173,10 +265,7 @@ Loaded 3211 observations
 > -*/
 . 
 . * Status: 0 = IP Address (real), 1 = Survey Preview
-. gen is_preview = (_status == 1) if !mi(_status)
-
-. replace is_preview = 0 if mi(is_preview)
-(0 real changes made)
+. gen is_preview = (_status == 1) 
 
 . 
 . /*---------------------------------------------------------------------------
@@ -257,12 +346,8 @@ You |
       Total |      3,211      100.00
 
 . * Recode to 0/1
-. recode consent (1=1) (2=0) (-99=.), gen(consent_new)
-(59 differences between consent and consent_new)
-
-. drop consent
-
-. rename consent_new consent
+. recode consent (1=1) (2 -99=0) (-99=.)
+(59 changes made to consent)
 
 . label values consent yesno
 
@@ -303,12 +388,8 @@ prescriptio |
 ------------+-----------------------------------
       Total |      3,211      100.00
 
-. recode got_glp1 (1=1) (2=0) (3=.), gen(got_glp1_new)
-(2924 differences between got_glp1 and got_glp1_new)
-
-. drop got_glp1
-
-. rename got_glp1_new got_glp1
+. recode got_glp1 (1=1) (2=0) (3=.)
+(2924 changes made to got_glp1)
 
 . label values got_glp1 yesno
 
@@ -387,13 +468,44 @@ did you get |
 
 . 
 . * --- Numeric guesses ---
+. replace guess_placebo= subinstr(guess_placebo, "%", "", .)
+(10 real changes made)
+
+. replace guess_placebo = "4" if strpos(guess_placebo, "id say 4")
+(1 real change made)
+
+. replace guess_vaccine= subinstr(guess_vaccine, " ", "", .)
+(2 real changes made)
+
+. tab guess_placebo if missing(real(guess_placebo))
+
+    The study told participants about a |
+       clinical trial involving the flu |
+                            vaccine. So |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                                     ,7 |          1       20.00       20.00
+                         I dont remeber |          1       20.00       40.00
+Okay I do remember this one now! I do.. |          1       20.00       60.00
+so basically i think the main motive .. |          1       20.00       80.00
+                                    yes |          1       20.00      100.00
+----------------------------------------+-----------------------------------
+                                  Total |          5      100.00
+
+. 
+. replace guess_vaccine= subinstr(guess_vaccine, "%", "", .)
+(9 real changes made)
+
+. replace guess_vaccine= subinstr(guess_vaccine, " ", "", .)
+(0 real changes made)
+
+. 
 . destring guess_placebo, replace force
 guess_placebo: contains nonnumeric characters; replaced as double
-(117 missing values generated)
+(107 missing values generated)
 
 . destring guess_vaccine, replace force
 guess_vaccine: contains nonnumeric characters; replaced as double
-(114 missing values generated)
+(105 missing values generated)
 
 . 
 . * --- Medicine dummies (SPSS: 1=selected, missing=not selected) ---
@@ -456,7 +568,13 @@ guess_vaccine: contains nonnumeric characters; replaced as double
 . label var pid_mismatch "Prolific PID mismatch"
 
 . 
-. * Duplicate PID
+. * Flag first attempt per PID (sort by start_date, keep first)
+. bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
+
+. label var first_attempt "First survey attempt for this PID"
+
+. 
+. * Duplicate PID (for reference/reporting only)
 . duplicates tag prolific_pid, gen(duplicate_pid)
 
 Duplicates in terms of prolific_pid
@@ -469,8 +587,11 @@ Duplicates in terms of prolific_pid
 . 
 . * Final sample flag (exclude previews)
 . gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonym
-> ous" & duplicate_pid == 0 & is_preview == 0)
+> ous" & is_preview == 0 & first_attempt == 1)
 
+. gen quality_sample = final_sample
+
+. 
 . label var final_sample "Final analysis sample"
 
 . label var is_preview "Preview/test response"
@@ -487,10 +608,10 @@ Duplicates in terms of prolific_pid
 Total observations: 3211
 
 . count if final_sample == 1
-  3,062
+  3,078
 
 . di "Final sample: " r(N)
-Final sample: 3062
+Final sample: 3078
 
 . count if incomplete == 1
   48
@@ -530,9 +651,7 @@ Preview responses: 1
 > -*/
 . 
 . * Correct placebo guess (3%) - exclude -99 values
-. gen placebo_correct = (guess_placebo >= 2 & guess_placebo <= 4) if !mi(guess_
-> placebo) & guess_placebo != -99
-(117 missing values generated)
+. gen placebo_correct = (guess_placebo >= 2 & guess_placebo <= 4) 
 
 . label var placebo_correct "Placebo guess within 1% of 3%"
 
@@ -540,11 +659,9 @@ Preview responses: 1
 
 . 
 . * Correct vaccine guess (1.3%) - exclude -99 values
-. gen vaccine_correct = (guess_vaccine >= 0.3 & guess_vaccine <= 2.3) if !mi(gu
-> ess_vaccine) & guess_vaccine != -99
-(117 missing values generated)
+. gen vaccine_correct = (guess_vaccine >= 0.3 & guess_vaccine <= 2.3) 
 
-. label var vaccine_correct "Vaccine guess within 1% of 3%"
+. label var vaccine_correct "Vaccine guess within 1% of 1.3%"
 
 . label values vaccine_correct yesno
 
@@ -638,7 +755,7 @@ Preview responses: 1
 . 
 . * Label all yes/no variables
 . foreach var of varlist final_sample incomplete failed_attn pid_mismatch dupli
-> cate_pid is_preview ///
+> cate_pid first_attempt is_preview ///
 >     med_pharmacy_chain med_grocery med_independent med_mail_order med_online 
 > med_provider med_other med_none ///
 >     flu_why_already flu_why_side_effects flu_why_bad_flu flu_why_needles flu_
@@ -663,7 +780,7 @@ Preview responses: 1
 . order response_id prolific_pid prolific_id_entered ///
 >       start_date end_date duration_sec progress ///
 >       consent final_sample incomplete failed_attn pid_mismatch duplicate_pid 
-> is_preview ///
+> first_attempt is_preview ///
 >       attn_check ///
 >       med_pharmacy_chain med_grocery med_independent med_mail_order med_onlin
 > e med_provider med_other med_none ///
@@ -720,7 +837,7 @@ Preview responses: 1
 
 Contains data
  Observations:         3,211                  
-    Variables:            47                  
+    Variables:            49                  
 -------------------------------------------------------------------------------
 Variable      Storage   Display    Value
     name         type    format    label      Variable label
@@ -732,12 +849,13 @@ start_date      double  %tc..                 Survey start date/time
 end_date        double  %tc..                 Survey end date/time
 duration_sec    long    %40.2f                Survey duration (seconds)
 progress        byte    %40.2f                Survey progress (%)
-consent         byte    %10.0g     yesno      Consent given
+consent         byte    %40.0f     yesno      Consent given
 final_sample    double  %10.0g     yesno      Final analysis sample
 incomplete      double  %10.0g     yesno      Incomplete response
 failed_attn     double  %10.0g     yesno      Failed attention check
 pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
 duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
+first_attempt   double  %10.0g     yesno      First survey attempt for this PID
 is_preview      double  %10.0g     yesno      Preview/test response
 attn_check      int     %10.0g                Attention check value (should be
                                                 1163)
@@ -758,7 +876,7 @@ price_compare   byte    %40.0f     shopping_lbl
                                               Compared prices at pharmacies
 use_coupons     byte    %40.0f     shopping_lbl
                                               Used coupons/deals like GoodRx
-got_glp1        byte    %10.0g     yesno      Got GLP-1 prescription last month
+got_glp1        byte    %40.0f     yesno      Got GLP-1 prescription last month
 got_flu_vacc    byte    %10.0g     yesno      Got flu vaccine last month
 got_covid_vacc  byte    %10.0g     yesno      Got COVID vaccine last month
 flu_why_already byte    %40.0f     yesno      Flu why not: Already got earlier
@@ -777,7 +895,7 @@ recall_study    byte    %40.0f     recall_lbl
 guess_placebo   double  %10.0g                Guessed placebo arm SE rate
 guess_vaccine   double  %10.0g                Guessed vaccine arm SE rate
 placebo_correct double  %10.0g     yesno      Placebo guess within 1% of 3%
-vaccine_correct double  %10.0g     yesno      Vaccine guess within 1% of 3%
+vaccine_correct double  %10.0g     yesno      Vaccine guess within 1% of 1.3%
 recall_manufa~r byte    %40.0f     recallinfo_lbl
                                               Recalls manufacturer/trial info
 recall_univer~y byte    %40.0f     recallinfo_lbl
@@ -787,14 +905,15 @@ recall_gavi     byte    %40.0f     recallinfo_lbl
 found_trustwo~y byte    %40.0f     trust_lbl
                                               Found study info trustworthy
 comments        str783  %783s                 Final comments
+quality_sample  double  %10.0g                
 -------------------------------------------------------------------------------
-Sorted by: 
+Sorted by: prolific_pid  start_date
      Note: Dataset has changed since last saved.
 
 . local nvars = r(k)
 
 . di "Total variables: `nvars'"
-Total variables: 47
+Total variables: 49
 
 . 
 . * Final quality summary
@@ -811,10 +930,10 @@ Total variables: 47
 Total observations: 3211
 
 . count if final_sample == 1
-  3,062
+  3,078
 
 . di "Final sample: " r(N)
-Final sample: 3062
+Final sample: 3078
 
 . tab got_flu_vacc if final_sample == 1, m
 
@@ -822,11 +941,11 @@ Final sample: 3062
     vaccine |
  last month |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      2,832       92.49       92.49
-     1. Yes |        180        5.88       98.37
-          . |         50        1.63      100.00
+      0. No |      2,836       92.14       92.14
+     1. Yes |        180        5.85       97.99
+          . |         62        2.01      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
 . tab recall_study if final_sample == 1, m
 
@@ -834,12 +953,12 @@ Final sample: 3062
  participating in |
        main study |      Freq.     Percent        Cum.
 ------------------+-----------------------------------
-           1. Yes |        761       24.85       24.85
-            2. No |        483       15.77       40.63
-3. Don't remember |      1,779       58.10       98.73
-                . |         39        1.27      100.00
+           1. Yes |        764       24.82       24.82
+            2. No |        483       15.69       40.51
+3. Don't remember |      1,780       57.83       98.34
+                . |         51        1.66      100.00
 ------------------+-----------------------------------
-            Total |      3,062      100.00
+            Total |      3,078      100.00
 
 . 
 . * Compress and save
@@ -848,14 +967,16 @@ Final sample: 3062
   variable incomplete was double now byte
   variable failed_attn was double now byte
   variable pid_mismatch was double now byte
+  variable first_attempt was double now byte
   variable is_preview was double now byte
   variable placebo_correct was double now byte
   variable vaccine_correct was double now byte
-  (157,339 bytes saved)
+  variable quality_sample was double now byte
+  (202,293 bytes saved)
 
-. save "data/followup_clean.dta", replace
-(file data/followup_clean.dta not found)
-file data/followup_clean.dta saved
+. save "derived/followup_clean.dta", replace
+(file derived/followup_clean.dta not found)
+file derived/followup_clean.dta saved
 
 . 
 . di ""
@@ -864,8 +985,11 @@ file data/followup_clean.dta saved
 . di "=== CLEANING COMPLETE ==="
 === CLEANING COMPLETE ===
 
-. di "Saved: data/followup_clean.dta"
-Saved: data/followup_clean.dta
+. di "Saved: derived/followup_clean.dta"
+Saved: derived/followup_clean.dta
 
 . 
 . capture log close
+
+. 
+end of do-file
