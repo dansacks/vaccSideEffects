@@ -21,7 +21,7 @@ Notes:
       3. More than 2 billion observations are allowed; see help obs_advice.
       4. Maximum number of variables is set to 5,000; see help set_maxvar.
 
-. do code/count_sample_size.do 
+. do C:/Users/sacks/Box/VaccSideEffects/code/count_sample_size.do 
 
 . /*===========================================================================
 > ===
@@ -30,9 +30,11 @@ Notes:
 >     Input:  derived/prescreen_clean.dta
 >             derived/main_clean.dta
 >             derived/followup_clean.dta
+>             derived/prolific_demographics_*.dta
 >     Output: output/tables/counts.csv
 > 
 >     Counts sample sizes as observations pass through sequential filters.
+>     Also counts matches to Prolific demographics (after final sample).
 > 
 >     Created by Dan + Claude Code
 > =============================================================================
@@ -92,14 +94,12 @@ C:\Users\sacks\Box\VaccSideEffects
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
-(file C:\Users\sacks\Box\VaccSideEffects\output/logs/count_sample_size.log
-    not found)
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/count_sample_size.l
 > og
   log type:  text
- opened on:  18 Jan 2026, 10:55:26
+ opened on:  18 Jan 2026, 13:27:29
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: count_sample_size ===
 .     di "Log: output/logs/$scriptname.log"
@@ -124,6 +124,7 @@ end of do-file
 >     4. first attempt only
 >     5. hesitant (vacc_intent is "don't intend" or "may or may not", i.e. <= 2
 > )
+>     + matches to demographics (not an inclusion criterion)
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -175,13 +176,37 @@ end of do-file
 
 . 
 . * Save prescreen final sample PIDs for linking
+. preserve
+
 . keep prolific_pid
 
 . tempfile prescreen_final
 
 . save `prescreen_final'
-file C:\Users\sacks\AppData\Local\Temp\ST_10afc_000001.tmp saved as .dta
+file C:\Users\sacks\AppData\Local\Temp\ST_13510_000002.tmp saved as .dta
     format
+
+. restore
+
+. 
+. * Count matches to demographics
+. merge m:1 prolific_pid using "derived/prolific_demographics_prescreen.dta", k
+> eep(1 3) keepusing(prolific_pid)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             4,525  (_merge==3)
+    -----------------------------------------
+
+. count if _merge == 3
+  4,525
+
+. local n_demog = r(N)
+
+. file write fout "Prescreen,Matches to demographics,`n_demog'" _n
+
+. drop _merge
 
 . 
 . di ""
@@ -205,6 +230,9 @@ First attempt: 8003
 . di "Hesitant (final): `n_hesitant'"
 Hesitant (final): 4525
 
+. di "Matches to demographics: `n_demog'"
+Matches to demographics: 4525
+
 . 
 . /*---------------------------------------------------------------------------
 > ---
@@ -219,6 +247,7 @@ Hesitant (final): 4525
 >     5. non-missing value of delta (and no -99 in posterior_vacc, posterior_no
 > vacc)
 >     6. first attempt only - this is the main survey sample
+>     + matches to demographics (not an inclusion criterion)
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -288,13 +317,62 @@ Hesitant (final): 4525
 
 . 
 . * Save main final sample PIDs for linking
+. preserve
+
 . keep prolific_pid
 
 . tempfile main_final
 
 . save `main_final'
-file C:\Users\sacks\AppData\Local\Temp\ST_10afc_000002.tmp saved as .dta
+file C:\Users\sacks\AppData\Local\Temp\ST_13510_000004.tmp saved as .dta
     format
+
+. restore
+
+. 
+. * Combine main and main_morepay demographics for matching
+. preserve
+
+. use "derived/prolific_demographics_main.dta", clear
+
+. append using "derived/prolific_demographics_main_morepay.dta"
+(variable prolific_country_birth was str33, now str36 to accommodate using
+       data's values)
+(label prolific_ethnicity_n already defined)
+
+. duplicates drop prolific_pid, force
+
+Duplicates in terms of prolific_pid
+
+(0 observations are duplicates)
+
+. tempfile main_demog_combined
+
+. save `main_demog_combined'
+file C:\Users\sacks\AppData\Local\Temp\ST_13510_000006.tmp saved as .dta
+    format
+
+. restore
+
+. 
+. * Count matches to demographics
+. merge m:1 prolific_pid using `main_demog_combined', keep(1 3) keepusing(proli
+> fic_pid)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             3,526  (_merge==3)
+    -----------------------------------------
+
+. count if _merge == 3
+  3,526
+
+. local n_demog = r(N)
+
+. file write fout "Main,Matches to demographics,`n_demog'" _n
+
+. drop _merge
 
 . 
 . di ""
@@ -321,6 +399,9 @@ Non-missing delta: 3547
 . di "First attempt (final): `n_first'"
 First attempt (final): 3526
 
+. di "Matches to demographics: `n_demog'"
+Matches to demographics: 3526
+
 . 
 . /*---------------------------------------------------------------------------
 > ---
@@ -332,6 +413,7 @@ First attempt (final): 3526
 >     3. passed attention check in follow up
 >     4. has non-missing outcome (got_flu_vacc)
 >     5. first attempt only
+>     + matches to demographics (not an inclusion criterion)
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -392,6 +474,26 @@ First attempt (final): 3526
 > n
 
 . 
+. * Count matches to demographics
+. merge m:1 prolific_pid using "derived/prolific_demographics_followup.dta", ke
+> ep(1 3) keepusing(prolific_pid)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             3,046  (_merge==3)
+    -----------------------------------------
+
+. count if _merge == 3
+  3,046
+
+. local n_demog = r(N)
+
+. file write fout "Followup,Matches to demographics,`n_demog'" _n
+
+. drop _merge
+
+. 
 . di ""
 
 
@@ -412,6 +514,9 @@ Non-missing outcome: 3074
 
 . di "First attempt (final): `n_first'"
 First attempt (final): 3046
+
+. di "Matches to demographics: `n_demog'"
+Matches to demographics: 3046
 
 . 
 . file close fout

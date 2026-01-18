@@ -127,10 +127,12 @@ $(MERGED_PRE): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(CODE)/merge_prescreen_main.do 
 $(MERGED_ALL): $(MERGED_PRE) $(FOLLOWUP_CLEAN) $(CODE)/merge_followup.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/merge_followup.do && mv merge_followup.log $(OUT_LOGS)/
 
-# Count sample sizes
+# Count sample sizes (depends on prolific demographics for matching counts)
 counts: $(COUNTS)
 
-$(COUNTS): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(FOLLOWUP_CLEAN) $(CODE)/count_sample_size.do $(CODE)/_config.do
+$(COUNTS): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(FOLLOWUP_CLEAN) \
+		$(PROLIFIC_PRE) $(PROLIFIC_MAIN) $(PROLIFIC_MAIN_MP) $(PROLIFIC_FU) \
+		$(CODE)/count_sample_size.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/count_sample_size.do && mv count_sample_size.log $(OUT_LOGS)/
 
 # Balance table
