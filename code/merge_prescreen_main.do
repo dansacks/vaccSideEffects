@@ -18,7 +18,7 @@ do "code/_config.do"
     1. Load and prepare prescreen data
 ------------------------------------------------------------------------------*/
 
-use "data/prescreen_clean.dta" if quality_sample , clear
+use "derived/prescreen_clean.dta" if quality_sample , clear
 
 
 * Rename conflicting variables with pre_ prefix
@@ -50,7 +50,7 @@ di "Prescreen observations: " _N
     2. Load and prepare main data
 ------------------------------------------------------------------------------*/
 
-use "data/main_clean.dta" if quality_sample, clear
+use "derived/main_clean.dta" if quality_sample, clear
 
 
 * Rename conflicting variables with main_ prefix
@@ -129,10 +129,10 @@ drop _merge
 
 * Compress and save
 compress
-save "data/merged_main_pre.dta", replace
+save "derived/merged_main_pre.dta", replace
 
 di ""
 di "=== MERGE COMPLETE ==="
-di "Saved: data/merged_main_pre.dta"
+di "Saved: derived/merged_main_pre.dta"
 
 capture log close

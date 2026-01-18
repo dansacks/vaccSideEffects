@@ -13,14 +13,14 @@ clear all
 global scriptname "merge_followup"
 do "code/_config.do"
 
-use "data/followup_clean.dta" if quality_sample , clear
+use "derived/followup_clean.dta" if quality_sample , clear
 rename attn_check attn_check_followup
 drop quality_sample is_preview
 
 tempfile followup
 save `followup'
 
-use "data/merged_main_pre", clear
+use "derived/merged_main_pre", clear
 assert quality_sample 
 
 
@@ -32,4 +32,4 @@ drop _merge
 label var in_followup "Observation in main and followup"
 
 
-save "data/merged_all", replace 
+save "derived/merged_all", replace 

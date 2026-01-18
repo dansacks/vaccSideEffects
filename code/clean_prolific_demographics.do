@@ -1,11 +1,11 @@
 /*==============================================================================
     Clean Prolific Demographic Exports
 
-    Input:  data/prolific_demographic_export_*.csv
-    Output: data/prolific_demographics_prescreen.dta
-            data/prolific_demographics_main.dta
-            data/prolific_demographics_main_morepay.dta
-            data/prolific_demographics_followup.dta
+    Input:  raw_data/prolific_demographic_export_*.csv
+    Output: derived/prolific_demographics_prescreen.dta
+            derived/prolific_demographics_main.dta
+            derived/prolific_demographics_main_morepay.dta
+            derived/prolific_demographics_followup.dta
 
     Cleans prolific demographic data for merging with survey data.
 
@@ -131,23 +131,23 @@ end
 
 * Prescreen (long string filename)
 clean_prolific ///
-    "data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
-    "data/prolific_demographics_prescreen.dta"
+    "raw_data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
+    "derived/prolific_demographics_prescreen.dta"
 
 * Main
 clean_prolific ///
-    "data/prolific_demographic_export_main.csv" ///
-    "data/prolific_demographics_main.dta"
+    "raw_data/prolific_demographic_export_main.csv" ///
+    "derived/prolific_demographics_main.dta"
 
 * Main morepay
 clean_prolific ///
-    "data/prolific_demographic_export_main_morepay.csv" ///
-    "data/prolific_demographics_main_morepay.dta"
+    "raw_data/prolific_demographic_export_main_morepay.csv" ///
+    "derived/prolific_demographics_main_morepay.dta"
 
 * Followup
 clean_prolific ///
-    "data/prolific_demographic_export_followup.csv" ///
-    "data/prolific_demographics_followup.dta"
+    "raw_data/prolific_demographic_export_followup.csv" ///
+    "derived/prolific_demographics_followup.dta"
 
 /*------------------------------------------------------------------------------
     Summary

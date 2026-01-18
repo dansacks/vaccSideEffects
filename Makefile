@@ -6,6 +6,8 @@
 #   make main        - Clean main data and build codebook
 #   make followup    - Clean followup data
 #   make merge       - Merge prescreen and main data
+#   make counts      - Generate sample size counts
+#   make balance     - Generate balance table
 #   make all         - Run prescreen, main, and followup pipelines
 #   make dirs        - Create output subdirectories
 #   make clean-data  - Remove .dta files only (force rebuild)
@@ -21,7 +23,8 @@ PYTHON := python
 PROJDIR := C:/Users/sacks/Box/VaccSideEffects
 
 # Directories
-DATA := $(PROJDIR)/data
+RAW_DATA := $(PROJDIR)/raw_data
+DERIVED := $(PROJDIR)/derived
 CODE := $(PROJDIR)/code
 OUTPUT := $(PROJDIR)/output
 OUT_LOGS := $(OUTPUT)/logs
@@ -32,7 +35,7 @@ OUT_FIGURES := $(OUTPUT)/figures
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific analysis dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance analysis dirs clean-data clean-all help
 
 all: prescreen main followup prolific
 
@@ -43,6 +46,8 @@ help:
 	@echo "  followup    - Clean followup data and build codebook"
 	@echo "  merge       - Merge prescreen, main, and followup data"
 	@echo "  prolific    - Clean prolific demographic exports"
+	@echo "  counts      - Generate sample size counts"
+	@echo "  balance     - Generate balance table"
 	@echo "  analysis    - Run treatment effects regressions"
 	@echo "  all         - Run prescreen, main, followup, and prolific pipelines"
 	@echo "  dirs        - Create output subdirectories"
@@ -51,14 +56,14 @@ help:
 
 # Create output directories
 dirs:
-	mkdir -p $(OUT_LOGS) $(OUT_TABLES) $(OUT_DOCS) $(OUT_FIGURES)
+	mkdir -p $(OUT_LOGS) $(OUT_TABLES) $(OUT_DOCS) $(OUT_FIGURES) $(DERIVED)
 
 #-------------------------------------------------------------------------------
 # PRESCREEN PIPELINE
 #-------------------------------------------------------------------------------
-# Prescreen now imports from SPSS directly (no XML parsing needed)
-PRESCREEN_SPSS := $(DATA)/vacc_se_prescreen_full_January+9,+2026_19.47.sav
-PRESCREEN_CLEAN := $(DATA)/prescreen_clean.dta
+# Prescreen imports from SPSS in raw_data directory
+PRESCREEN_SPSS := $(RAW_DATA)/vacc_se_prescreen_full_January+9,+2026_19.47.sav
+PRESCREEN_CLEAN := $(DERIVED)/prescreen_clean.dta
 PRESCREEN_STATS_CONT := $(OUT_TABLES)/stats_continuous.csv
 PRESCREEN_STATS_CAT := $(OUT_TABLES)/stats_categorical.csv
 PRESCREEN_CODEBOOK_TEMPLATE := $(OUT_DOCS)/prescreen_codebook_template.md
@@ -81,9 +86,9 @@ $(PRESCREEN_CODEBOOK): $(PRESCREEN_STATS_CONT) $(PRESCREEN_STATS_CAT) $(PRESCREE
 #-------------------------------------------------------------------------------
 # MAIN STUDY PIPELINE
 #-------------------------------------------------------------------------------
-# Main now imports from SPSS directly (no XML parsing needed)
-MAIN_SPSS := $(DATA)/flu_survey_main_January+9,+2026_08.08.sav
-MAIN_CLEAN := $(DATA)/main_clean.dta
+# Main imports from SPSS in raw_data directory
+MAIN_SPSS := $(RAW_DATA)/flu_survey_main_January+9,+2026_08.08.sav
+MAIN_CLEAN := $(DERIVED)/main_clean.dta
 MAIN_STATS_CONT := $(OUT_TABLES)/stats_main_continuous.csv
 MAIN_STATS_CAT := $(OUT_TABLES)/stats_main_categorical.csv
 MAIN_CODEBOOK_TEMPLATE := $(OUT_DOCS)/main_codebook_template.md
@@ -106,9 +111,11 @@ $(MAIN_CODEBOOK): $(MAIN_STATS_CONT) $(MAIN_STATS_CAT) $(MAIN_CODEBOOK_TEMPLATE)
 #-------------------------------------------------------------------------------
 # MERGED DATA
 #-------------------------------------------------------------------------------
-MERGED_PRE := $(DATA)/merged_main_pre.dta
-MERGED_ALL := $(DATA)/merged_all.dta
+MERGED_PRE := $(DERIVED)/merged_main_pre.dta
+MERGED_ALL := $(DERIVED)/merged_all.dta
 COUNTS := $(OUT_TABLES)/counts.csv
+BALANCE_CSV := $(OUT_TABLES)/balance_table.csv
+BALANCE_TEX := $(OUT_TABLES)/balance_table.tex
 
 merge: $(MERGED_ALL)
 
@@ -121,15 +128,23 @@ $(MERGED_ALL): $(MERGED_PRE) $(FOLLOWUP_CLEAN) $(CODE)/merge_followup.do $(CODE)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/merge_followup.do && mv merge_followup.log $(OUT_LOGS)/
 
 # Count sample sizes
+counts: $(COUNTS)
+
 $(COUNTS): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(FOLLOWUP_CLEAN) $(CODE)/count_sample_size.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/count_sample_size.do && mv count_sample_size.log $(OUT_LOGS)/
+
+# Balance table
+balance: $(BALANCE_CSV)
+
+$(BALANCE_CSV) $(BALANCE_TEX) &: $(MERGED_PRE) $(CODE)/balance_table.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_table.do && mv balance_table.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
 # FOLLOWUP PIPELINE
 #-------------------------------------------------------------------------------
-# Followup now imports from SPSS directly (no XML parsing needed)
-FOLLOWUP_SPSS := $(DATA)/flu_vacc_se_followup_January+9,+2026_19.43.sav
-FOLLOWUP_CLEAN := $(DATA)/followup_clean.dta
+# Followup imports from SPSS in raw_data directory
+FOLLOWUP_SPSS := $(RAW_DATA)/flu_vacc_se_followup_January+9,+2026_19.43.sav
+FOLLOWUP_CLEAN := $(DERIVED)/followup_clean.dta
 FOLLOWUP_STATS_CONT := $(OUT_TABLES)/stats_followup_continuous.csv
 FOLLOWUP_STATS_CAT := $(OUT_TABLES)/stats_followup_categorical.csv
 FOLLOWUP_CODEBOOK_TEMPLATE := $(OUT_DOCS)/followup_codebook_template.md
@@ -152,15 +167,15 @@ $(FOLLOWUP_CODEBOOK): $(FOLLOWUP_STATS_CONT) $(FOLLOWUP_STATS_CAT) $(FOLLOWUP_CO
 #-------------------------------------------------------------------------------
 # PROLIFIC DEMOGRAPHICS
 #-------------------------------------------------------------------------------
-PROLIFIC_PRE_CSV := $(DATA)/prolific_demographic_export_692494f77a877e57e000eb60.csv
-PROLIFIC_MAIN_CSV := $(DATA)/prolific_demographic_export_main.csv
-PROLIFIC_MAIN_MP_CSV := $(DATA)/prolific_demographic_export_main_morepay.csv
-PROLIFIC_FU_CSV := $(DATA)/prolific_demographic_export_followup.csv
+PROLIFIC_PRE_CSV := $(RAW_DATA)/prolific_demographic_export_692494f77a877e57e000eb60.csv
+PROLIFIC_MAIN_CSV := $(RAW_DATA)/prolific_demographic_export_main.csv
+PROLIFIC_MAIN_MP_CSV := $(RAW_DATA)/prolific_demographic_export_main_morepay.csv
+PROLIFIC_FU_CSV := $(RAW_DATA)/prolific_demographic_export_followup.csv
 
-PROLIFIC_PRE := $(DATA)/prolific_demographics_prescreen.dta
-PROLIFIC_MAIN := $(DATA)/prolific_demographics_main.dta
-PROLIFIC_MAIN_MP := $(DATA)/prolific_demographics_main_morepay.dta
-PROLIFIC_FU := $(DATA)/prolific_demographics_followup.dta
+PROLIFIC_PRE := $(DERIVED)/prolific_demographics_prescreen.dta
+PROLIFIC_MAIN := $(DERIVED)/prolific_demographics_main.dta
+PROLIFIC_MAIN_MP := $(DERIVED)/prolific_demographics_main_morepay.dta
+PROLIFIC_FU := $(DERIVED)/prolific_demographics_followup.dta
 
 prolific: $(PROLIFIC_PRE) $(PROLIFIC_MAIN) $(PROLIFIC_MAIN_MP) $(PROLIFIC_FU)
 
@@ -186,12 +201,12 @@ $(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config
 
 # Remove only .dta files to force full rebuild
 clean-data:
-	rm -f $(DATA)/prescreen_clean.dta
-	rm -f $(DATA)/main_clean.dta
-	rm -f $(DATA)/merged_main_pre.dta
-	rm -f $(DATA)/merged_all.dta
-	rm -f $(DATA)/followup_clean.dta
-	rm -f $(DATA)/prolific_demographics_*.dta
+	rm -f $(DERIVED)/prescreen_clean.dta
+	rm -f $(DERIVED)/main_clean.dta
+	rm -f $(DERIVED)/merged_main_pre.dta
+	rm -f $(DERIVED)/merged_all.dta
+	rm -f $(DERIVED)/followup_clean.dta
+	rm -f $(DERIVED)/prolific_demographics_*.dta
 
 # Full clean (use sparingly - removes all generated outputs)
 clean-all: clean-data

@@ -16,7 +16,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-import spss using "data/flu_vacc_se_followup_January+9,+2026_19.43.sav", clear
+import spss using "raw_data/flu_vacc_se_followup_January+9,+2026_19.43.sav", clear
 
 * Verify we have data
 assert _N > 0
@@ -237,14 +237,18 @@ label var failed_attn "Failed attention check"
 gen pid_mismatch = (prolific_pid != prolific_id_entered)
 label var pid_mismatch "Prolific PID mismatch"
 
-* Duplicate PID
+* Flag first attempt per PID (sort by start_date, keep first)
+bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
+label var first_attempt "First survey attempt for this PID"
+
+* Duplicate PID (for reference/reporting only)
 duplicates tag prolific_pid, gen(duplicate_pid)
 replace duplicate_pid = (duplicate_pid > 0)
 label var duplicate_pid "Duplicate Prolific PID"
 
 * Final sample flag (exclude previews)
-gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous"  & is_preview == 0)
-gen quality_sample = final_sample & duplicate_pid == 0
+gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & is_preview == 0 & first_attempt == 1)
+gen quality_sample = final_sample
 
 label var final_sample "Final analysis sample"
 label var is_preview "Preview/test response"
@@ -327,7 +331,7 @@ label var flu_why_cost "Flu why not: Cost concern"
 label var flu_why_none "Flu why not: None relevant"
 
 * Label all yes/no variables
-foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid is_preview ///
+foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
     med_pharmacy_chain med_grocery med_independent med_mail_order med_online med_provider med_other med_none ///
     flu_why_already flu_why_side_effects flu_why_bad_flu flu_why_needles flu_why_time flu_why_location flu_why_cost flu_why_none ///
     got_glp1 got_flu_vacc got_covid_vacc placebo_correct vaccine_correct {
@@ -344,7 +348,7 @@ drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _userlan
 * Order variables logically
 order response_id prolific_pid prolific_id_entered ///
       start_date end_date duration_sec progress ///
-      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid is_preview ///
+      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
       attn_check ///
       med_pharmacy_chain med_grocery med_independent med_mail_order med_online med_provider med_other med_none ///
       pharmacy_factor price_compare use_coupons ///
@@ -391,10 +395,10 @@ tab recall_study if final_sample == 1, m
 
 * Compress and save
 compress
-save "data/followup_clean.dta", replace
+save "derived/followup_clean.dta", replace
 
 di ""
 di "=== CLEANING COMPLETE ==="
-di "Saved: data/followup_clean.dta"
+di "Saved: derived/followup_clean.dta"
 
 capture log close

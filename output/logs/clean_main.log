@@ -1,8 +1,99 @@
+
+  ___  ____  ____  ____  ____ ©
+ /__    /   ____/   /   ____/      17.0
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-STATA-PC        https://www.stata.com
+                                   979-696-4600        stata@stata.com
+
+Stata license: Single-user 4-core  perpetual
+Serial number: 501709220187
+  Licensed to: Dan Sacks
+               Indiana University
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+
+. do code/clean_main.do 
+
+. /*===========================================================================
+> ===
+>     Clean Main Survey Data
+> 
+>     Input:  data/flu_survey_main_*.sav (SPSS export from Qualtrics)
+>     Output: data/main_clean.dta
+> 
+>     This do-file cleans the raw Qualtrics SPSS export from the main survey.
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "clean_main"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory
+. local usr `c(username)'
+
+. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+
+. cd "$projdir"
+C:\Users\sacks\Box\VaccSideEffects
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. * Conditional logging: only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_main.log
   log type:  text
- opened on:   9 Jan 2026, 20:57:00
+ opened on:  18 Jan 2026, 09:41:08
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -21,7 +112,7 @@ end of do-file
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. import spss using "data/flu_survey_main_January+9,+2026_08.08.sav", clear
+. import spss using "raw_data/flu_survey_main_January+9,+2026_08.08.sav", clear
 (51 vars, 3,658 obs)
 
 . 
@@ -252,12 +343,8 @@ You |
       Total |      3,658      100.00
 
 . * SPSS has 4=Yes, 5=No - recode to 1/0
-. recode consent (4=1) (5=0), gen(consent_new)
-(3658 differences between consent and consent_new)
-
-. drop consent
-
-. rename consent_new consent
+. recode consent (4=1) (5=0)
+(3658 changes made to consent)
 
 . label values consent yesno
 
@@ -277,11 +364,29 @@ attn_check: contains nonnumeric characters; replaced as long
 . * --- Trust/relevance (SPSS has 1-11, recode to 0-10) ---
 . foreach v of varlist trust_trial relevant_trial trust_academic relevant_acade
 > mic {
-  2.     replace `v' = `v' - 1 if !mi(`v')
-  3. }
+  2.         sum `v' 
+  3.         assert r(max) == 11 & r(min)==1
+  4.         replace `v' = `v' - 1 if !mi(`v')
+  5. }
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+ trust_trial |      3,561    6.445381    2.438665          1         11
 (3,561 real changes made)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+relevant_t~l |      3,561           6    3.029073          1         11
 (3,561 real changes made)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+trust_acad~c |      1,780    6.874719    2.373389          1         11
 (1,780 real changes made)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+relevant_a~c |      1,780    5.897753    3.061978          1         11
 (1,780 real changes made)
 
 . label values trust_trial scale10_lbl
@@ -315,7 +420,7 @@ attn_check: contains nonnumeric characters; replaced as long
 . 
 . * --- Link clicks ---
 . foreach i of numlist 1/4 {
-  2.     destring link`i'_clicked, replace force
+  2.         destring link`i'_clicked, replace force
   3. }
 link1_clicked: all characters numeric; replaced as byte
 link2_clicked: all characters numeric; replaced as byte
@@ -325,94 +430,7 @@ link4_clicked: all characters numeric; replaced as byte
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     7. Create quality/sample flags
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Incomplete flag
-. gen incomplete = (Progress != 100 | _finished != 1)
-
-. label var incomplete "Incomplete response"
-
-. 
-. * Failed attention check (should be 4419)
-. gen failed_attn = (attn_check != 4419) if !mi(attn_check)
-(12 missing values generated)
-
-. replace failed_attn = 1 if mi(attn_check)
-(12 real changes made)
-
-. label var failed_attn "Failed attention check"
-
-. 
-. * PID mismatch
-. gen pid_mismatch = (prolific_pid != prolific_id_entered)
-
-. label var pid_mismatch "Prolific PID mismatch"
-
-. 
-. * Duplicate PID
-. duplicates tag prolific_pid, gen(duplicate_pid)
-
-Duplicates in terms of prolific_pid
-
-. replace duplicate_pid = (duplicate_pid > 0)
-(7 real changes made)
-
-. label var duplicate_pid "Duplicate Prolific PID"
-
-. 
-. * Final sample flag (will be updated after arm assignment)
-. gen final_sample = .
-(3,658 missing values generated)
-
-. label var final_sample "Final analysis sample"
-
-. 
-. * Report quality flags (preliminary)
-. di "=== PRELIMINARY QUALITY FLAG SUMMARY ==="
-=== PRELIMINARY QUALITY FLAG SUMMARY ===
-
-. count
-  3,658
-
-. di "Total observations: " r(N)
-Total observations: 3658
-
-. count if incomplete == 1
-  74
-
-. di "Incomplete: " r(N)
-Incomplete: 74
-
-. count if failed_attn == 1
-  19
-
-. di "Failed attention check: " r(N)
-Failed attention check: 19
-
-. count if pid_mismatch == 1
-  9
-
-. di "PID mismatch: " r(N)
-PID mismatch: 9
-
-. count if duplicate_pid == 1
-  57
-
-. di "Duplicate PIDs: " r(N)
-Duplicate PIDs: 57
-
-. count if is_preview == 1
-  7
-
-. di "Preview responses: " r(N)
-Preview responses: 7
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     8. Consolidate treatment arm variables
+>     7. Consolidate treatment arm variables
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -483,41 +501,9 @@ variable arm was str7 now str8
 (61 missing values generated)
 
 . 
-. * Update final sample flag
-. replace final_sample = (consent == 1 & failed_attn == 0 ///
->     & _distchannel == "anonymous" & duplicate_pid == 0 & ~missing(arm_n) & is
-> _preview == 0)
-(3,658 real changes made)
-
-. label var is_preview "Preview/test response"
-
-. 
-. * Report final sample size
-. count if final_sample == 1
-  3,558
-
-. di "=== FINAL SAMPLE SIZE: " r(N) " ==="
-=== FINAL SAMPLE SIZE: 3558 ===
-
-. 
-. * Verify arm assignment
-. tab arm_n if final_sample == 1, m
-
-  Treatment |
-        arm |
-  (numeric) |      Freq.     Percent        Cum.
-------------+-----------------------------------
- 0. Control |        890       25.01       25.01
-1. Industry |        890       25.01       50.03
-2. Academic |        887       24.93       74.96
-3. Personal |        891       25.04      100.00
-------------+-----------------------------------
-      Total |      3,558      100.00
-
-. 
 . /*---------------------------------------------------------------------------
 > ---
->     9. Consolidate post-trial and posterior belief variables
+>     8. Consolidate post-trial and posterior belief variables
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -583,19 +569,6 @@ post_p_trial: contains nonnumeric characters; replaced as double
 . label var post_trial "Post-trial side effect estimate (0-100)"
 
 . 
-. * Verify arm variable matches which post_trial is non-missing
-. egen _arm_count = rownonmiss(post_c_trial post_i_trial post_a_trial post_p_tr
-> ial)
-
-. count if _arm_count != 1 & final_sample == 1
-  19
-
-. di "Observations with unexpected arm count: " r(N)
-Observations with unexpected arm count: 19
-
-. drop _arm_count
-
-. 
 . * --- Consolidate posterior beliefs ---
 . * Remove "%" if present and convert to numeric
 . foreach v in posterior_novacc posterior_vacc {
@@ -621,7 +594,7 @@ posterior_vacc: all characters numeric; replaced as double
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     10. Create derived variables
+>     9. Create derived variables
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -656,6 +629,110 @@ posterior_vacc: all characters numeric; replaced as double
 
 . label values link_click yesno
 
+. 
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     10. Create quality/sample flags
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Incomplete flag
+. gen incomplete = (Progress != 100 | _finished != 1)
+
+. label var incomplete "Incomplete response"
+
+. 
+. * Failed attention check (should be 4419)
+. gen failed_attn = (attn_check != 4419) 
+
+. label var failed_attn "Failed attention check"
+
+. 
+. * PID mismatch
+. gen pid_mismatch = (prolific_pid != prolific_id_entered)
+
+. label var pid_mismatch "Prolific PID mismatch"
+
+. 
+. * Flag first attempt per PID (sort by start_date, keep first)
+. bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
+
+. label var first_attempt "First survey attempt for this PID"
+
+. 
+. * Duplicate PID (for reference/reporting only)
+. duplicates tag prolific_pid, gen(duplicate_pid)
+
+Duplicates in terms of prolific_pid
+
+. replace duplicate_pid = (duplicate_pid > 0)
+(7 real changes made)
+
+. label var duplicate_pid "Duplicate Prolific PID"
+
+. 
+. * count missing outcomes
+. egen n_missing = rowmiss(posterior_vacc posterior_novacc post_trial)
+
+. 
+. * Update final sample flag
+. gen final_sample = (consent == 1 & failed_attn == 0 ///
+>     & _distchannel == "anonymous" & is_preview == 0 ///
+>                 & n_missing == 0 & first_attempt == 1)
+
+. 
+. label var final_sample "Final analysis sample (consent, passed attn, non-miss
+> ing outcomes, first attempt)"
+note: label truncated to 80 characters
+
+. assert ~missing(arm_n) if final_sample
+
+. gen quality_sample = final_sample
+
+. 
+. 
+. * Report quality flags (preliminary)
+. di "=== PRELIMINARY QUALITY FLAG SUMMARY ==="
+=== PRELIMINARY QUALITY FLAG SUMMARY ===
+
+. count
+  3,658
+
+. di "Total observations: " r(N)
+Total observations: 3658
+
+. count if incomplete == 1
+  74
+
+. di "Incomplete: " r(N)
+Incomplete: 74
+
+. count if failed_attn == 1
+  19
+
+. di "Failed attention check: " r(N)
+Failed attention check: 19
+
+. count if pid_mismatch == 1
+  9
+
+. di "PID mismatch: " r(N)
+PID mismatch: 9
+
+. count if duplicate_pid == 1
+  57
+
+. di "Duplicate PIDs: " r(N)
+Duplicate PIDs: 57
+
+. count if is_preview == 1
+  7
+
+. di "Preview responses: " r(N)
+Preview responses: 7
+
+. 
 . 
 . /*---------------------------------------------------------------------------
 > ---
@@ -733,7 +810,7 @@ posterior_vacc: all characters numeric; replaced as double
 . 
 . * Label all yes/no variables
 . foreach var of varlist final_sample incomplete failed_attn pid_mismatch dupli
-> cate_pid is_preview ///
+> cate_pid first_attempt is_preview ///
 >     arm_control arm_industry arm_academic arm_personal maybe link_click {
   2.     label values `var' yesno
   3. }
@@ -761,7 +838,7 @@ posterior_vacc: all characters numeric; replaced as double
 . order response_id prolific_pid prolific_id_entered ///
 >       start_date end_date duration_sec progress ///
 >       consent final_sample incomplete failed_attn pid_mismatch duplicate_pid 
-> is_preview ///
+> first_attempt is_preview ///
 >       attn_check ///
 >       arm_n arm arm_control arm_industry arm_academic arm_personal ///
 >       prior_self_placebo prior_self_vacc prior_diff ///
@@ -772,6 +849,8 @@ posterior_vacc: all characters numeric; replaced as double
 >       link_click link1_clicked link2_clicked link3_clicked link4_clicked ///
 >       age gender education income race ethnicity polviews ///
 >       debrief_about comments
+
+. rename vacc_intentions vacc_intent
 
 . 
 . /*---------------------------------------------------------------------------
@@ -800,7 +879,7 @@ posterior_vacc: all characters numeric; replaced as double
 
 . assert inlist(relevant_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
 
-. assert inlist(vacc_intentions, 1, 2, 3, 4, -99, .)
+. assert inlist(vacc_intent, 1, 2, 3, 4, -99, .)
 
 . assert inlist(age, 1, 2, 3, 4, 5, 6, -99, .)
 
@@ -822,7 +901,7 @@ posterior_vacc: all characters numeric; replaced as double
 
 Contains data
  Observations:         3,658                  
-    Variables:            52                  
+    Variables:            55                  
 -------------------------------------------------------------------------------
 Variable      Storage   Display    Value
     name         type    format    label      Variable label
@@ -834,13 +913,16 @@ start_date      double  %tc..                 Survey start date/time
 end_date        double  %tc..                 Survey end date/time
 duration_sec    long    %40.2f                Survey duration (seconds)
 progress        byte    %40.2f                Survey progress (%)
-consent         byte    %10.0g     yesno      Consent given
-final_sample    double  %10.0g     yesno      Final analysis sample
+consent         byte    %40.0f     yesno      Consent given
+final_sample    double  %10.0g     yesno      Final analysis sample (consent,
+                                                passed attn, non-missing
+                                                outcomes, first attempt
 incomplete      double  %10.0g     yesno      Incomplete response
 failed_attn     double  %10.0g     yesno      Failed attention check
 pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
 duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
-is_preview      double  %10.0g     yesno      Preview/test response
+first_attempt   double  %10.0g     yesno      First survey attempt for this PID
+is_preview      double  %10.0g     yesno      
 attn_check      long    %10.0g                Attention check value (should be
                                                 4419)
 arm_n           double  %11.0g     arm_lbl    Treatment arm (numeric)
@@ -878,7 +960,7 @@ trust_academic  byte    %40.0f     scale10_lbl
 relevant_acad~c byte    %40.0f     scale10_lbl
                                               Relevance of academic source
                                                 (0-10)
-vacc_intentions byte    %40.0f     vacc_intent_lbl
+vacc_intent     byte    %40.0f     vacc_intent_lbl
                                               Flu vaccine intentions
 maybe           double  %10.0g     yesno      Intends/already got vaccine
 link_click      double  %10.0g     yesno      Any link clicked
@@ -899,14 +981,16 @@ polviews        byte    %40.0f     polviews_lbl
                                               Political views
 debrief_about   strL    %255s                 Debrief: What survey was about
 comments        strL    %255s                 Final comments
+n_missing       double  %10.0g                
+quality_sample  double  %10.0g                
 -------------------------------------------------------------------------------
-Sorted by: 
+Sorted by: prolific_pid  start_date
      Note: Dataset has changed since last saved.
 
 . local nvars = r(k)
 
 . di "Total variables: `nvars'"
-Total variables: 52
+Total variables: 55
 
 . 
 . * Final quality summary
@@ -923,10 +1007,10 @@ Total variables: 52
 Total observations: 3658
 
 . count if final_sample == 1
-  3,558
+  3,538
 
 . di "Final sample: " r(N)
-Final sample: 3558
+Final sample: 3538
 
 . tab arm_n if final_sample == 1, m
 
@@ -934,25 +1018,25 @@ Final sample: 3558
         arm |
   (numeric) |      Freq.     Percent        Cum.
 ------------+-----------------------------------
- 0. Control |        890       25.01       25.01
-1. Industry |        890       25.01       50.03
-2. Academic |        887       24.93       74.96
-3. Personal |        891       25.04      100.00
+ 0. Control |        885       25.01       25.01
+1. Industry |        885       25.01       50.03
+2. Academic |        882       24.93       74.96
+3. Personal |        886       25.04      100.00
 ------------+-----------------------------------
-      Total |      3,558      100.00
+      Total |      3,538      100.00
 
-. tab vacc_intentions if final_sample == 1, m
+. tab vacc_intent if final_sample == 1, m
 
 Flu vaccine intentions |      Freq.     Percent        Cum.
 -----------------------+-----------------------------------
 -99. Prefer not to say |          1        0.03        0.03
-  1. No, do not intend |      2,198       61.78       61.80
-     2. May or may not |      1,031       28.98       90.78
-      3. Intend to get |        225        6.32       97.11
-        4. Already got |         67        1.88       98.99
-                     . |         36        1.01      100.00
+  1. No, do not intend |      2,203       62.27       62.30
+     2. May or may not |      1,034       29.23       91.52
+      3. Intend to get |        225        6.36       97.88
+        4. Already got |         67        1.89       99.77
+                     . |          8        0.23      100.00
 -----------------------+-----------------------------------
-                 Total |      3,558      100.00
+                 Total |      3,538      100.00
 
 . 
 . * Compress and save
@@ -961,6 +1045,7 @@ Flu vaccine intentions |      Freq.     Percent        Cum.
   variable incomplete was double now byte
   variable failed_attn was double now byte
   variable pid_mismatch was double now byte
+  variable first_attempt was double now byte
   variable is_preview was double now byte
   variable arm_n was double now byte
   variable arm_control was double now byte
@@ -970,11 +1055,13 @@ Flu vaccine intentions |      Freq.     Percent        Cum.
   variable prior_diff was double now byte
   variable maybe was double now byte
   variable link_click was double now byte
-  (332,878 bytes saved)
+  variable n_missing was double now byte
+  variable quality_sample was double now byte
+  (409,696 bytes saved)
 
-. save "data/main_clean.dta", replace
-(file data/main_clean.dta not found)
-file data/main_clean.dta saved
+. save "derived/main_clean.dta", replace
+(file derived/main_clean.dta not found)
+file derived/main_clean.dta saved
 
 . 
 . di ""
@@ -983,8 +1070,11 @@ file data/main_clean.dta saved
 . di "=== CLEANING COMPLETE ==="
 === CLEANING COMPLETE ===
 
-. di "Saved: data/main_clean.dta"
-Saved: data/main_clean.dta
+. di "Saved: derived/main_clean.dta"
+Saved: derived/main_clean.dta
 
 . 
 . capture log close
+
+. 
+end of do-file

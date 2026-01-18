@@ -18,7 +18,7 @@ global scriptname "summary_stats_followup"
 do "code/_config.do"
 
 * Load cleaned data
-use "data/followup_clean.dta", clear
+use "derived/followup_clean.dta", clear
 
 * Keep only valid observations
 keep if final_sample == 1

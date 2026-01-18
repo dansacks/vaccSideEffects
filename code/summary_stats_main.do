@@ -18,7 +18,7 @@ global scriptname "summary_stats_main"
 do "code/_config.do"
 
 * Load cleaned data
-use "data/main_clean.dta", clear
+use "derived/main_clean.dta", clear
 
 * Keep only valid observations
 keep if final_sample == 1

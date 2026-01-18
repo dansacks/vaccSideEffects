@@ -7,10 +7,11 @@ Research study examining vaccine side effects. Uses Stata for data processing/an
 ```
 VaccSideEffects/
 ├── code/           # Stata do-files and Python scripts
-├── data/           # Raw and cleaned data files
+├── raw_data/       # Minimal raw data for replication (SPSS + Prolific demographics)
+├── derived/        # All derived/cleaned data files (.dta)
 ├── output/
 │   ├── logs/       # Stata log files
-│   ├── tables/     # CSV output tables
+│   ├── tables/     # CSV output tables (counts, balance, treatment effects)
 │   ├── docs/       # Generated codebooks (markdown)
 │   └── figures/    # Generated figures
 ├── design_materials/
@@ -25,7 +26,10 @@ The project uses Make for build automation. Run from Git Bash:
 cd /c/Users/sacks/Box/VaccSideEffects
 make prescreen    # Clean prescreen data and build codebook
 make main         # Clean main survey data and build codebook
-make all          # Run both prescreen and main pipelines
+make followup     # Clean followup data and build codebook
+make counts       # Generate sample size counts
+make balance      # Generate balance table
+make all          # Run prescreen, main, followup, and prolific pipelines
 make help         # Show available targets
 ```
 
@@ -76,16 +80,22 @@ assert r(N)==40
 Each survey has its own pipeline: prescreen, main, followup
 
 ### Prescreen Pipeline
-1. `clean_prescreen.do` - Cleans raw Qualtrics CSV
+1. `clean_prescreen.do` - Cleans raw SPSS export from raw_data/, outputs to derived/
 2. `summary_stats_prescreen.do` - Generates summary statistics CSVs
 3. `build_codebook.py prescreen` - Combines stats into markdown codebook
 
 ### Main Survey Pipeline
 4-arm RCT (Control, Industry, Academic, Personal) examining vaccine information sources.
 
-1. `clean_main.do` - Cleans raw Qualtrics CSV, creates treatment arm variables
+1. `clean_main.do` - Cleans raw SPSS export, creates treatment arm variables
 2. `summary_stats_main.do` - Generates summary statistics CSVs
 3. `build_codebook.py main` - Combines stats into markdown codebook
+
+### Sample Selection
+Final samples are defined as first attempt per PID passing all quality checks:
+- **Prescreen**: consent + attention check + first attempt + hesitant (vacc_intent <= 2)
+- **Main**: linked to prescreen final + consent + attention + non-missing delta + first attempt
+- **Followup**: linked to main final + attention + non-missing outcome + first attempt
 
 **Key variables:**
 - `arm_n` (0-3): Treatment arm assignment

@@ -19,7 +19,7 @@ global scriptname "summary_stats_prescreen"
 do "code/_config.do"
 
 * Load cleaned data
-use "data/prescreen_clean.dta", clear
+use "derived/prescreen_clean.dta", clear
 
 * Keep only valid observations
 keep if final_sample == 1
