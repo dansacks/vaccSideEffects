@@ -1,0 +1,962 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_prescreen.log
+  log type:  text
+ opened on:   9 Jan 2026, 20:56:53
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: clean_prescreen ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/clean_prescreen.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     1. Load raw SPSS data
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. import spss using "data/vacc_se_prescreen_full_January+9,+2026_19.47.sav", cl
+> ear
+(58 vars, 8,198 obs)
+
+. 
+. * Verify we have data
+. assert _N > 0
+
+. di "Loaded " _N " observations"
+Loaded 8198 observations
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     2. Drop unused metadata variables
+> -----------------------------------------------------------------------------
+> -*/
+. drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3. Rename variables to clean names
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Rename Qualtrics metadata
+. rename StartDate start_date
+
+. rename EndDate end_date
+
+. rename Duration__in_seconds_ duration_sec
+
+. rename Finished _finished
+
+. rename ResponseId response_id
+
+. rename IPAddress _ipaddress
+
+. rename LocationLatitude _lat
+
+. rename LocationLongitude _long
+
+. rename Status _status
+
+. rename RecordedDate _recordeddate
+
+. rename DistributionChannel _distchannel
+
+. rename UserLanguage _userlang
+
+. rename Progress progress
+
+. 
+. * Rename survey variables from SPSS names
+. rename Q42 prolific_id_entered
+
+. rename Favorite_Number favorite_number
+
+. rename Vaccine_History flu_vacc_lastyear
+
+. rename Other_Vaccines prior_vaccines
+
+. rename Vaccine_Status vacc_intent
+
+. 
+. * Vaccine reactions (complex routing)
+. rename Reaction _covid_reaction1
+
+. rename Flu_Vax_Experience _flu_reaction1
+
+. rename COVID_Vax_Experience _covid_reaction2
+
+. rename _v1 _flu_reaction2
+
+. 
+. * Health conditions (already split in SPSS)
+. rename Conditions_1 cond_asthma
+
+. rename Conditions_2 cond_lung
+
+. rename Conditions_3 cond_heart
+
+. rename Conditions_4 cond_diabetes
+
+. rename Conditions_6 cond_kidney
+
+. rename Conditions_7 cond_rather_not_say
+
+. rename Conditions_8 cond_none
+
+. 
+. rename Insurance has_insurance
+
+. rename Government trust_govt
+
+. rename Doctors follow_doctor
+
+. rename government_prior trust_govt_prior
+
+. rename Importance info_source_main
+
+. 
+. * Source text fields
+. rename Source source_sm_text
+
+. rename _v2 source_podcast_text
+
+. rename _v3 source_news_text
+
+. 
+. * Info frequency
+. rename Doctor info_doctor
+
+. rename Social_Media info_sm
+
+. rename Podcasts info_podcasts
+
+. rename CDC info_cdc
+
+. rename News info_news
+
+. rename Consumption info_university
+
+. 
+. * Reliability (use wildcards for truncated names)
+. rename Reliabilit*r reliable_doctor
+
+. rename Reliabilit*M reliable_sm
+
+. rename Reliabili*ds reliable_podcasts
+
+. rename Reliabilit*C reliable_cdc
+
+. rename Reliabili*ws reliable_news
+
+. rename Reliability reliable_university
+
+. 
+. rename Final_Comments comments
+
+. rename PROLIFIC_PID prolific_pid
+
+. 
+. * Drop session/study IDs
+. drop SESSION_ID STUDY_ID
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     4. Create preview flag from Status
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Status: 0 = IP Address (real), 1 = Survey Preview
+. gen is_preview = (_status == 1) if !mi(_status)
+
+. replace is_preview = 0 if mi(is_preview)
+(0 real changes made)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     5. Define value labels (numbered format)
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Boolean (Yes/No)
+. label define yesno 0 "0. No" 1 "1. Yes"
+
+. 
+. * Insurance (Yes/No/Not sure)
+. label define insurance_lbl -1 "-1. Not sure" 0 "0. No" 1 "1. Yes"
+
+. 
+. * Likert agreement scale
+. label define agree5 ///
+>     1 "1. Strongly disagree" ///
+>     2 "2. Somewhat disagree" ///
+>     3 "3. Neither agree nor disagree" ///
+>     4 "4. Somewhat agree" ///
+>     5 "5. Strongly agree"
+
+. 
+. * Frequency scale
+. label define freq4 ///
+>     1 "1. Never" ///
+>     2 "2. Rarely" ///
+>     3 "3. Sometimes" ///
+>     4 "4. Often"
+
+. 
+. * Frequency scale with "no doctor" option
+. label define freq4_nodoc ///
+>     -1 "-1. No doctor" ///
+>     1 "1. Never" ///
+>     2 "2. Rarely" ///
+>     3 "3. Sometimes" ///
+>     4 "4. Often"
+
+. 
+. * Reliability scale
+. label define reliable3 ///
+>     1 "1. Not reliable" ///
+>     2 "2. Somewhat reliable" ///
+>     3 "3. Yes, reliable"
+
+. 
+. * Flu vaccine last year
+. label define fluvax_lastyear_lbl 0 "0. No" 1 "1. Yes"
+
+. 
+. * Prior vaccines
+. label define prior_vax_lbl ///
+>     1 "1. Neither vaccine" ///
+>     2 "2. Flu only" ///
+>     3 "3. COVID only" ///
+>     4 "4. Both vaccines"
+
+. 
+. * Flu vaccine intent
+. label define flu_intent_lbl ///
+>     1 "1. No, do not intend" ///
+>     2 "2. May or may not" ///
+>     3 "3. Intend to get" ///
+>     4 "4. Already got"
+
+. 
+. * Vaccine reaction
+. label define reaction_lbl ///
+>     0 "0. No prior vaccine" ///
+>     1 "1. None/don't remember" ///
+>     2 "2. Mild (not severe)" ///
+>     3 "3. Severe"
+
+. 
+. * Main info source
+. label define source_main_lbl ///
+>     1 "1. Doctor" ///
+>     2 "2. Social media" ///
+>     3 "3. Podcasts" ///
+>     4 "4. CDC" ///
+>     5 "5. News organizations" ///
+>     6 "6. None of the above"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     6. Convert/recode variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * --- Consent (SPSS: 4=Yes, 5=No, -99=missing) ---
+. tab consent, m nolabel
+
+ University |
+         of |
+Wisconsin-M |
+adison
+
+Res |
+      earch |
+participant |
+information |
+ sheet
+
+You |
+        are |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        -99 |        100        1.22        1.22
+          4 |      8,093       98.72       99.94
+          5 |          5        0.06      100.00
+------------+-----------------------------------
+      Total |      8,198      100.00
+
+. recode consent (4=1) (5=0) (-99=.), gen(consent_new)
+(8198 differences between consent and consent_new)
+
+. drop consent
+
+. rename consent_new consent
+
+. label values consent yesno
+
+. 
+. * --- Flu vaccine last year (SPSS: 1=Yes, 2=No) ---
+. recode flu_vacc_lastyear (1=1) (2=0), gen(flu_vacc_lastyear_new)
+(3516 differences between flu_vacc_lastyear and flu_vacc_lastyear_new)
+
+. drop flu_vacc_lastyear
+
+. rename flu_vacc_lastyear_new flu_vacc_lastyear
+
+. label values flu_vacc_lastyear fluvax_lastyear_lbl
+
+. 
+. * --- Prior vaccines (SPSS: 1=Both, 2=Flu only, 3=COVID only, 4=Neither) ---
+. * Remap to: 1=Neither, 2=Flu only, 3=COVID only, 4=Both
+. recode prior_vaccines (1=4) (2=2) (3=3) (4=1), gen(prior_vaccines_new)
+(6075 differences between prior_vaccines and prior_vaccines_new)
+
+. drop prior_vaccines
+
+. rename prior_vaccines_new prior_vaccines
+
+. label values prior_vaccines prior_vax_lbl
+
+. 
+. * --- Flu vaccine intent (SPSS already 1-4 matching) ---
+. label values vacc_intent flu_intent_lbl
+
+. 
+. * --- Insurance (SPSS: 1=Not sure, 2=No, 3=Yes) ---
+. recode has_insurance (1=-1) (2=0) (3=1), gen(has_insurance_new)
+(8058 differences between has_insurance and has_insurance_new)
+
+. drop has_insurance
+
+. rename has_insurance_new has_insurance
+
+. label values has_insurance insurance_lbl
+
+. 
+. * --- Trust/follow scales (SPSS already 1-5 matching) ---
+. label values trust_govt agree5
+
+. label values follow_doctor agree5
+
+. label values trust_govt_prior agree5
+
+. 
+. * --- Main info source (SPSS already 1-6 matching) ---
+. label values info_source_main source_main_lbl
+
+. 
+. * --- Info from doctor (SPSS: 1=Often, 2=Sometimes, 3=Rarely, 4=Never, 5=No d
+> octor) ---
+. recode info_doctor (1=4) (2=3) (3=2) (4=1) (5=-1), gen(info_doctor_new)
+(8031 differences between info_doctor and info_doctor_new)
+
+. drop info_doctor
+
+. rename info_doctor_new info_doctor
+
+. label values info_doctor freq4_nodoc
+
+. 
+. * --- Info from other sources (SPSS: 1=Often, 2=Sometimes, 3=Rarely, 4=Never)
+>  ---
+. foreach v in info_sm info_podcasts info_cdc info_news info_university {
+  2.     recode `v' (1=4) (2=3) (3=2) (4=1), gen(`v'_new)
+  3.     drop `v'
+  4.     rename `v'_new `v'
+  5.     label values `v' freq4
+  6. }
+(8031 differences between info_sm and info_sm_new)
+(8031 differences between info_podcasts and info_podcasts_new)
+(8031 differences between info_cdc and info_cdc_new)
+(8031 differences between info_news and info_news_new)
+(8021 differences between info_university and info_university_new)
+
+. 
+. * --- Reliability (SPSS: 1=Yes reliable, 2=Somewhat, 3=Not reliable) ---
+. foreach v in reliable_doctor reliable_sm reliable_podcasts reliable_cdc relia
+> ble_news reliable_university {
+  2.     recode `v' (1=3) (2=2) (3=1), gen(`v'_new)
+  3.     drop `v'
+  4.     rename `v'_new `v'
+  5.     label values `v' reliable3
+  6. }
+(5066 differences between reliable_doctor and reliable_doctor_new)
+(712 differences between reliable_sm and reliable_sm_new)
+(325 differences between reliable_podcasts and reliable_podcasts_new)
+(2671 differences between reliable_cdc and reliable_cdc_new)
+(755 differences between reliable_news and reliable_news_new)
+(3983 differences between reliable_university and reliable_university_new)
+
+. 
+. * --- Favorite number (attention check) ---
+. destring favorite_number, replace force
+favorite_number: contains nonnumeric characters; replaced as double
+(17 missing values generated)
+
+. 
+. * --- Health condition dummies (SPSS: 1=selected, missing=not selected) ---
+. foreach v of varlist cond_asthma cond_lung cond_heart cond_diabetes cond_kidn
+> ey cond_rather_not_say cond_none {
+  2.     replace `v' = 0 if mi(`v')
+  3. }
+(140 real changes made)
+(140 real changes made)
+(140 real changes made)
+(140 real changes made)
+(140 real changes made)
+(140 real changes made)
+(140 real changes made)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     7. Create quality/sample flags
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Incomplete flag
+. gen incomplete = (progress != 100 | _finished != 1)
+
+. label var incomplete "Incomplete response"
+
+. 
+. * Failed attention check (favorite number should be 1965)
+. gen failed_attn = (favorite_number != 1965) if !mi(favorite_number)
+(17 missing values generated)
+
+. replace failed_attn = 1 if mi(favorite_number)
+(17 real changes made)
+
+. label var failed_attn "Failed attention check"
+
+. 
+. * PID mismatch
+. gen pid_mismatch = (prolific_pid != prolific_id_entered)
+
+. label var pid_mismatch "Prolific PID mismatch"
+
+. 
+. * Duplicate PID
+. duplicates tag prolific_pid, gen(duplicate_pid)
+
+Duplicates in terms of prolific_pid
+
+. replace duplicate_pid = (duplicate_pid > 0)
+(3 real changes made)
+
+. label var duplicate_pid "Duplicate Prolific PID"
+
+. 
+. * Final sample flag (exclude previews)
+. gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonym
+> ous" & duplicate_pid == 0 & is_preview == 0)
+
+. label var final_sample "Final analysis sample"
+
+. label var is_preview "Preview/test response"
+
+. 
+. * Report quality flags
+. di "=== QUALITY FLAG SUMMARY ==="
+=== QUALITY FLAG SUMMARY ===
+
+. count
+  8,198
+
+. di "Total observations: " r(N)
+Total observations: 8198
+
+. count if final_sample == 1
+  7,961
+
+. di "Final sample: " r(N)
+Final sample: 7961
+
+. count if incomplete == 1
+  86
+
+. di "Incomplete: " r(N)
+Incomplete: 86
+
+. count if failed_attn == 1
+  50
+
+. di "Failed attention check: " r(N)
+Failed attention check: 50
+
+. count if pid_mismatch == 1
+  8
+
+. di "PID mismatch: " r(N)
+PID mismatch: 8
+
+. count if duplicate_pid == 1
+  111
+
+. di "Duplicate PIDs: " r(N)
+Duplicate PIDs: 111
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     8. Consolidate vaccine experience variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Create binary indicators for prior vaccination
+. gen had_prior_covid = inlist(prior_vaccines, 3, 4) if !mi(prior_vaccines)
+(120 missing values generated)
+
+. gen had_prior_flu = inlist(prior_vaccines, 2, 4) if !mi(prior_vaccines)
+(120 missing values generated)
+
+. label var had_prior_covid "Had prior COVID vaccine"
+
+. label var had_prior_flu "Had prior flu vaccine"
+
+. 
+. * Consolidate COVID reaction (SPSS: 1=None/don't remember, 2=Mild, 3=Severe)
+. * _covid_reaction1 is asked if prior_vaccines == 3 (COVID only)
+. * _covid_reaction2 is asked if prior_vaccines == 4 (both)
+. gen covid_reaction = .
+(8,198 missing values generated)
+
+. replace covid_reaction = 0 if had_prior_covid == 0
+(1,887 real changes made)
+
+. replace covid_reaction = _covid_reaction1 if !mi(_covid_reaction1)
+(1,006 real changes made)
+
+. replace covid_reaction = _covid_reaction2 if !mi(_covid_reaction2)
+(5,178 real changes made)
+
+. label values covid_reaction reaction_lbl
+
+. label var covid_reaction "COVID vaccine reaction"
+
+. 
+. * Consolidate flu reaction (SPSS: 1=None/don't remember, 2=Mild, 3=Severe)
+. * _flu_reaction1 is asked if prior_vaccines == 4 (both)
+. * _flu_reaction2 is asked if prior_vaccines == 2 (flu only)
+. gen flu_reaction = .
+(8,198 missing values generated)
+
+. replace flu_reaction = 0 if had_prior_flu == 0
+(1,896 real changes made)
+
+. replace flu_reaction = _flu_reaction1 if !mi(_flu_reaction1)
+(5,178 real changes made)
+
+. replace flu_reaction = _flu_reaction2 if !mi(_flu_reaction2)
+(995 real changes made)
+
+. label values flu_reaction reaction_lbl
+
+. label var flu_reaction "Flu vaccine reaction"
+
+. 
+. * Assertions for reaction variables
+. assert covid_reaction == 0 if had_prior_covid == 0 & !mi(prior_vaccines)
+
+. assert inlist(covid_reaction, 1, 2, 3) if had_prior_covid == 1 & (!mi(_covid_
+> reaction1) | !mi(_covid_reaction2))
+
+. assert flu_reaction == 0 if had_prior_flu == 0 & !mi(prior_vaccines)
+
+. assert inlist(flu_reaction, 1, 2, 3) if had_prior_flu == 1 & (!mi(_flu_reacti
+> on1) | !mi(_flu_reaction2))
+
+. 
+. * Drop temporary reaction variables
+. drop _covid_reaction1 _covid_reaction2 _flu_reaction1 _flu_reaction2
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     9. Create binary indicators for main info source
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. gen source_doctor = (info_source_main == 1) if !mi(info_source_main)
+(155 missing values generated)
+
+. gen source_sm = (info_source_main == 2) if !mi(info_source_main)
+(155 missing values generated)
+
+. gen source_podcasts = (info_source_main == 3) if !mi(info_source_main)
+(155 missing values generated)
+
+. gen source_cdc = (info_source_main == 4) if !mi(info_source_main)
+(155 missing values generated)
+
+. gen source_news = (info_source_main == 5) if !mi(info_source_main)
+(155 missing values generated)
+
+. gen source_none = (info_source_main == 6) if !mi(info_source_main)
+(155 missing values generated)
+
+. 
+. label var source_doctor "Main source: Doctor"
+
+. label var source_sm "Main source: Social media"
+
+. label var source_podcasts "Main source: Podcasts"
+
+. label var source_cdc "Main source: CDC"
+
+. label var source_news "Main source: News"
+
+. label var source_none "Main source: None of the above"
+
+. 
+. * Assert source dummies sum to 1 (or all 0 if missing)
+. egen _src_sum = rowtotal(source_doctor source_sm source_podcasts source_cdc s
+> ource_news source_none)
+
+. assert _src_sum == 1 if !mi(info_source_main)
+
+. assert _src_sum == 0 if mi(info_source_main)
+
+. drop _src_sum
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     10. Apply variable labels
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. label var start_date "Survey start date/time"
+
+. label var end_date "Survey end date/time"
+
+. label var duration_sec "Survey duration (seconds)"
+
+. label var progress "Survey progress (%)"
+
+. label var response_id "Qualtrics response ID"
+
+. label var consent "Consent given"
+
+. label var prolific_id_entered "Prolific ID (entered)"
+
+. label var prolific_pid "Prolific ID (from URL)"
+
+. label var favorite_number "Favorite number (attention check)"
+
+. label var flu_vacc_lastyear "Got flu vaccine last year"
+
+. label var prior_vaccines "Prior vaccine history"
+
+. label var vacc_intent "Flu vaccine intent this season"
+
+. label var has_insurance "Has health insurance"
+
+. label var trust_govt "Trust government info about flu vaccine"
+
+. label var follow_doctor "Generally follow doctor's vaccine advice"
+
+. label var trust_govt_prior "Prior trust in government info"
+
+. label var info_source_main "Most important health info source"
+
+. label var source_sm_text "Social media source (text)"
+
+. label var source_podcast_text "Podcast source (text)"
+
+. label var source_news_text "News source (text)"
+
+. label var info_doctor "Get info from doctor"
+
+. label var info_sm "Get info from social media"
+
+. label var info_podcasts "Get info from podcasts"
+
+. label var info_cdc "Get info from CDC"
+
+. label var info_news "Get info from news"
+
+. label var info_university "Get info from university research"
+
+. label var reliable_doctor "Find doctor info reliable"
+
+. label var reliable_sm "Find social media info reliable"
+
+. label var reliable_podcasts "Find podcast info reliable"
+
+. label var reliable_cdc "Find CDC info reliable"
+
+. label var reliable_news "Find news info reliable"
+
+. label var reliable_university "Find university research reliable"
+
+. label var comments "Final comments"
+
+. 
+. label var cond_none "No health conditions"
+
+. label var cond_asthma "Has asthma"
+
+. label var cond_diabetes "Has diabetes"
+
+. label var cond_heart "Has heart disease"
+
+. label var cond_lung "Has lung disease"
+
+. label var cond_kidney "Has kidney disease"
+
+. label var cond_rather_not_say "Health conditions: rather not say"
+
+. 
+. * Label all yes/no variables
+. foreach var of varlist final_sample incomplete failed_attn pid_mismatch dupli
+> cate_pid is_preview ///
+>     had_prior_covid had_prior_flu cond_* source_doctor source_sm source_podca
+> sts source_cdc source_news source_none {
+  2.     label values `var' yesno
+  3. }
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     11. Drop unnecessary variables and reorder
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Drop temporary variables
+. drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _user
+> lang
+
+. 
+. * Order variables logically
+. order response_id prolific_pid prolific_id_entered ///
+>       start_date end_date duration_sec progress ///
+>       consent final_sample incomplete failed_attn pid_mismatch duplicate_pid 
+> is_preview ///
+>       favorite_number ///
+>       flu_vacc_lastyear prior_vaccines vacc_intent ///
+>       had_prior_covid had_prior_flu covid_reaction flu_reaction ///
+>       cond_* ///
+>       has_insurance ///
+>       trust_govt follow_doctor trust_govt_prior ///
+>       info_source_main source_* ///
+>       info_doctor info_sm info_podcasts info_cdc info_news info_university //
+> /
+>       reliable_* ///
+>       comments
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     12. Final assertions and save
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Verify key variable ranges
+. assert inlist(consent, 0, 1, .)
+
+. assert inlist(flu_vacc_lastyear, 0, 1, .)
+
+. assert inlist(prior_vaccines, 1, 2, 3, 4, .)
+
+. assert inlist(vacc_intent, 1, 2, 3, 4, .)
+
+. assert inlist(trust_govt, 1, 2, 3, 4, 5, .)
+
+. assert inlist(follow_doctor, 1, 2, 3, 4, 5, .)
+
+. assert inlist(trust_govt_prior, 1, 2, 3, 4, 5, .)
+
+. assert inlist(has_insurance, -1, 0, 1, .)
+
+. assert inlist(info_source_main, 1, 2, 3, 4, 5, 6, .)
+
+. assert inlist(covid_reaction, 0, 1, 2, 3, .)
+
+. assert inlist(flu_reaction, 0, 1, 2, 3, .)
+
+. 
+. * Check variable count
+. desc
+
+Contains data
+ Observations:         8,198                  
+    Variables:            56                  
+-------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+-------------------------------------------------------------------------------
+response_id     str17   %17s                  Qualtrics response ID
+prolific_pid    str24   %24s                  Prolific ID (from URL)
+prolific_id_e~d str67   %67s                  Prolific ID (entered)
+start_date      double  %tc..                 Survey start date/time
+end_date        double  %tc..                 Survey end date/time
+duration_sec    long    %40.2f                Survey duration (seconds)
+progress        byte    %40.2f                Survey progress (%)
+consent         byte    %10.0g     yesno      Consent given
+final_sample    double  %10.0g     yesno      Final analysis sample
+incomplete      double  %10.0g     yesno      Incomplete response
+failed_attn     double  %10.0g     yesno      Failed attention check
+pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
+duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
+is_preview      double  %10.0g     yesno      Preview/test response
+favorite_number double  %10.0g                Favorite number (attention check)
+flu_vacc_last~r byte    %10.0g     fluvax_lastyear_lbl
+                                              Got flu vaccine last year
+prior_vaccines  byte    %18.0g     prior_vax_lbl
+                                              Prior vaccine history
+vacc_intent     byte    %40.0f     flu_intent_lbl
+                                              Flu vaccine intent this season
+had_prior_covid double  %10.0g     yesno      Had prior COVID vaccine
+had_prior_flu   double  %10.0g     yesno      Had prior flu vaccine
+covid_reaction  double  %22.0g     reaction_lbl
+                                              COVID vaccine reaction
+flu_reaction    double  %22.0g     reaction_lbl
+                                              Flu vaccine reaction
+cond_asthma     byte    %40.0f     yesno      Has asthma
+cond_lung       byte    %40.0f     yesno      Has lung disease
+cond_heart      byte    %40.0f     yesno      Has heart disease
+cond_diabetes   byte    %40.0f     yesno      Has diabetes
+cond_kidney     byte    %40.0f     yesno      Has kidney disease
+cond_rather_n~y byte    %40.0f     yesno      Health conditions: rather not say
+cond_none       byte    %40.0f     yesno      No health conditions
+has_insurance   byte    %12.0g     insurance_lbl
+                                              Has health insurance
+trust_govt      byte    %40.0f     agree5     Trust government info about flu
+                                                vaccine
+follow_doctor   byte    %40.0f     agree5     Generally follow doctor's vaccine
+                                                advice
+trust_govt_pr~r byte    %40.0f     agree5     Prior trust in government info
+info_source_m~n byte    %40.0f     source_main_lbl
+                                              Most important health info source
+source_sm_text  str409  %409s                 Social media source (text)
+source_podcas~t str262  %262s                 Podcast source (text)
+source_news_t~t str243  %243s                 News source (text)
+source_doctor   double  %10.0g     yesno      Main source: Doctor
+source_sm       double  %10.0g     yesno      Main source: Social media
+source_podcasts double  %10.0g     yesno      Main source: Podcasts
+source_cdc      double  %10.0g     yesno      Main source: CDC
+source_news     double  %10.0g     yesno      Main source: News
+source_none     double  %10.0g     yesno      Main source: None of the above
+info_doctor     byte    %13.0g     freq4_nodoc
+                                              Get info from doctor
+info_sm         byte    %12.0g     freq4      Get info from social media
+info_podcasts   byte    %12.0g     freq4      Get info from podcasts
+info_cdc        byte    %12.0g     freq4      Get info from CDC
+info_news       byte    %12.0g     freq4      Get info from news
+info_university byte    %12.0g     freq4      Get info from university research
+reliable_doctor byte    %20.0g     reliable3
+                                              Find doctor info reliable
+reliable_sm     byte    %20.0g     reliable3
+                                              Find social media info reliable
+reliable_podc~s byte    %20.0g     reliable3
+                                              Find podcast info reliable
+reliable_cdc    byte    %20.0g     reliable3
+                                              Find CDC info reliable
+reliable_news   byte    %20.0g     reliable3
+                                              Find news info reliable
+reliable_univ~y byte    %20.0g     reliable3
+                                              Find university research reliable
+comments        str2000 %255s                 Final comments
+-------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. local nvars = r(k)
+
+. di "Total variables: `nvars'"
+Total variables: 56
+
+. 
+. * Final quality summary
+. di ""
+
+
+. di "=== FINAL DATA QUALITY SUMMARY ==="
+=== FINAL DATA QUALITY SUMMARY ===
+
+. count
+  8,198
+
+. di "Total observations: " r(N)
+Total observations: 8198
+
+. count if final_sample == 1
+  7,961
+
+. di "Final sample: " r(N)
+Final sample: 7961
+
+. tab prior_vaccines if final_sample == 1, m
+
+     Prior vaccine |
+           history |      Freq.     Percent        Cum.
+-------------------+-----------------------------------
+1. Neither vaccine |        869       10.92       10.92
+       2. Flu only |        968       12.16       23.07
+     3. COVID only |        989       12.42       35.50
+  4. Both vaccines |      5,092       63.96       99.46
+                 . |         43        0.54      100.00
+-------------------+-----------------------------------
+             Total |      7,961      100.00
+
+. tab vacc_intent if final_sample == 1, m
+
+  Flu vaccine intent |
+         this season |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+1. No, do not intend |      2,998       37.66       37.66
+   2. May or may not |      1,517       19.06       56.71
+    3. Intend to get |      1,139       14.31       71.02
+      4. Already got |      2,264       28.44       99.46
+                   . |         43        0.54      100.00
+---------------------+-----------------------------------
+               Total |      7,961      100.00
+
+. 
+. * Compress and save
+. compress
+  variable final_sample was double now byte
+  variable incomplete was double now byte
+  variable failed_attn was double now byte
+  variable pid_mismatch was double now byte
+  variable is_preview was double now byte
+  variable had_prior_covid was double now byte
+  variable had_prior_flu was double now byte
+  variable covid_reaction was double now byte
+  variable flu_reaction was double now byte
+  variable source_doctor was double now byte
+  variable source_sm was double now byte
+  variable source_podcasts was double now byte
+  variable source_cdc was double now byte
+  variable source_news was double now byte
+  variable source_none was double now byte
+  (860,790 bytes saved)
+
+. save "data/prescreen_clean.dta", replace
+(file data/prescreen_clean.dta not found)
+file data/prescreen_clean.dta saved
+
+. 
+. di ""
+
+
+. di "=== CLEANING COMPLETE ==="
+=== CLEANING COMPLETE ===
+
+. di "Saved: data/prescreen_clean.dta"
+Saved: data/prescreen_clean.dta
+
+. 
+. capture log close

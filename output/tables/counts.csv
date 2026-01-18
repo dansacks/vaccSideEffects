@@ -1,0 +1,21 @@
+Condition, count
+Prescreen survey
+started, 8198
+consent, 8093
+attention, 8052
+single, 7961
+hesitant, 4515
+
+Main survey
+started, 3629
+consent, 3627
+attention, 3611
+outcome, 3538
+single, 3508
+
+Followup survey
+started, 3160
+consent, 3102
+attention, 3065
+outcome, 3006
+single, 2975

@@ -1,0 +1,330 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_prolific_demo
+> graphics.log
+  log type:  text
+ opened on:  13 Jan 2026, 16:36:01
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: clean_prolific_demographics ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/clean_prolific_demographics.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Program to clean a single prolific demographic file
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. capture program drop clean_prolific
+
+. program define clean_prolific
+  1.     args infile outfile
+  2. 
+.     di ""
+  3.     di "=== Cleaning: `infile' ==="
+  4. 
+.     * Import CSV
+.     import delimited using "`infile'", clear varnames(1) stringcols(_all)
+  5. 
+.     * Rename key variables
+.     rename submissionid prolific_submission_id
+  6.     rename participantid prolific_pid
+  7.     rename status prolific_status
+  8.     rename startedat prolific_started
+  9.     rename completedat prolific_completed
+ 10.     rename timetaken prolific_duration
+ 11.     rename totalapprovals prolific_approvals
+ 12. 
+.     * Clean demographics
+.     rename age prolific_age
+ 13.     rename sex prolific_sex
+ 14.     rename ethnicitysimplified prolific_ethnicity
+ 15.     rename countryofbirth prolific_country_birth
+ 16.     rename countryofresidence prolific_country_residence
+ 17.     rename nationality prolific_nationality
+ 18.     rename language prolific_language
+ 19.     rename studentstatus prolific_student
+ 20.     rename employmentstatus prolific_employment
+ 21. 
+.     * Convert numeric variables
+.     destring prolific_age, replace force
+ 22.     destring prolific_duration, replace force
+ 23.     destring prolific_approvals, replace force
+ 24. 
+.     * Clean string variables - handle DATA_EXPIRED
+.     foreach var in prolific_student prolific_employment {
+ 25.         replace `var' = "" if `var' == "DATA_EXPIRED"
+ 26.     }
+ 27. 
+.     * Create numeric codes for categorical variables
+. 
+.     * Sex
+.     gen prolific_female = (prolific_sex == "Female") if prolific_sex != ""
+ 28.     gen prolific_male = (prolific_sex == "Male") if prolific_sex != ""
+ 29.     label var prolific_female "Female (Prolific)"
+ 30.     label var prolific_male "Male (Prolific)"
+ 31. 
+.     * Ethnicity
+.     encode prolific_ethnicity, gen(prolific_ethnicity_n)
+ 32.     label var prolific_ethnicity_n "Ethnicity (Prolific, numeric)"
+ 33. 
+.     * Student status
+.     gen prolific_is_student = (prolific_student == "Yes") if prolific_student
+>  != ""
+ 34.     label var prolific_is_student "Currently a student (Prolific)"
+ 35. 
+.     * Employment - create categories
+.     gen prolific_employed_ft = strpos(prolific_employment, "Full-Time") > 0 i
+> f prolific_employment != ""
+ 36.     gen prolific_employed_pt = strpos(prolific_employment, "Part-Time") > 
+> 0 if prolific_employment != ""
+ 37.     gen prolific_not_working = strpos(prolific_employment, "Not in paid wo
+> rk") > 0 if prolific_employment != ""
+ 38.     gen prolific_unemployed = strpos(prolific_employment, "Unemployed") > 
+> 0 if prolific_employment != ""
+ 39.     label var prolific_employed_ft "Employed full-time (Prolific)"
+ 40.     label var prolific_employed_pt "Employed part-time (Prolific)"
+ 41.     label var prolific_not_working "Not in paid work (Prolific)"
+ 42.     label var prolific_unemployed "Unemployed (Prolific)"
+ 43. 
+.     * Keep only relevant variables
+.     keep prolific_pid prolific_submission_id prolific_status ///
+>          prolific_started prolific_completed prolific_duration prolific_appro
+> vals ///
+>          prolific_age prolific_sex prolific_female prolific_male ///
+>          prolific_ethnicity prolific_ethnicity_n ///
+>          prolific_country_birth prolific_country_residence prolific_nationali
+> ty ///
+>          prolific_language prolific_student prolific_is_student ///
+>          prolific_employment prolific_employed_ft prolific_employed_pt ///
+>          prolific_not_working prolific_unemployed
+ 44. 
+.     * Label core variables
+.     label var prolific_pid "Prolific participant ID"
+ 45.     label var prolific_submission_id "Prolific submission ID"
+ 46.     label var prolific_status "Prolific submission status"
+ 47.     label var prolific_started "Prolific start time"
+ 48.     label var prolific_completed "Prolific completion time"
+ 49.     label var prolific_duration "Time taken (seconds, Prolific)"
+ 50.     label var prolific_approvals "Total approvals (Prolific)"
+ 51.     label var prolific_age "Age (Prolific)"
+ 52.     label var prolific_sex "Sex (Prolific)"
+ 53.     label var prolific_ethnicity "Ethnicity simplified (Prolific)"
+ 54.     label var prolific_country_birth "Country of birth (Prolific)"
+ 55.     label var prolific_country_residence "Country of residence (Prolific)"
+ 56.     label var prolific_nationality "Nationality (Prolific)"
+ 57.     label var prolific_language "Language (Prolific)"
+ 58.     label var prolific_student "Student status (Prolific)"
+ 59.     label var prolific_employment "Employment status (Prolific)"
+ 60. 
+.     * Check for duplicates
+.     duplicates report prolific_pid
+ 61. 
+.     * Compress and save
+.     compress
+ 62.     save "`outfile'", replace
+ 63. 
+.     di "Saved: `outfile'"
+ 64.     di "Observations: " _N
+ 65. end
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Clean each file
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Prescreen (long string filename)
+. clean_prolific ///
+>     "data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
+>     "data/prolific_demographics_prescreen.dta"
+
+=== Cleaning: data/prolific_demographic_export_692494f77a877e57e000eb60.csv ===
+(encoding automatically selected: ISO-8859-1)
+(26 vars, 8,216 obs)
+prolific_age: contains nonnumeric characters; replaced as int
+(168 missing values generated)
+prolific_duration: all characters numeric; replaced as long
+(164 missing values generated)
+prolific_approvals: all characters numeric; replaced as int
+(1,795 real changes made)
+(1,825 real changes made)
+(1,795 missing values generated)
+(1,825 missing values generated)
+(1,825 missing values generated)
+(1,825 missing values generated)
+(1,825 missing values generated)
+
+Duplicates in terms of prolific_pid
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |         8216             0
+--------------------------------------
+  variable prolific_ethnicity_n was long now byte
+  variable prolific_female was double now byte
+  variable prolific_male was double now byte
+  variable prolific_is_student was double now byte
+  variable prolific_employed_ft was double now byte
+  variable prolific_employed_pt was double now byte
+  variable prolific_not_working was double now byte
+  variable prolific_unemployed was double now byte
+  (427,232 bytes saved)
+(file data/prolific_demographics_prescreen.dta not found)
+file data/prolific_demographics_prescreen.dta saved
+Saved: data/prolific_demographics_prescreen.dta
+Observations: 8216
+
+. 
+. * Main
+. clean_prolific ///
+>     "data/prolific_demographic_export_main.csv" ///
+>     "data/prolific_demographics_main.dta"
+
+=== Cleaning: data/prolific_demographic_export_main.csv ===
+(encoding automatically selected: ISO-8859-1)
+(30 vars, 2,752 obs)
+prolific_age: contains nonnumeric characters; replaced as byte
+(68 missing values generated)
+prolific_duration: all characters numeric; replaced as long
+(67 missing values generated)
+prolific_approvals: all characters numeric; replaced as int
+(566 real changes made)
+(574 real changes made)
+(566 missing values generated)
+(574 missing values generated)
+(574 missing values generated)
+(574 missing values generated)
+(574 missing values generated)
+
+Duplicates in terms of prolific_pid
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |         2752             0
+--------------------------------------
+  variable prolific_ethnicity_n was long now byte
+  variable prolific_female was double now byte
+  variable prolific_male was double now byte
+  variable prolific_is_student was double now byte
+  variable prolific_employed_ft was double now byte
+  variable prolific_employed_pt was double now byte
+  variable prolific_not_working was double now byte
+  variable prolific_unemployed was double now byte
+  (143,104 bytes saved)
+(file data/prolific_demographics_main.dta not found)
+file data/prolific_demographics_main.dta saved
+Saved: data/prolific_demographics_main.dta
+Observations: 2752
+
+. 
+. * Main morepay
+. clean_prolific ///
+>     "data/prolific_demographic_export_main_morepay.csv" ///
+>     "data/prolific_demographics_main_morepay.dta"
+
+=== Cleaning: data/prolific_demographic_export_main_morepay.csv ===
+(encoding automatically selected: ISO-8859-1)
+(30 vars, 904 obs)
+prolific_age: contains nonnumeric characters; replaced as byte
+(22 missing values generated)
+prolific_duration: all characters numeric; replaced as long
+(22 missing values generated)
+prolific_approvals: all characters numeric; replaced as int
+(176 real changes made)
+(180 real changes made)
+(176 missing values generated)
+(180 missing values generated)
+(180 missing values generated)
+(180 missing values generated)
+(180 missing values generated)
+
+Duplicates in terms of prolific_pid
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |          904             0
+--------------------------------------
+  variable prolific_ethnicity_n was long now byte
+  variable prolific_female was double now byte
+  variable prolific_male was double now byte
+  variable prolific_is_student was double now byte
+  variable prolific_employed_ft was double now byte
+  variable prolific_employed_pt was double now byte
+  variable prolific_not_working was double now byte
+  variable prolific_unemployed was double now byte
+  (47,008 bytes saved)
+(file data/prolific_demographics_main_morepay.dta not found)
+file data/prolific_demographics_main_morepay.dta saved
+Saved: data/prolific_demographics_main_morepay.dta
+Observations: 904
+
+. 
+. * Followup
+. clean_prolific ///
+>     "data/prolific_demographic_export_followup.csv" ///
+>     "data/prolific_demographics_followup.dta"
+
+=== Cleaning: data/prolific_demographic_export_followup.csv ===
+(encoding automatically selected: ISO-8859-1)
+(25 vars, 3,192 obs)
+prolific_age: contains nonnumeric characters; replaced as byte
+(70 missing values generated)
+prolific_duration: all characters numeric; replaced as long
+(70 missing values generated)
+prolific_approvals: all characters numeric; replaced as int
+(638 real changes made)
+(643 real changes made)
+(638 missing values generated)
+(643 missing values generated)
+(643 missing values generated)
+(643 missing values generated)
+(643 missing values generated)
+
+Duplicates in terms of prolific_pid
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |         3192             0
+--------------------------------------
+  variable prolific_ethnicity_n was long now byte
+  variable prolific_female was double now byte
+  variable prolific_male was double now byte
+  variable prolific_is_student was double now byte
+  variable prolific_employed_ft was double now byte
+  variable prolific_employed_pt was double now byte
+  variable prolific_not_working was double now byte
+  variable prolific_unemployed was double now byte
+  (165,984 bytes saved)
+(file data/prolific_demographics_followup.dta not found)
+file data/prolific_demographics_followup.dta saved
+Saved: data/prolific_demographics_followup.dta
+Observations: 3192
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Summary
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. di ""
+
+
+. di "=== All prolific demographic files cleaned ==="
+=== All prolific demographic files cleaned ===
+
+. 
+. capture log close

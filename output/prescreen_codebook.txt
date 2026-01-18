@@ -1,0 +1,1292 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  codebook
+       log:  C:\Users\sacks\Box\VaccSideEffects\output/prescreen_codebook.txt
+  log type:  text
+ opened on:   2 Jan 2026, 21:31:14
+
+. 
+. di ""
+
+
+. di "================================================================================"
+================================================================================
+
+. di "PRESCREEN SURVEY CODEBOOK"
+PRESCREEN SURVEY CODEBOOK
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. di "Data file: data/prescreen_clean.dta"
+Data file: data/prescreen_clean.dta
+
+. di "Analysis sample: final_sample == 1 (consented + passed attention check)"
+Analysis sample: final_sample == 1 (consented + passed attention check)
+
+. di "N = `n_valid'"
+N = 7873
+
+. di ""
+
+
+. di "Generated: $S_DATE $S_TIME"
+Generated:  2 Jan 2026 21:31:14
+
+. di ""
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CONTINUOUS VARIABLES
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CONTINUOUS VARIABLES"
+CONTINUOUS VARIABLES
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. * Duration (seconds)
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: duration_sec"
+Variable: duration_sec
+
+. di "Label: Survey duration (seconds)"
+Label: Survey duration (seconds)
+
+. di ""
+
+
+. summarize duration_sec, detail
+
+                  Survey duration (seconds)
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           79             11
+ 5%           98             14
+10%          110             15       Obs               7,873
+25%          139             15       Sum of wgt.       7,873
+
+50%          188                      Mean           248.2335
+                        Largest       Std. dev.      651.6364
+75%          270           4067
+90%          416           4544       Variance         424630
+95%          566           4663       Skewness       76.95152
+99%         1013          55342       Kurtosis       6492.491
+
+. di ""
+
+
+. di "    Mean:     " %10.1f r(mean)
+    Mean:          248.2
+
+. di "    SD:       " %10.1f r(sd)
+    SD:            651.6
+
+. di "    Min:      " %10.0f r(min)
+    Min:              11
+
+. di "    p10:      " %10.0f r(p10)
+    p10:             110
+
+. di "    p25:      " %10.0f r(p25)
+    p25:             139
+
+. di "    Median:   " %10.0f r(p50)
+    Median:          188
+
+. di "    p75:      " %10.0f r(p75)
+    p75:             270
+
+. di "    p90:      " %10.0f r(p90)
+    p90:             416
+
+. di "    Max:      " %10.0f r(max)
+    Max:           55342
+
+. di "    Missing:  " %10.0f `n_valid' - r(N)
+    Missing:           0
+
+. di ""
+
+
+. 
+. * Progress (should be 100 for final sample)
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: progress"
+Variable: progress
+
+. di "Label: Survey progress (%)"
+Label: Survey progress (%)
+
+. di ""
+
+
+. summarize progress, detail
+
+                     Survey progress (%)
+-------------------------------------------------------------
+no observations
+
+. di ""
+
+
+. di "    Mean:     " %10.1f r(mean)
+    Mean:              .
+
+. di "    SD:       " %10.1f r(sd)
+    SD:                .
+
+. di "    Min:      " %10.0f r(min)
+    Min:               .
+
+. di "    Max:      " %10.0f r(max)
+    Max:               .
+
+. di "    Missing:  " %10.0f `n_valid' - r(N)
+    Missing:        7873
+
+. di ""
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CATEGORICAL VARIABLES: VACCINE HISTORY & INTENT
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CATEGORICAL VARIABLES: VACCINE HISTORY & INTENT"
+CATEGORICAL VARIABLES: VACCINE HISTORY & INTENT
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. * Flu vaccine last year
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: flu_vax_lastyear"
+Variable: flu_vax_lastyear
+
+. di "Label: Got flu vaccine last year"
+Label: Got flu vaccine last year
+
+. di "Values: 0 = No, 1 = Yes"
+Values: 0 = No, 1 = Yes
+
+. di ""
+
+
+. tab flu_vax_lastyear, m
+
+    Got flu |
+    vaccine |
+  last year |      Freq.     Percent        Cum.
+------------+-----------------------------------
+      0. No |      4,413       56.05       56.05
+     1. Yes |      3,435       43.63       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Prior vaccines
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: prior_vaccines"
+Variable: prior_vaccines
+
+. di "Label: Prior vaccine history"
+Label: Prior vaccine history
+
+. di "Values: 1 = Neither, 2 = Flu only, 3 = COVID only, 4 = Both"
+Values: 1 = Neither, 2 = Flu only, 3 = COVID only, 4 = Both
+
+. di ""
+
+
+. tab prior_vaccines, m
+
+     Prior vaccine |
+           history |      Freq.     Percent        Cum.
+-------------------+-----------------------------------
+1. Neither vaccine |        860       10.92       10.92
+       2. Flu only |        954       12.12       23.04
+     3. COVID only |        977       12.41       35.45
+  4. Both vaccines |      5,057       64.23       99.68
+                 . |         25        0.32      100.00
+-------------------+-----------------------------------
+             Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Flu vaccine intent
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: flu_vax_intent"
+Variable: flu_vax_intent
+
+. di "Label: Flu vaccine intent this season"
+Label: Flu vaccine intent this season
+
+. di "Values: 1 = No, do not intend; 2 = May or may not; 3 = Intend to get; 4 = Already got"
+Values: 1 = No, do not intend; 2 = May or may not; 3 = Intend to get; 4 = Already got
+
+. di ""
+
+
+. tab flu_vax_intent, m
+
+  Flu vaccine intent |
+         this season |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+1. No, do not intend |      2,958       37.57       37.57
+   2. May or may not |      1,506       19.13       56.70
+    3. Intend to get |      1,133       14.39       71.09
+      4. Already got |      2,251       28.59       99.68
+                   . |         25        0.32      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Had prior COVID vaccine
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: had_prior_covid"
+Variable: had_prior_covid
+
+. di "Label: Had prior COVID vaccine"
+Label: Had prior COVID vaccine
+
+. di "Values: 0 = No, 1 = Yes"
+Values: 0 = No, 1 = Yes
+
+. di ""
+
+
+. tab had_prior_covid, m
+
+  Had prior |
+      COVID |
+    vaccine |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,814       23.04       23.04
+          1 |      6,034       76.64       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Had prior flu vaccine
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: had_prior_flu"
+Variable: had_prior_flu
+
+. di "Label: Had prior flu vaccine"
+Label: Had prior flu vaccine
+
+. di "Values: 0 = No, 1 = Yes"
+Values: 0 = No, 1 = Yes
+
+. di ""
+
+
+. tab had_prior_flu, m
+
+  Had prior |
+flu vaccine |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,837       23.33       23.33
+          1 |      6,011       76.35       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * COVID vaccine reaction
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: covid_reaction"
+Variable: covid_reaction
+
+. di "Label: COVID vaccine reaction"
+Label: COVID vaccine reaction
+
+. di "Values: 0 = No prior vaccine; 1 = None/don't remember; 2 = Mild; 3 = Severe"
+Values: 0 = No prior vaccine; 1 = None/don't remember; 2 = Mild; 3 = Severe
+
+. di ""
+
+
+. tab covid_reaction, m
+
+COVID vaccine reaction |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+   0. No prior vaccine |      1,814       23.04       23.04
+1. None/don't remember |      2,685       34.10       57.14
+  2. Mild (not severe) |      2,569       32.63       89.78
+             3. Severe |        780        9.91       99.68
+                     . |         25        0.32      100.00
+-----------------------+-----------------------------------
+                 Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Flu vaccine reaction
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: flu_reaction"
+Variable: flu_reaction
+
+. di "Label: Flu vaccine reaction"
+Label: Flu vaccine reaction
+
+. di "Values: 0 = No prior vaccine; 1 = None/don't remember; 2 = Mild; 3 = Severe"
+Values: 0 = No prior vaccine; 1 = None/don't remember; 2 = Mild; 3 = Severe
+
+. di ""
+
+
+. tab flu_reaction, m
+
+  Flu vaccine reaction |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+   0. No prior vaccine |      1,837       23.33       23.33
+1. None/don't remember |      3,484       44.25       67.59
+  2. Mild (not severe) |      2,169       27.55       95.14
+             3. Severe |        358        4.55       99.68
+                     . |         25        0.32      100.00
+-----------------------+-----------------------------------
+                 Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CATEGORICAL VARIABLES: HEALTH CONDITIONS
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CATEGORICAL VARIABLES: HEALTH CONDITIONS"
+CATEGORICAL VARIABLES: HEALTH CONDITIONS
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. foreach v in cond_none cond_asthma cond_diabetes cond_heart cond_lung cond_kidney cond_rather_not_say {
+  2.     local lbl : variable label `v'
+  3.     di "--------------------------------------------------------------------------------"
+  4.     di "Variable: `v'"
+  5.     di "Label: `lbl'"
+  6.     di "Values: 0 = No, 1 = Yes"
+  7.     di ""
+  8.     tab `v', m
+  9.     di ""
+ 10. }
+--------------------------------------------------------------------------------
+Variable: cond_none
+Label: No health conditions
+Values: 0 = No, 1 = Yes
+
+
+  No health |
+ conditions |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,719       21.83       21.83
+          1 |      6,154       78.17      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: cond_asthma
+Label: Has asthma
+Values: 0 = No, 1 = Yes
+
+
+ Has asthma |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      6,864       87.18       87.18
+          1 |      1,009       12.82      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: cond_diabetes
+Label: Has diabetes
+Values: 0 = No, 1 = Yes
+
+
+        Has |
+   diabetes |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,342       93.26       93.26
+          1 |        531        6.74      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: cond_heart
+Label: Has heart disease
+Values: 0 = No, 1 = Yes
+
+
+  Has heart |
+    disease |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,650       97.17       97.17
+          1 |        223        2.83      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: cond_lung
+Label: Has lung disease
+Values: 0 = No, 1 = Yes
+
+
+   Has lung |
+    disease |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,771       98.70       98.70
+          1 |        102        1.30      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: cond_kidney
+Label: Has kidney disease
+Values: 0 = No, 1 = Yes
+
+
+ Has kidney |
+    disease |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,769       98.68       98.68
+          1 |        104        1.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: cond_rather_not_say
+Label: Health conditions: rather not say
+Values: 0 = No, 1 = Yes
+
+
+     Health |
+conditions: |
+ rather not |
+        say |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,837       99.54       99.54
+          1 |         36        0.46      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+
+. 
+. * Insurance
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: has_insurance"
+Variable: has_insurance
+
+. di "Label: Has health insurance"
+Label: Has health insurance
+
+. di "Values: -1 = Not sure; 0 = No; 1 = Yes"
+Values: -1 = Not sure; 0 = No; 1 = Yes
+
+. di ""
+
+
+. tab has_insurance, m
+
+  Has health |
+   insurance |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+-1. Not sure |         75        0.95        0.95
+       0. No |        859       10.91       11.86
+      1. Yes |      6,914       87.82       99.68
+           . |         25        0.32      100.00
+-------------+-----------------------------------
+       Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CATEGORICAL VARIABLES: TRUST & ATTITUDES
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CATEGORICAL VARIABLES: TRUST & ATTITUDES"
+CATEGORICAL VARIABLES: TRUST & ATTITUDES
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. * Trust government (current)
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: trust_govt"
+Variable: trust_govt
+
+. di "Label: Trust government info about flu vaccine"
+Label: Trust government info about flu vaccine
+
+. di "Values: 1 = Strongly disagree; 2 = Somewhat disagree; 3 = Neither; 4 = Somewhat agree; 5 = Strongly agree"
+Values: 1 = Strongly disagree; 2 = Somewhat disagree; 3 = Neither; 4 = Somewhat agree; 5 = Strongly agree
+
+. di ""
+
+
+. tab trust_govt, m
+
+  Trust government info about |
+                  flu vaccine |      Freq.     Percent        Cum.
+------------------------------+-----------------------------------
+         1. Strongly disagree |        681        8.65        8.65
+         2. Somewhat disagree |      1,114       14.15       22.80
+3. Neither agree nor disagree |      1,675       21.28       44.07
+            4. Somewhat agree |      3,023       38.40       82.47
+            5. Strongly agree |      1,355       17.21       99.68
+                            . |         25        0.32      100.00
+------------------------------+-----------------------------------
+                        Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Trust government (prior)
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: trust_govt_prior"
+Variable: trust_govt_prior
+
+. di "Label: Prior trust in government info"
+Label: Prior trust in government info
+
+. di "Values: 1 = Strongly disagree; 2 = Somewhat disagree; 3 = Neither; 4 = Somewhat agree; 5 = Strongly agree"
+Values: 1 = Strongly disagree; 2 = Somewhat disagree; 3 = Neither; 4 = Somewhat agree; 5 = Strongly agree
+
+. di ""
+
+
+. tab trust_govt_prior, m
+
+    Prior trust in government |
+                         info |      Freq.     Percent        Cum.
+------------------------------+-----------------------------------
+         1. Strongly disagree |        461        5.86        5.86
+         2. Somewhat disagree |        780        9.91       15.76
+3. Neither agree nor disagree |      1,223       15.53       31.30
+            4. Somewhat agree |      2,692       34.19       65.49
+            5. Strongly agree |      2,692       34.19       99.68
+                            . |         25        0.32      100.00
+------------------------------+-----------------------------------
+                        Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Follow doctor
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: follow_doctor"
+Variable: follow_doctor
+
+. di "Label: Generally follow doctor's vaccine advice"
+Label: Generally follow doctor's vaccine advice
+
+. di "Values: 1 = Strongly disagree; 2 = Somewhat disagree; 3 = Neither; 4 = Somewhat agree; 5 = Strongly agree"
+Values: 1 = Strongly disagree; 2 = Somewhat disagree; 3 = Neither; 4 = Somewhat agree; 5 = Strongly agree
+
+. di ""
+
+
+. tab follow_doctor, m
+
+    Generally follow doctor's |
+               vaccine advice |      Freq.     Percent        Cum.
+------------------------------+-----------------------------------
+         1. Strongly disagree |        478        6.07        6.07
+         2. Somewhat disagree |        730        9.27       15.34
+3. Neither agree nor disagree |        956       12.14       27.49
+            4. Somewhat agree |      2,718       34.52       62.01
+            5. Strongly agree |      2,966       37.67       99.68
+                            . |         25        0.32      100.00
+------------------------------+-----------------------------------
+                        Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CATEGORICAL VARIABLES: INFORMATION SOURCES
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CATEGORICAL VARIABLES: INFORMATION SOURCES"
+CATEGORICAL VARIABLES: INFORMATION SOURCES
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. * Main info source
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: info_source_main"
+Variable: info_source_main
+
+. di "Label: Most important health info source"
+Label: Most important health info source
+
+. di "Values: 1 = Doctor; 2 = Social media; 3 = Podcasts; 4 = CDC; 5 = News; 6 = None"
+Values: 1 = Doctor; 2 = Social media; 3 = Podcasts; 4 = CDC; 5 = News; 6 = None
+
+. di ""
+
+
+. tab info_source_main, m
+
+Most important health |
+          info source |      Freq.     Percent        Cum.
+----------------------+-----------------------------------
+            1. Doctor |      5,559       70.61       70.61
+      2. Social media |        386        4.90       75.51
+          3. Podcasts |        127        1.61       77.12
+               4. CDC |        767        9.74       86.87
+5. News organizations |        250        3.18       90.04
+ 6. None of the above |        759        9.64       99.68
+                    . |         25        0.32      100.00
+----------------------+-----------------------------------
+                Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Source dummies
+. foreach v in source_doctor source_sm source_podcasts source_cdc source_news source_none {
+  2.     local lbl : variable label `v'
+  3.     di "--------------------------------------------------------------------------------"
+  4.     di "Variable: `v'"
+  5.     di "Label: `lbl'"
+  6.     di "Values: 0 = No, 1 = Yes"
+  7.     di ""
+  8.     tab `v', m
+  9.     di ""
+ 10. }
+--------------------------------------------------------------------------------
+Variable: source_doctor
+Label: Main source: Doctor
+Values: 0 = No, 1 = Yes
+
+
+       Main |
+    source: |
+     Doctor |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      2,289       29.07       29.07
+          1 |      5,559       70.61       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: source_sm
+Label: Main source: Social media
+Values: 0 = No, 1 = Yes
+
+
+       Main |
+    source: |
+     Social |
+      media |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,462       94.78       94.78
+          1 |        386        4.90       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: source_podcasts
+Label: Main source: Podcasts
+Values: 0 = No, 1 = Yes
+
+
+       Main |
+    source: |
+   Podcasts |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,721       98.07       98.07
+          1 |        127        1.61       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: source_cdc
+Label: Main source: CDC
+Values: 0 = No, 1 = Yes
+
+
+       Main |
+source: CDC |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,081       89.94       89.94
+          1 |        767        9.74       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: source_news
+Label: Main source: News
+Values: 0 = No, 1 = Yes
+
+
+       Main |
+    source: |
+       News |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,598       96.51       96.51
+          1 |        250        3.18       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: source_none
+Label: Main source: None of the above
+Values: 0 = No, 1 = Yes
+
+
+       Main |
+    source: |
+None of the |
+      above |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,089       90.04       90.04
+          1 |        759        9.64       99.68
+          . |         25        0.32      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CATEGORICAL VARIABLES: INFORMATION FREQUENCY
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CATEGORICAL VARIABLES: INFORMATION FREQUENCY"
+CATEGORICAL VARIABLES: INFORMATION FREQUENCY
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. * Info from doctor
+. di "--------------------------------------------------------------------------------"
+--------------------------------------------------------------------------------
+
+. di "Variable: info_doctor"
+Variable: info_doctor
+
+. di "Label: Get info from doctor"
+Label: Get info from doctor
+
+. di "Values: -1 = No doctor; 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often"
+Values: -1 = No doctor; 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often
+
+. di ""
+
+
+. tab info_doctor, m
+
+Get info from |
+       doctor |      Freq.     Percent        Cum.
+--------------+-----------------------------------
+-1. No doctor |        411        5.22        5.22
+     1. Never |         64        0.81        6.03
+    2. Rarely |        745        9.46       15.50
+ 3. Sometimes |      3,874       49.21       64.70
+     4. Often |      2,754       34.98       99.68
+            . |         25        0.32      100.00
+--------------+-----------------------------------
+        Total |      7,873      100.00
+
+. di ""
+
+
+. 
+. * Info from other sources
+. foreach v in info_sm info_podcasts info_cdc info_news info_university {
+  2.     local lbl : variable label `v'
+  3.     di "--------------------------------------------------------------------------------"
+  4.     di "Variable: `v'"
+  5.     di "Label: `lbl'"
+  6.     di "Values: 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often"
+  7.     di ""
+  8.     tab `v', m
+  9.     di ""
+ 10. }
+--------------------------------------------------------------------------------
+Variable: info_sm
+Label: Get info from social media
+Values: 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often
+
+
+    Get info |
+ from social |
+       media |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    1. Never |      2,231       28.34       28.34
+   2. Rarely |      2,891       36.72       65.06
+3. Sometimes |      2,267       28.79       93.85
+    4. Often |        459        5.83       99.68
+           . |         25        0.32      100.00
+-------------+-----------------------------------
+       Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: info_podcasts
+Label: Get info from podcasts
+Values: 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often
+
+
+    Get info |
+        from |
+    podcasts |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    1. Never |      4,314       54.79       54.79
+   2. Rarely |      2,104       26.72       81.52
+3. Sometimes |      1,253       15.92       97.43
+    4. Often |        177        2.25       99.68
+           . |         25        0.32      100.00
+-------------+-----------------------------------
+       Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: info_cdc
+Label: Get info from CDC
+Values: 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often
+
+
+    Get info |
+    from CDC |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    1. Never |        938       11.91       11.91
+   2. Rarely |      2,327       29.56       41.47
+3. Sometimes |      3,695       46.93       88.40
+    4. Often |        888       11.28       99.68
+           . |         25        0.32      100.00
+-------------+-----------------------------------
+       Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: info_news
+Label: Get info from news
+Values: 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often
+
+
+    Get info |
+   from news |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    1. Never |      2,100       26.67       26.67
+   2. Rarely |      2,866       36.40       63.08
+3. Sometimes |      2,500       31.75       94.83
+    4. Often |        382        4.85       99.68
+           . |         25        0.32      100.00
+-------------+-----------------------------------
+       Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: info_university
+Label: Get info from university research
+Values: 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often
+
+
+    Get info |
+        from |
+  university |
+    research |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    1. Never |      1,837       23.33       23.33
+   2. Rarely |      2,310       29.34       52.67
+3. Sometimes |      3,066       38.94       91.62
+    4. Often |        635        8.07       99.68
+           . |         25        0.32      100.00
+-------------+-----------------------------------
+       Total |      7,873      100.00
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     CATEGORICAL VARIABLES: SOURCE RELIABILITY
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "CATEGORICAL VARIABLES: SOURCE RELIABILITY"
+CATEGORICAL VARIABLES: SOURCE RELIABILITY
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. foreach v in reliable_doctor reliable_sm reliable_podcasts reliable_cdc reliable_news reliable_university {
+  2.     local lbl : variable label `v'
+  3.     di "--------------------------------------------------------------------------------"
+  4.     di "Variable: `v'"
+  5.     di "Label: `lbl'"
+  6.     di "Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable"
+  7.     di ""
+  8.     tab `v', m
+  9.     di ""
+ 10. }
+--------------------------------------------------------------------------------
+Variable: reliable_doctor
+Label: Find doctor info reliable
+Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable
+
+
+    Find doctor info |
+            reliable |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+     1. Not reliable |         27        0.34        0.34
+2. Somewhat reliable |      1,670       21.21       21.55
+    3. Yes, reliable |      4,931       62.63       84.19
+                   . |      1,245       15.81      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: reliable_sm
+Label: Find social media info reliable
+Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable
+
+
+   Find social media |
+       info reliable |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+     1. Not reliable |        407        5.17        5.17
+2. Somewhat reliable |      2,035       25.85       31.02
+    3. Yes, reliable |        284        3.61       34.62
+                   . |      5,147       65.38      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: reliable_podcasts
+Label: Find podcast info reliable
+Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable
+
+
+   Find podcast info |
+            reliable |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+     1. Not reliable |         63        0.80        0.80
+2. Somewhat reliable |      1,121       14.24       15.04
+    3. Yes, reliable |        246        3.12       18.16
+                   . |      6,443       81.84      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: reliable_cdc
+Label: Find CDC info reliable
+Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable
+
+
+       Find CDC info |
+            reliable |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+     1. Not reliable |        137        1.74        1.74
+2. Somewhat reliable |      1,959       24.88       26.62
+    3. Yes, reliable |      2,487       31.59       58.21
+                   . |      3,290       41.79      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: reliable_news
+Label: Find news info reliable
+Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable
+
+
+      Find news info |
+            reliable |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+     1. Not reliable |        147        1.87        1.87
+2. Somewhat reliable |      2,146       27.26       29.12
+    3. Yes, reliable |        589        7.48       36.61
+                   . |      4,991       63.39      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: reliable_university
+Label: Find university research reliable
+Values: 1 = Not reliable; 2 = Somewhat reliable; 3 = Yes, reliable
+
+
+     Find university |
+   research reliable |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+     1. Not reliable |        411        5.22        5.22
+2. Somewhat reliable |      3,938       50.02       55.24
+    3. Yes, reliable |      3,499       44.44       99.68
+                   . |         25        0.32      100.00
+---------------------+-----------------------------------
+               Total |      7,873      100.00
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     QUALITY FLAGS (for reference)
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "QUALITY FLAGS (for reference - all 0 in final sample by definition)"
+QUALITY FLAGS (for reference - all 0 in final sample by definition)
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. di "Note: In final_sample, by definition:"
+Note: In final_sample, by definition:
+
+. di "  - consent = 1 (all consented)"
+  - consent = 1 (all consented)
+
+. di "  - failed_attn = 0 (all passed attention check)"
+  - failed_attn = 0 (all passed attention check)
+
+. di ""
+
+
+. 
+. foreach v in incomplete pid_mismatch duplicate_pid {
+  2.     local lbl : variable label `v'
+  3.     di "--------------------------------------------------------------------------------"
+  4.     di "Variable: `v'"
+  5.     di "Label: `lbl'"
+  6.     di "Values: 0 = No, 1 = Yes"
+  7.     di ""
+  8.     tab `v', m
+  9.     di ""
+ 10. }
+--------------------------------------------------------------------------------
+Variable: incomplete
+Label: Incomplete response
+Values: 0 = No, 1 = Yes
+
+
+ Incomplete |
+   response |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,873      100.00      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: pid_mismatch
+Label: Prolific PID mismatch
+Values: 0 = No, 1 = Yes
+
+
+   Prolific |
+        PID |
+   mismatch |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,867       99.92       99.92
+          1 |          6        0.08      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+--------------------------------------------------------------------------------
+Variable: duplicate_pid
+Label: Duplicate Prolific PID
+Values: 0 = No, 1 = Yes
+
+
+  Duplicate |
+   Prolific |
+        PID |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      7,873      100.00      100.00
+------------+-----------------------------------
+      Total |      7,873      100.00
+
+
+. 
+. /*------------------------------------------------------------------------------
+>     SUMMARY TABLE
+> ------------------------------------------------------------------------------*/
+. 
+. di "================================================================================"
+================================================================================
+
+. di "SUMMARY TABLE: KEY VARIABLES"
+SUMMARY TABLE: KEY VARIABLES
+
+. di "================================================================================"
+================================================================================
+
+. di ""
+
+
+. 
+. * Create a compact summary
+. di "Variable                   N      Mean      SD     Min     Max"
+Variable                   N      Mean      SD     Min     Max
+
+. di "--------------------------------------------------------------"
+--------------------------------------------------------------
+
+. 
+. foreach v in duration_sec progress {
+  2.     quietly summarize `v'
+  3.     di "`v'" _col(25) %6.0f r(N) _col(32) %9.1f r(mean) _col(42) %7.1f r(sd) _col(50) %7.0f r(min) _col(58) %7.0f r(max)
+  4. }
+duration_sec              7873     248.2   651.6      11   55342
+progress                     0         .       .       .       .
+
+. 
+. di ""
+
+
+. di "Categorical Variable       N    Mode  Mode%"
+Categorical Variable       N    Mode  Mode%
+
+. di "--------------------------------------------------------------"
+--------------------------------------------------------------
+
+. 
+. * For categorical, show mode
+. foreach v in flu_vax_lastyear prior_vaccines flu_vax_intent has_insurance trust_govt follow_doctor info_source_main {
+  2.     quietly tab `v', matcell(freq) matrow(vals)
+  3.     mata: st_numscalar("max_freq", max(st_matrix("freq")))
+  4.     mata: st_numscalar("max_idx", selectindex(st_matrix("freq") :== max(st_matrix("freq")))[1])
+  5.     local mode_val = vals[scalar(max_idx), 1]
+  6.     local mode_pct = 100 * scalar(max_freq) / `n_valid'
+  7.     quietly count if !mi(`v')
+  8.     di "`v'" _col(28) %5.0f r(N) _col(37) %4.0f `mode_val' _col(43) %5.1f `mode_pct' "%"
+  9. }
+flu_vax_lastyear            7848       0   56.1%
+prior_vaccines              7848       4   64.2%
+flu_vax_intent              7848       1   37.6%
+has_insurance               7848       1   87.8%
+trust_govt                  7848       4   38.4%
+follow_doctor               7848       5   37.7%
+info_source_main            7848       1   70.6%
+
+. 
+. di ""
+
+
+. di "================================================================================"
+================================================================================
+
+. di "END OF CODEBOOK"
+END OF CODEBOOK
+
+. di "================================================================================"
+================================================================================
+
+. 
+. log close codebook
+      name:  codebook
+       log:  C:\Users\sacks\Box\VaccSideEffects\output/prescreen_codebook.txt
+  log type:  text
+ closed on:   2 Jan 2026, 21:31:14
+------------------------------------------------------------------------------------------------------------------------------------------------------------

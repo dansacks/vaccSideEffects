@@ -1,0 +1,2 @@
+
+This repo contains code to analyze data from an experiment that provides information about flu vaccine side effects and measures subsequent beliefs about side effects as well as vaccine intentions and self-reported vaccinations. 

@@ -1,0 +1,990 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_main.log
+  log type:  text
+ opened on:   9 Jan 2026, 20:57:00
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: clean_main ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/clean_main.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     1. Load raw SPSS data
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. import spss using "data/flu_survey_main_January+9,+2026_08.08.sav", clear
+(51 vars, 3,658 obs)
+
+. 
+. * Verify we have data
+. assert _N > 0
+
+. di "Loaded " _N " observations"
+Loaded 3658 observations
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     2. Drop unused metadata variables
+> -----------------------------------------------------------------------------
+> -*/
+. drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3. Rename variables to clean names
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Rename Qualtrics metadata
+. rename StartDate start_date
+
+. rename EndDate end_date
+
+. rename Duration__in_seconds_ duration_sec
+
+. rename Finished _finished
+
+. rename ResponseId response_id
+
+. rename IPAddress _ipaddress
+
+. rename LocationLatitude _lat
+
+. rename LocationLongitude _long
+
+. rename Status _status
+
+. rename RecordedDate _recordeddate
+
+. rename DistributionChannel _distchannel
+
+. rename UserLanguage _userlang
+
+. 
+. * Rename survey variables
+. rename Q52 prolific_id_entered
+
+. rename Q2 attn_check
+
+. * consent, prior_self_placebo, prior_self_vacc already named correctly
+. * post_c_trial, post_i_trial, post_a_trial, post_p_trial already named correc
+> tly
+. * posterior_novacc, posterior_vacc already named correctly (but need undersco
+> re fix)
+. rename posterior_novacc posterior_novacc
+  (all newnames==oldnames)
+
+. rename posterior_vacc posterior_vacc
+  (all newnames==oldnames)
+
+. * trust_trial, relevant_trial, trust_academic, relevant_academic already name
+> d
+. * vacc_intentions, age, gender, education, income, race, ethnicity, polviews 
+> already named
+. * debrief_about, comments already named
+. * link1_clicked - link4_clicked already named
+. rename PROLIFIC_PID prolific_pid
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     4. Create preview flag from Status
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Status: 0 = IP Address (real), 1 = Survey Preview, etc.
+. gen is_preview = (_status == 1) if !mi(_status)
+
+. replace is_preview = 0 if mi(is_preview)
+(0 real changes made)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     5. Define value labels (numbered format)
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Boolean (Yes/No)
+. label define yesno 0 "0. No" 1 "1. Yes"
+
+. 
+. * Treatment arm
+. label define arm_lbl ///
+>     0 "0. Control" ///
+>     1 "1. Industry" ///
+>     2 "2. Academic" ///
+>     3 "3. Personal"
+
+. 
+. * Prior beliefs (7-point) - SPSS already has numeric codes
+. label define prior7_lbl ///
+>     1 "1. Would definitely not" ///
+>     2 "2. Very unlikely" ///
+>     3 "3. Somewhat unlikely" ///
+>     4 "4. Neither likely nor unlikely" ///
+>     5 "5. Somewhat likely" ///
+>     6 "6. Very likely" ///
+>     7 "7. Would definitely"
+
+. 
+. * Trust/relevance (0-10) - SPSS already has numeric codes
+. label define scale10_lbl ///
+>     0 "0" 1 "1" 2 "2" 3 "3" 4 "4" 5 "5" 6 "6" 7 "7" 8 "8" 9 "9" 10 "10"
+
+. 
+. * Vaccination intentions - SPSS already has numeric codes
+. label define vacc_intent_lbl ///
+>     1 "1. No, do not intend" ///
+>     2 "2. May or may not" ///
+>     3 "3. Intend to get" ///
+>     4 "4. Already got" ///
+>     -99 "-99. Prefer not to say"
+
+. 
+. * Age - SPSS already has numeric codes
+. label define age_lbl ///
+>     1 "1. Under 18" ///
+>     2 "2. 18-34" ///
+>     3 "3. 35-49" ///
+>     4 "4. 50-64" ///
+>     5 "5. 65-74" ///
+>     6 "6. 75+" ///
+>     -99 "-99. Prefer not to say"
+
+. 
+. * Gender
+. label define gender_lbl ///
+>     1 "1. Male" ///
+>     2 "2. Female" ///
+>     3 "3. Other" ///
+>     4 "4. Prefer not to say"
+
+. 
+. * Education (SPSS codes 1-6)
+. label define educ_lbl ///
+>     1 "1. Less than HS" ///
+>     2 "2. HS" ///
+>     3 "3. Some college" ///
+>     4 "4. 4-year degree" ///
+>     5 "5. More than 4-year" ///
+>     6 "6. Prefer not to say"
+
+. 
+. * Income (SPSS codes 1-6)
+. label define income_lbl ///
+>     1 "1. <$25k" ///
+>     2 "2. $25-50k" ///
+>     3 "3. $50-75k" ///
+>     4 "4. $75-100k" ///
+>     5 "5. >$100k" ///
+>     6 "6. Prefer not to say"
+
+. 
+. * Race (SPSS codes 1-7)
+. label define race_lbl ///
+>     1 "1. White" ///
+>     2 "2. Black" ///
+>     3 "3. Asian" ///
+>     4 "4. Am Indian/Alaska Native" ///
+>     5 "5. Pacific Islander" ///
+>     6 "6. Other" ///
+>     7 "7. Prefer not to say"
+
+. 
+. * Ethnicity (SPSS codes 1-3)
+. label define ethnicity_lbl ///
+>     1 "1. Yes" ///
+>     2 "2. No" ///
+>     3 "3. Prefer not to say"
+
+. 
+. * Political views (SPSS codes 1-8)
+. label define polviews_lbl ///
+>     1 "1. Very liberal" ///
+>     2 "2. Liberal" ///
+>     3 "3. Slightly liberal" ///
+>     4 "4. Moderate" ///
+>     5 "5. Slightly conservative" ///
+>     6 "6. Conservative" ///
+>     7 "7. Very conservative" ///
+>     8 "8. Prefer not to say"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     6. Convert/clean variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * --- Consent (SPSS imports as numeric) ---
+. * Check current values
+. tab consent, m
+
+ University |
+         of |
+Wisconsin-M |
+adison
+
+Res |
+      earch |
+participant |
+information |
+ sheet
+
+You |
+        are |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Yes |      3,655       99.92       99.92
+         No |          3        0.08      100.00
+------------+-----------------------------------
+      Total |      3,658      100.00
+
+. * SPSS has 4=Yes, 5=No - recode to 1/0
+. recode consent (4=1) (5=0), gen(consent_new)
+(3658 differences between consent and consent_new)
+
+. drop consent
+
+. rename consent_new consent
+
+. label values consent yesno
+
+. 
+. * --- Attention check ---
+. destring attn_check, replace force
+attn_check: contains nonnumeric characters; replaced as long
+(12 missing values generated)
+
+. 
+. * --- Prior beliefs (already numeric from SPSS) ---
+. label values prior_self_placebo prior7_lbl
+
+. label values prior_self_vacc prior7_lbl
+
+. 
+. * --- Trust/relevance (SPSS has 1-11, recode to 0-10) ---
+. foreach v of varlist trust_trial relevant_trial trust_academic relevant_acade
+> mic {
+  2.     replace `v' = `v' - 1 if !mi(`v')
+  3. }
+(3,561 real changes made)
+(3,561 real changes made)
+(1,780 real changes made)
+(1,780 real changes made)
+
+. label values trust_trial scale10_lbl
+
+. label values relevant_trial scale10_lbl
+
+. label values trust_academic scale10_lbl
+
+. label values relevant_academic scale10_lbl
+
+. 
+. * --- Vaccination intentions (already numeric from SPSS) ---
+. label values vacc_intentions vacc_intent_lbl
+
+. 
+. * --- Demographics (already numeric from SPSS) ---
+. label values age age_lbl
+
+. label values gender gender_lbl
+
+. label values education educ_lbl
+
+. label values income income_lbl
+
+. label values race race_lbl
+
+. label values ethnicity ethnicity_lbl
+
+. label values polviews polviews_lbl
+
+. 
+. * --- Link clicks ---
+. foreach i of numlist 1/4 {
+  2.     destring link`i'_clicked, replace force
+  3. }
+link1_clicked: all characters numeric; replaced as byte
+link2_clicked: all characters numeric; replaced as byte
+link3_clicked: all characters numeric; replaced as byte
+link4_clicked: all characters numeric; replaced as byte
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     7. Create quality/sample flags
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Incomplete flag
+. gen incomplete = (Progress != 100 | _finished != 1)
+
+. label var incomplete "Incomplete response"
+
+. 
+. * Failed attention check (should be 4419)
+. gen failed_attn = (attn_check != 4419) if !mi(attn_check)
+(12 missing values generated)
+
+. replace failed_attn = 1 if mi(attn_check)
+(12 real changes made)
+
+. label var failed_attn "Failed attention check"
+
+. 
+. * PID mismatch
+. gen pid_mismatch = (prolific_pid != prolific_id_entered)
+
+. label var pid_mismatch "Prolific PID mismatch"
+
+. 
+. * Duplicate PID
+. duplicates tag prolific_pid, gen(duplicate_pid)
+
+Duplicates in terms of prolific_pid
+
+. replace duplicate_pid = (duplicate_pid > 0)
+(7 real changes made)
+
+. label var duplicate_pid "Duplicate Prolific PID"
+
+. 
+. * Final sample flag (will be updated after arm assignment)
+. gen final_sample = .
+(3,658 missing values generated)
+
+. label var final_sample "Final analysis sample"
+
+. 
+. * Report quality flags (preliminary)
+. di "=== PRELIMINARY QUALITY FLAG SUMMARY ==="
+=== PRELIMINARY QUALITY FLAG SUMMARY ===
+
+. count
+  3,658
+
+. di "Total observations: " r(N)
+Total observations: 3658
+
+. count if incomplete == 1
+  74
+
+. di "Incomplete: " r(N)
+Incomplete: 74
+
+. count if failed_attn == 1
+  19
+
+. di "Failed attention check: " r(N)
+Failed attention check: 19
+
+. count if pid_mismatch == 1
+  9
+
+. di "PID mismatch: " r(N)
+PID mismatch: 9
+
+. count if duplicate_pid == 1
+  57
+
+. di "Duplicate PIDs: " r(N)
+Duplicate PIDs: 57
+
+. count if is_preview == 1
+  7
+
+. di "Preview responses: " r(N)
+Preview responses: 7
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     8. Consolidate treatment arm variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Treatment arm is stored in FL_17_DO_* variables (1 if assigned to that arm)
+. gen arm_n = .
+(3,658 missing values generated)
+
+. replace arm_n = 0 if FL_17_DO_CONTROLARM == 1
+(900 real changes made)
+
+. replace arm_n = 1 if FL_17_DO_INDUSTRYARM == 1
+(899 real changes made)
+
+. replace arm_n = 2 if FL_17_DO_ACADEMICARM == 1
+(899 real changes made)
+
+. replace arm_n = 3 if FL_17_DO_PERSONALARM == 1
+(899 real changes made)
+
+. label values arm_n arm_lbl
+
+. label var arm_n "Treatment arm (numeric)"
+
+. 
+. * Check arm assignment
+. count if mi(arm_n) & consent == 1 & _distchannel == "anonymous"
+  58
+
+. di "Consented anonymous without arm assignment: " r(N)
+Consented anonymous without arm assignment: 58
+
+. 
+. * Create string arm indicator
+. gen arm = ""
+(3,658 missing values generated)
+
+. replace arm = "control" if arm_n == 0
+variable arm was str1 now str7
+(900 real changes made)
+
+. replace arm = "industry" if arm_n == 1
+variable arm was str7 now str8
+(899 real changes made)
+
+. replace arm = "academic" if arm_n == 2
+(899 real changes made)
+
+. replace arm = "personal" if arm_n == 3
+(899 real changes made)
+
+. label var arm "Treatment arm (string)"
+
+. 
+. * Create arm dummies
+. local arms "control industry academic personal"
+
+. local i = 0
+
+. foreach a of local arms {
+  2.     gen arm_`a' = (arm_n == `i') if !mi(arm_n)
+  3.     label var arm_`a' "Treatment: `a' arm"
+  4.     label values arm_`a' yesno
+  5.     local ++i
+  6. }
+(61 missing values generated)
+(61 missing values generated)
+(61 missing values generated)
+(61 missing values generated)
+
+. 
+. * Update final sample flag
+. replace final_sample = (consent == 1 & failed_attn == 0 ///
+>     & _distchannel == "anonymous" & duplicate_pid == 0 & ~missing(arm_n) & is
+> _preview == 0)
+(3,658 real changes made)
+
+. label var is_preview "Preview/test response"
+
+. 
+. * Report final sample size
+. count if final_sample == 1
+  3,558
+
+. di "=== FINAL SAMPLE SIZE: " r(N) " ==="
+=== FINAL SAMPLE SIZE: 3558 ===
+
+. 
+. * Verify arm assignment
+. tab arm_n if final_sample == 1, m
+
+  Treatment |
+        arm |
+  (numeric) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+ 0. Control |        890       25.01       25.01
+1. Industry |        890       25.01       50.03
+2. Academic |        887       24.93       74.96
+3. Personal |        891       25.04      100.00
+------------+-----------------------------------
+      Total |      3,558      100.00
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     9. Consolidate post-trial and posterior belief variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * --- Consolidate post-trial estimate ---
+. foreach a in c i a p {
+  2.     replace post_`a'_trial = subinstr(post_`a'_trial, "%", "", .)
+  3.     replace post_`a'_trial = subinstr(post_`a'_trial, " ", "", .)
+  4.     count if missing(real(post_`a'_trial)) & ~missing(post_`a'_trial)
+  5.     if r(N)>0 {
+  6.         assert r(N)<=2
+  7.         list post_`a'_trial if missing(real(post_`a'_trial)) & ~missing(po
+> st_`a'_trial)
+  8.     }
+  9.     destring post_`a'_trial, replace force
+ 10. }
+(14 real changes made)
+(0 real changes made)
+  0
+post_c_trial: all characters numeric; replaced as double
+(2763 missing values generated)
+(18 real changes made)
+(1 real change made)
+  1
+
+      +----------+
+      | post_i~l |
+      |----------|
+1337. |       1
+ |
+      +----------+
+post_i_trial: all characters numeric; replaced as double
+(2765 missing values generated)
+(15 real changes made)
+(0 real changes made)
+  0
+post_a_trial: all characters numeric; replaced as double
+(2764 missing values generated)
+(16 real changes made)
+(0 real changes made)
+  2
+
+      +----------+
+      | post_p~l |
+      |----------|
+ 314. |       8
+ |
+2570. |       ,7 |
+      +----------+
+post_p_trial: contains nonnumeric characters; replaced as double
+(2763 missing values generated)
+
+. gen post_trial = .
+(3,658 missing values generated)
+
+. foreach a in c i a p {
+  2.     replace post_trial = post_`a'_trial if !mi(post_`a'_trial)
+  3. }
+(895 real changes made)
+(893 real changes made)
+(894 real changes made)
+(895 real changes made)
+
+. label var post_trial "Post-trial side effect estimate (0-100)"
+
+. 
+. * Verify arm variable matches which post_trial is non-missing
+. egen _arm_count = rownonmiss(post_c_trial post_i_trial post_a_trial post_p_tr
+> ial)
+
+. count if _arm_count != 1 & final_sample == 1
+  19
+
+. di "Observations with unexpected arm count: " r(N)
+Observations with unexpected arm count: 19
+
+. drop _arm_count
+
+. 
+. * --- Consolidate posterior beliefs ---
+. * Remove "%" if present and convert to numeric
+. foreach v in posterior_novacc posterior_vacc {
+  2.     capture confirm string variable `v'
+  3.     if !_rc {
+  4.         replace `v' = subinstr(`v', "%", "", .)
+  5.         destring `v', replace
+  6.     }
+  7. }
+(37 real changes made)
+posterior_novacc: all characters numeric; replaced as double
+(85 missing values generated)
+(36 real changes made)
+posterior_vacc: all characters numeric; replaced as double
+(92 missing values generated)
+
+. 
+. label var posterior_novacc "Posterior: SE probability without vaccine (0-100)
+> "
+
+. label var posterior_vacc "Posterior: SE probability with vaccine (0-100)"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     10. Create derived variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Delta: difference between posterior with vaccine and without vaccine
+. gen delta = posterior_vacc - posterior_novacc
+(92 missing values generated)
+
+. label var delta "Posterior difference (vacc - novacc)"
+
+. 
+. * Prior diff: difference between prior belief with vaccine and without
+. gen prior_diff = prior_self_vacc - prior_self_placebo
+(61 missing values generated)
+
+. label var prior_diff "Prior difference (vacc - placebo)"
+
+. 
+. * Maybe: binary indicator for vaccine intention (intend to or already got)
+. gen maybe = inlist(vacc_intentions, 3, 4) if !mi(vacc_intentions)
+(100 missing values generated)
+
+. label var maybe "Intends/already got vaccine"
+
+. label values maybe yesno
+
+. 
+. * Link click: any link clicked
+. gen link_click = (link1_clicked == 1 | link2_clicked == 1 | link3_clicked == 
+> 1 | link4_clicked == 1)
+
+. label var link_click "Any link clicked"
+
+. label values link_click yesno
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     11. Apply variable labels
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. label var start_date "Survey start date/time"
+
+. label var end_date "Survey end date/time"
+
+. label var duration_sec "Survey duration (seconds)"
+
+. label var Progress "Survey progress (%)"
+
+. label var response_id "Qualtrics response ID"
+
+. label var consent "Consent given"
+
+. label var prolific_id_entered "Prolific ID (entered)"
+
+. label var prolific_pid "Prolific ID (from URL)"
+
+. label var attn_check "Attention check value (should be 4419)"
+
+. label var prior_self_placebo "Prior belief: SE likelihood without vaccine (1-
+> 7)"
+
+. label var prior_self_vacc "Prior belief: SE likelihood with vaccine (1-7)"
+
+. label var post_c_trial "Post-trial estimate: Control arm"
+
+. label var post_i_trial "Post-trial estimate: Industry arm"
+
+. label var post_a_trial "Post-trial estimate: Academic arm"
+
+. label var post_p_trial "Post-trial estimate: Personal arm"
+
+. label var trust_trial "Trust in trial information (0-10)"
+
+. label var relevant_trial "Relevance of trial information (0-10)"
+
+. label var trust_academic "Trust in academic source (0-10)"
+
+. label var relevant_academic "Relevance of academic source (0-10)"
+
+. label var vacc_intentions "Flu vaccine intentions"
+
+. label var age "Age group"
+
+. label var gender "Gender"
+
+. label var education "Education level"
+
+. label var income "Household income"
+
+. label var race "Race"
+
+. label var ethnicity "Hispanic/Latino"
+
+. label var polviews "Political views"
+
+. label var debrief_about "Debrief: What survey was about"
+
+. label var comments "Final comments"
+
+. label var link1_clicked "Link 1 clicked"
+
+. label var link2_clicked "Link 2 clicked"
+
+. label var link3_clicked "Link 3 clicked"
+
+. label var link4_clicked "Link 4 clicked"
+
+. 
+. * Label all yes/no variables
+. foreach var of varlist final_sample incomplete failed_attn pid_mismatch dupli
+> cate_pid is_preview ///
+>     arm_control arm_industry arm_academic arm_personal maybe link_click {
+  2.     label values `var' yesno
+  3. }
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     12. Drop unnecessary variables and reorder
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Drop temporary variables
+. drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _user
+> lang
+
+. drop FL_17_DO_CONTROLARM FL_17_DO_INDUSTRYARM FL_17_DO_ACADEMICARM FL_17_DO_P
+> ERSONALARM
+
+. 
+. * Rename Progress to lowercase
+. rename Progress progress
+
+. 
+. * Order variables logically
+. order response_id prolific_pid prolific_id_entered ///
+>       start_date end_date duration_sec progress ///
+>       consent final_sample incomplete failed_attn pid_mismatch duplicate_pid 
+> is_preview ///
+>       attn_check ///
+>       arm_n arm arm_control arm_industry arm_academic arm_personal ///
+>       prior_self_placebo prior_self_vacc prior_diff ///
+>       post_trial post_c_trial post_i_trial post_a_trial post_p_trial ///
+>       posterior_novacc posterior_vacc delta ///
+>       trust_trial relevant_trial trust_academic relevant_academic ///
+>       vacc_intentions maybe ///
+>       link_click link1_clicked link2_clicked link3_clicked link4_clicked ///
+>       age gender education income race ethnicity polviews ///
+>       debrief_about comments
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     13. Final assertions and save
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Verify key variable ranges
+. assert inlist(consent, 0, 1, .)
+
+. assert inlist(arm_n, 0, 1, 2, 3, .)
+
+. assert inlist(prior_self_placebo, 1, 2, 3, 4, 5, 6, 7, .)
+
+. assert inlist(prior_self_vacc, 1, 2, 3, 4, 5, 6, 7, .)
+
+. assert post_trial >= 0 & post_trial <= 100 if !mi(post_trial)
+
+. assert posterior_novacc >= 0 & posterior_novacc <= 100 if !mi(posterior_novac
+> c)
+
+. assert posterior_vacc >= 0 & posterior_vacc <= 100 if !mi(posterior_vacc)
+
+. assert inlist(trust_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
+
+. assert inlist(relevant_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
+
+. assert inlist(vacc_intentions, 1, 2, 3, 4, -99, .)
+
+. assert inlist(age, 1, 2, 3, 4, 5, 6, -99, .)
+
+. assert inlist(gender, 1, 2, 3, 4, .)
+
+. assert inlist(education, 1, 2, 3, 4, 5, 6, .)
+
+. assert inlist(income, 1, 2, 3, 4, 5, 6, .)
+
+. assert inlist(race, 1, 2, 3, 4, 5, 6, 7, .)
+
+. assert inlist(ethnicity, 1, 2, 3, .)
+
+. assert inlist(polviews, 1, 2, 3, 4, 5, 6, 7, 8, .)
+
+. 
+. * Check variable count
+. desc
+
+Contains data
+ Observations:         3,658                  
+    Variables:            52                  
+-------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+-------------------------------------------------------------------------------
+response_id     str17   %17s                  Qualtrics response ID
+prolific_pid    str24   %24s                  Prolific ID (from URL)
+prolific_id_e~d str67   %67s                  Prolific ID (entered)
+start_date      double  %tc..                 Survey start date/time
+end_date        double  %tc..                 Survey end date/time
+duration_sec    long    %40.2f                Survey duration (seconds)
+progress        byte    %40.2f                Survey progress (%)
+consent         byte    %10.0g     yesno      Consent given
+final_sample    double  %10.0g     yesno      Final analysis sample
+incomplete      double  %10.0g     yesno      Incomplete response
+failed_attn     double  %10.0g     yesno      Failed attention check
+pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
+duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
+is_preview      double  %10.0g     yesno      Preview/test response
+attn_check      long    %10.0g                Attention check value (should be
+                                                4419)
+arm_n           double  %11.0g     arm_lbl    Treatment arm (numeric)
+arm             str8    %9s                   Treatment arm (string)
+arm_control     double  %10.0g     yesno      Treatment: control arm
+arm_industry    double  %10.0g     yesno      Treatment: industry arm
+arm_academic    double  %10.0g     yesno      Treatment: academic arm
+arm_personal    double  %10.0g     yesno      Treatment: personal arm
+prior_self_pl~o byte    %40.0f     prior7_lbl
+                                              Prior belief: SE likelihood
+                                                without vaccine (1-7)
+prior_self_vacc byte    %40.0f     prior7_lbl
+                                              Prior belief: SE likelihood with
+                                                vaccine (1-7)
+prior_diff      double  %10.0g                Prior difference (vacc - placebo)
+post_trial      double  %10.0g                Post-trial side effect estimate
+                                                (0-100)
+post_c_trial    double  %10.0g                Post-trial estimate: Control arm
+post_i_trial    double  %10.0g                Post-trial estimate: Industry arm
+post_a_trial    double  %10.0g                Post-trial estimate: Academic arm
+post_p_trial    double  %10.0g                Post-trial estimate: Personal arm
+posterior_nov~c double  %10.0g                Posterior: SE probability without
+                                                vaccine (0-100)
+posterior_vacc  double  %10.0g                Posterior: SE probability with
+                                                vaccine (0-100)
+delta           double  %10.0g                Posterior difference (vacc -
+                                                novacc)
+trust_trial     byte    %40.0f     scale10_lbl
+                                              Trust in trial information (0-10)
+relevant_trial  byte    %40.0f     scale10_lbl
+                                              Relevance of trial information
+                                                (0-10)
+trust_academic  byte    %40.0f     scale10_lbl
+                                              Trust in academic source (0-10)
+relevant_acad~c byte    %40.0f     scale10_lbl
+                                              Relevance of academic source
+                                                (0-10)
+vacc_intentions byte    %40.0f     vacc_intent_lbl
+                                              Flu vaccine intentions
+maybe           double  %10.0g     yesno      Intends/already got vaccine
+link_click      double  %10.0g     yesno      Any link clicked
+link1_clicked   byte    %10.0g                Link 1 clicked
+link2_clicked   byte    %10.0g                Link 2 clicked
+link3_clicked   byte    %10.0g                Link 3 clicked
+link4_clicked   byte    %10.0g                Link 4 clicked
+age             byte    %40.0f     age_lbl    Age group
+gender          byte    %40.0f     gender_lbl
+                                              Gender
+education       byte    %40.0f     educ_lbl   Education level
+income          byte    %40.0f     income_lbl
+                                              Household income
+race            byte    %40.0f     race_lbl   Race
+ethnicity       byte    %40.0f     ethnicity_lbl
+                                              Hispanic/Latino
+polviews        byte    %40.0f     polviews_lbl
+                                              Political views
+debrief_about   strL    %255s                 Debrief: What survey was about
+comments        strL    %255s                 Final comments
+-------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. local nvars = r(k)
+
+. di "Total variables: `nvars'"
+Total variables: 52
+
+. 
+. * Final quality summary
+. di ""
+
+
+. di "=== FINAL DATA QUALITY SUMMARY ==="
+=== FINAL DATA QUALITY SUMMARY ===
+
+. count
+  3,658
+
+. di "Total observations: " r(N)
+Total observations: 3658
+
+. count if final_sample == 1
+  3,558
+
+. di "Final sample: " r(N)
+Final sample: 3558
+
+. tab arm_n if final_sample == 1, m
+
+  Treatment |
+        arm |
+  (numeric) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+ 0. Control |        890       25.01       25.01
+1. Industry |        890       25.01       50.03
+2. Academic |        887       24.93       74.96
+3. Personal |        891       25.04      100.00
+------------+-----------------------------------
+      Total |      3,558      100.00
+
+. tab vacc_intentions if final_sample == 1, m
+
+Flu vaccine intentions |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+-99. Prefer not to say |          1        0.03        0.03
+  1. No, do not intend |      2,198       61.78       61.80
+     2. May or may not |      1,031       28.98       90.78
+      3. Intend to get |        225        6.32       97.11
+        4. Already got |         67        1.88       98.99
+                     . |         36        1.01      100.00
+-----------------------+-----------------------------------
+                 Total |      3,558      100.00
+
+. 
+. * Compress and save
+. compress
+  variable final_sample was double now byte
+  variable incomplete was double now byte
+  variable failed_attn was double now byte
+  variable pid_mismatch was double now byte
+  variable is_preview was double now byte
+  variable arm_n was double now byte
+  variable arm_control was double now byte
+  variable arm_industry was double now byte
+  variable arm_academic was double now byte
+  variable arm_personal was double now byte
+  variable prior_diff was double now byte
+  variable maybe was double now byte
+  variable link_click was double now byte
+  (332,878 bytes saved)
+
+. save "data/main_clean.dta", replace
+(file data/main_clean.dta not found)
+file data/main_clean.dta saved
+
+. 
+. di ""
+
+
+. di "=== CLEANING COMPLETE ==="
+=== CLEANING COMPLETE ===
+
+. di "Saved: data/main_clean.dta"
+Saved: data/main_clean.dta
+
+. 
+. capture log close

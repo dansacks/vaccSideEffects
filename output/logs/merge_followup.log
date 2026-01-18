@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/merge_followup.log
+  log type:  text
+ opened on:  13 Jan 2026, 15:40:20
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: merge_followup ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/merge_followup.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. use "data/followup_clean.dta" if quality_sample , clear
+
+. rename attn_check attn_check_followup
+
+. drop quality_sample is_preview
+
+. 
+. tempfile followup
+
+. save `followup'
+file C:\Users\sacks\AppData\Local\Temp\ST_a984_000001.tmp saved as .dta
+    format
+
+. 
+. use "data/merged_main_pre", clear
+
+. assert quality_sample 
+
+. 
+. 
+. merge 1:1 prolific_pid using `followup', update assert(1 2 3) keep(1 3)
+(label yesno already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           488
+        from master                       488  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                             3,041
+        not updated                     3,041  (_merge==3)
+        missing updated                     0  (_merge==4)
+        nonmissing conflict                 0  (_merge==5)
+    -----------------------------------------
+
+. 
+. tab _merge
+
+   Matching result from |
+                  merge |      Freq.     Percent        Cum.
+------------------------+-----------------------------------
+        Master only (1) |        488       13.83       13.83
+            Matched (3) |      3,041       86.17      100.00
+------------------------+-----------------------------------
+                  Total |      3,529      100.00
+
+. gen in_followup = _merge == 3
+
+. drop _merge
+
+. label var in_followup "Observation in main and followup"
+
+. 
+. 
+. save "data/merged_all", replace 
+file data/merged_all.dta saved
+
+. 
+end of do-file
