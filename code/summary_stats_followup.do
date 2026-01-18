@@ -80,7 +80,7 @@ global n_valid = `n_valid'
 * Loop over categorical variables
 # delimit ;
 local cat_vars
-    consent
+    consent first_attempt
     incomplete failed_attn pid_mismatch duplicate_pid is_preview
     pharmacy_factor price_compare use_coupons
     got_glp1 got_flu_vacc got_covid_vacc

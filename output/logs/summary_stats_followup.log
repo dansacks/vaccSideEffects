@@ -1,9 +1,105 @@
+
+  ___  ____  ____  ____  ____ ©
+ /__    /   ____/   /   ____/      17.0
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-STATA-PC        https://www.stata.com
+                                   979-696-4600        stata@stata.com
+
+Stata license: Single-user 4-core  perpetual
+Serial number: 501709220187
+  Licensed to: Dan Sacks
+               Indiana University
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+
+. do C:/Users/sacks/Box/VaccSideEffects/code/summary_stats_followup.do 
+
+. /*===========================================================================
+> ===
+>     Summary Statistics: Follow-up Survey Data
+> 
+>     Input:  data/followup_clean.dta
+>     Output:
+>       - output/tables/stats_followup_continuous.csv
+>       - output/tables/stats_followup_categorical.csv
+> 
+>     Produces summary statistics for valid observations (final_sample == 1):
+>     - Continuous variables: mean, SD, percentiles
+>     - Categorical variables: frequency distribution
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "summary_stats_followup"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory
+. local usr `c(username)'
+
+. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+
+. cd "$projdir"
+C:\Users\sacks\Box\VaccSideEffects
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. * Conditional logging: only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/summary_stats_follo
 > wup.log
   log type:  text
- opened on:   9 Jan 2026, 20:57:09
+ opened on:  18 Jan 2026, 11:01:18
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_followup ===
 .     di "Log: output/logs/$scriptname.log"
@@ -17,15 +113,15 @@ end of do-file
 
 . 
 . * Load cleaned data
-. use "data/followup_clean.dta", clear
+. use "derived/followup_clean.dta", clear
 
 . 
 . * Keep only valid observations
 . keep if final_sample == 1
-(149 observations deleted)
+(133 observations deleted)
 
 . count
-  3,062
+  3,078
 
 . local n_valid = r(N)
 
@@ -38,7 +134,6 @@ end of do-file
 . 
 . file open contcsv using "output/tables/stats_followup_continuous.csv", write 
 > replace
-(file output/tables/stats_followup_continuous.csv not found)
 
 . file write contcsv "variable,n,mean,sd,min,p50,max" _n
 
@@ -56,47 +151,47 @@ end of do-file
                   Survey duration (seconds)
 -------------------------------------------------------------
       Percentiles      Smallest
- 1%           83             18
- 5%          125             23
-10%          143             25       Obs               3,062
-25%          180             26       Sum of wgt.       3,062
+ 1%           75             11
+ 5%          124             15
+10%          142             18       Obs               3,078
+25%          179             18       Sum of wgt.       3,078
 
-50%          233                      Mean            386.323
-                        Largest       Std. dev.      3411.862
+50%          233                      Mean           385.4136
+                        Largest       Std. dev.      3403.066
 75%          327          29013
 90%          487          32355       Variance       1.16e+07
-95%          639          52970       Skewness       46.21774
-99%         1221         176003       Kurtosis       2316.484
+95%          640          52970       Skewness       46.33561
+99%         1221         176003       Kurtosis       2328.403
 
                  Guessed placebo arm SE rate
 -------------------------------------------------------------
       Percentiles      Smallest
  1%            0              0
  5%            1              0
-10%            2              0       Obs               3,002
-25%            3              0       Sum of wgt.       3,002
+10%            2              0       Obs               3,016
+25%            3              0       Sum of wgt.       3,016
 
-50%           10                      Mean           16.26855
-                        Largest       Std. dev.      17.11228
+50%           10                      Mean           16.25471
+                        Largest       Std. dev.      17.10401
 75%           25             85
-90%           42             87       Variance       292.8301
-95%           50             99       Skewness       1.463978
-99%           70            100       Kurtosis       4.789136
+90%           42             87       Variance       292.5473
+95%           50             99       Skewness       1.463357
+99%           70            100       Kurtosis       4.787817
 
                  Guessed vaccine arm SE rate
 -------------------------------------------------------------
       Percentiles      Smallest
  1%          .13            -99
  5%            1            -99
-10%            2            -99       Obs               3,006
-25%            3              0       Sum of wgt.       3,006
+10%            2            -99       Obs               3,019
+25%            3              0       Sum of wgt.       3,019
 
-50%            7                      Mean           14.10831
-                        Largest       Std. dev.      17.37317
+50%            7                      Mean           14.07446
+                        Largest       Std. dev.      17.34922
 75%           20             97
-90%           40             97       Variance       301.8272
-95%           50            100       Skewness       1.705674
-99%           76            100       Kurtosis       8.635966
+90%           40             97       Variance       300.9953
+95%           50            100       Skewness       1.710335
+99%           76            100       Kurtosis       8.660347
 
 . 
 . file close contcsv
@@ -110,7 +205,6 @@ end of do-file
 . 
 . file open catcsv using "output/tables/stats_followup_categorical.csv", write 
 > replace
-(file output/tables/stats_followup_categorical.csv not found)
 
 . file write catcsv "variable,value,n,pct" _n
 
@@ -150,7 +244,7 @@ end of do-file
 . # delimit ;
 delimiter now ;
 . local cat_vars
->     consent
+>     consent first_attempt
 >     incomplete failed_attn pid_mismatch duplicate_pid is_preview
 >     pharmacy_factor price_compare use_coupons
 >     got_glp1 got_flu_vacc got_covid_vacc
@@ -174,203 +268,213 @@ delimiter now cr
     Consent |
       given |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-     1. Yes |      3,062      100.00      100.00
+     1. Yes |      3,078      100.00      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
+
+      First |
+     survey |
+attempt for |
+   this PID |      Freq.     Percent        Cum.
+------------+-----------------------------------
+     1. Yes |      3,078      100.00      100.00
+------------+-----------------------------------
+      Total |      3,078      100.00
 
  Incomplete |
    response |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,027       98.86       98.86
-     1. Yes |         35        1.14      100.00
+      0. No |      3,042       98.83       98.83
+     1. Yes |         36        1.17      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
      Failed |
   attention |
       check |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,062      100.00      100.00
+      0. No |      3,078      100.00      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
    Prolific |
         PID |
    mismatch |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,038       99.22       99.22
+      0. No |      3,054       99.22       99.22
      1. Yes |         24        0.78      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
   Duplicate |
    Prolific |
         PID |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,062      100.00      100.00
+      0. No |      3,062       99.48       99.48
+     1. Yes |         16        0.52      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
 Preview/tes |
  t response |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,062      100.00      100.00
+      0. No |      3,078      100.00      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
 Most important factor |
   for pharmacy choice |      Freq.     Percent        Cum.
 ----------------------+-----------------------------------
-             1. Price |        927       31.69       31.69
-       2. Convenience |      1,577       53.91       85.61
-3. Quality/reputation |        339       11.59       97.20
- 4. Pharmacist access |         54        1.85       99.04
+             1. Price |        928       31.68       31.68
+       2. Convenience |      1,578       53.88       85.56
+3. Quality/reputation |        341       11.64       97.20
+ 4. Pharmacist access |         54        1.84       99.04
     5. None important |         28        0.96      100.00
 ----------------------+-----------------------------------
-                Total |      2,925      100.00
+                Total |      2,929      100.00
 
 Compared prices at pharmacies |      Freq.     Percent        Cum.
 ------------------------------+-----------------------------------
-        1. Yes, at least once |        621       20.49       20.49
-                        2. No |      1,696       55.96       76.44
-3. Did not shop for medicines |        714       23.56      100.00
+        1. Yes, at least once |        623       20.53       20.53
+                        2. No |      1,698       55.95       76.47
+3. Did not shop for medicines |        714       23.53      100.00
 ------------------------------+-----------------------------------
-                        Total |      3,031      100.00
+                        Total |      3,035      100.00
 
       Used coupons/deals like |
                        GoodRx |      Freq.     Percent        Cum.
 ------------------------------+-----------------------------------
-        1. Yes, at least once |        605       19.96       19.96
-                        2. No |      1,734       57.21       77.17
-3. Did not shop for medicines |        692       22.83      100.00
+        1. Yes, at least once |        607       20.00       20.00
+                        2. No |      1,736       57.20       77.20
+3. Did not shop for medicines |        692       22.80      100.00
 ------------------------------+-----------------------------------
-                        Total |      3,031      100.00
+                        Total |      3,035      100.00
 
   Got GLP-1 |
 prescriptio |
      n last |
       month |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      2,823       93.63       93.63
-     1. Yes |        192        6.37      100.00
+      0. No |      2,827       93.64       93.64
+     1. Yes |        192        6.36      100.00
 ------------+-----------------------------------
-      Total |      3,015      100.00
+      Total |      3,019      100.00
 
     Got flu |
     vaccine |
  last month |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      2,832       94.02       94.02
-     1. Yes |        180        5.98      100.00
+      0. No |      2,836       94.03       94.03
+     1. Yes |        180        5.97      100.00
 ------------+-----------------------------------
-      Total |      3,012      100.00
+      Total |      3,016      100.00
 
   Got COVID |
     vaccine |
  last month |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      2,964       98.34       98.34
+      0. No |      2,968       98.34       98.34
      1. Yes |         50        1.66      100.00
 ------------+-----------------------------------
-      Total |      3,014      100.00
+      Total |      3,018      100.00
 
        Gets |
   medicine: |
    Pharmacy |
       chain |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |        942       30.76       30.76
-      0. No |         21        0.69       31.45
-     1. Yes |      2,099       68.55      100.00
+        -99 |        944       30.67       30.67
+      0. No |         33        1.07       31.74
+     1. Yes |      2,101       68.26      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
 Grocery/sup |
     erstore |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      1,836       59.96       59.96
-      0. No |         21        0.69       60.65
-     1. Yes |      1,205       39.35      100.00
+        -99 |      1,837       59.68       59.68
+      0. No |         33        1.07       60.75
+     1. Yes |      1,208       39.25      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
 Independent |
    pharmacy |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,644       86.35       86.35
-      0. No |         21        0.69       87.03
-     1. Yes |        397       12.97      100.00
+        -99 |      2,648       86.03       86.03
+      0. No |         33        1.07       87.10
+     1. Yes |        397       12.90      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
  Mail-order |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,763       90.24       90.24
-      0. No |         21        0.69       90.92
-     1. Yes |        278        9.08      100.00
+        -99 |      2,766       89.86       89.86
+      0. No |         33        1.07       90.94
+     1. Yes |        279        9.06      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
      Online |
    pharmacy |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,814       91.90       91.90
-      0. No |         21        0.69       92.59
-     1. Yes |        227        7.41      100.00
+        -99 |      2,817       91.52       91.52
+      0. No |         33        1.07       92.59
+     1. Yes |        228        7.41      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
  Healthcare |
    provider |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,329       76.06       76.06
-      0. No |         21        0.69       76.75
-     1. Yes |        712       23.25      100.00
+        -99 |      2,333       75.80       75.80
+      0. No |         33        1.07       76.87
+     1. Yes |        712       23.13      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
   Somewhere |
        else |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      3,025       98.79       98.79
-      0. No |         21        0.69       99.48
+        -99 |      3,029       98.41       98.41
+      0. No |         33        1.07       99.48
      1. Yes |         16        0.52      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
        Gets |
   medicine: |
    Does not |
    purchase |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,930       95.69       95.69
-      0. No |         21        0.69       96.37
-     1. Yes |        111        3.63      100.00
+        -99 |      2,934       95.32       95.32
+      0. No |         33        1.07       96.39
+     1. Yes |        111        3.61      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
        not: |
 Already got |
     earlier |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,733       89.26       89.26
-      0. No |        234        7.64       96.90
-     1. Yes |         95        3.10      100.00
+        -99 |      2,737       88.92       88.92
+      0. No |        246        7.99       96.91
+     1. Yes |         95        3.09      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
        not: |
@@ -378,11 +482,11 @@ Already got |
  about side |
     effects |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      1,665       54.38       54.38
-      0. No |        234        7.64       62.02
-     1. Yes |      1,163       37.98      100.00
+        -99 |      1,668       54.19       54.19
+      0. No |        246        7.99       62.18
+     1. Yes |      1,164       37.82      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
        not: |
@@ -390,131 +494,134 @@ Already got |
   about bad |
         flu |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,505       81.81       81.81
-      0. No |        234        7.64       89.45
-     1. Yes |        323       10.55      100.00
+        -99 |      2,509       81.51       81.51
+      0. No |        246        7.99       89.51
+     1. Yes |        323       10.49      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
  not: Don't |
        like |
     needles |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,367       77.30       77.30
-      0. No |        234        7.64       84.94
-     1. Yes |        461       15.06      100.00
+        -99 |      2,370       77.00       77.00
+      0. No |        246        7.99       84.99
+     1. Yes |        462       15.01      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
   not: Time |
     concern |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,653       86.64       86.64
-      0. No |        234        7.64       94.28
-     1. Yes |        175        5.72      100.00
+        -99 |      2,657       86.32       86.32
+      0. No |        246        7.99       94.31
+     1. Yes |        175        5.69      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
        not: |
    Location |
     concern |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,724       88.96       88.96
-      0. No |        234        7.64       96.60
-     1. Yes |        104        3.40      100.00
+        -99 |      2,728       88.63       88.63
+      0. No |        246        7.99       96.62
+     1. Yes |        104        3.38      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
   not: Cost |
     concern |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      2,634       86.02       86.02
-      0. No |        234        7.64       93.66
-     1. Yes |        194        6.34      100.00
+        -99 |      2,636       85.64       85.64
+      0. No |        246        7.99       93.63
+     1. Yes |        196        6.37      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
     Flu why |
   not: None |
    relevant |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-        -99 |      1,725       56.34       56.34
-      0. No |        234        7.64       63.98
-     1. Yes |      1,103       36.02      100.00
+        -99 |      1,727       56.11       56.11
+      0. No |        246        7.99       64.10
+     1. Yes |      1,105       35.90      100.00
 ------------+-----------------------------------
-      Total |      3,062      100.00
+      Total |      3,078      100.00
 
           Recalls |
  participating in |
        main study |      Freq.     Percent        Cum.
 ------------------+-----------------------------------
-           1. Yes |        761       25.17       25.17
-            2. No |        483       15.98       41.15
-3. Don't remember |      1,779       58.85      100.00
+           1. Yes |        764       25.24       25.24
+            2. No |        483       15.96       41.20
+3. Don't remember |      1,780       58.80      100.00
 ------------------+-----------------------------------
-            Total |      3,023      100.00
+            Total |      3,027      100.00
 
                 Recalls |
 manufacturer/trial info |      Freq.     Percent        Cum.
 ------------------------+-----------------------------------
-                 1. Yes |        972       38.39       38.39
-                  2. No |        646       25.51       63.90
-3. Don't remember study |        914       36.10      100.00
+                 1. Yes |        973       38.38       38.38
+                  2. No |        648       25.56       63.94
+3. Don't remember study |        914       36.06      100.00
 ------------------------+-----------------------------------
-                  Total |      2,532      100.00
+                  Total |      2,535      100.00
 
      Recalls university |
           research info |      Freq.     Percent        Cum.
 ------------------------+-----------------------------------
-                 1. Yes |      1,285       50.75       50.75
-                  2. No |        339       13.39       64.14
-3. Don't remember study |        908       35.86      100.00
+                 1. Yes |      1,287       50.77       50.77
+                  2. No |        340       13.41       64.18
+3. Don't remember study |        908       35.82      100.00
 ------------------------+-----------------------------------
-                  Total |      2,532      100.00
+                  Total |      2,535      100.00
 
       Recalls Gavi info |      Freq.     Percent        Cum.
 ------------------------+-----------------------------------
-                 1. Yes |        272       10.74       10.74
-                  2. No |      1,140       45.02       55.77
-3. Don't remember study |      1,120       44.23      100.00
+                 1. Yes |        274       10.81       10.81
+                  2. No |      1,141       45.01       55.82
+3. Don't remember study |      1,120       44.18      100.00
 ------------------------+-----------------------------------
-                  Total |      2,532      100.00
+                  Total |      2,535      100.00
 
        Found study info |
             trustworthy |      Freq.     Percent        Cum.
 ------------------------+-----------------------------------
-1. Don't remember study |        856       33.81       33.81
-         2. Trustworthy |        583       23.03       56.83
-3. Somewhat trustworthy |        950       37.52       94.35
-     4. Not trustworthy |        143        5.65      100.00
+1. Don't remember study |        856       33.77       33.77
+         2. Trustworthy |        585       23.08       56.84
+3. Somewhat trustworthy |        951       37.51       94.36
+     4. Not trustworthy |        143        5.64      100.00
 ------------------------+-----------------------------------
-                  Total |      2,532      100.00
+                  Total |      2,535      100.00
 
     Placebo |
       guess |
   within 1% |
       of 3% |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      2,356       78.48       78.48
-     1. Yes |        646       21.52      100.00
+      0. No |      2,429       78.91       78.91
+     1. Yes |        649       21.09      100.00
 ------------+-----------------------------------
-      Total |      3,002      100.00
+      Total |      3,078      100.00
 
     Vaccine |
       guess |
   within 1% |
-      of 3% |      Freq.     Percent        Cum.
+    of 1.3% |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      2,631       87.61       87.61
-     1. Yes |        372       12.39      100.00
+      0. No |      2,702       87.78       87.78
+     1. Yes |        376       12.22      100.00
 ------------+-----------------------------------
-      Total |      3,003      100.00
+      Total |      3,078      100.00
 
 . 
 . file close catcsv
 
 . capture log close
+
+. 
+end of do-file

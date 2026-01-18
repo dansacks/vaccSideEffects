@@ -96,7 +96,7 @@ C:\Users\sacks\Box\VaccSideEffects
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/merge_prescreen_mai
 > n.log
   log type:  text
- opened on:  18 Jan 2026, 09:44:57
+ opened on:  18 Jan 2026, 10:55:24
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: merge_prescreen_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -156,7 +156,7 @@ end of do-file
 . tempfile prescreen
 
 . save `prescreen'
-file C:\Users\sacks\AppData\Local\Temp\ST_6b90_000001.tmp saved as .dta
+file C:\Users\sacks\AppData\Local\Temp\ST_10fa0_000001.tmp saved as .dta
     format
 
 . 
@@ -310,7 +310,7 @@ file output/logs/main_only_observations.csv saved
 
 Contains data from derived/main_clean.dta
  Observations:         3,538                  
-    Variables:           111                  18 Jan 2026 09:41
+    Variables:           111                  18 Jan 2026 10:55
 Sorted by: prolific_pid
      Note: Dataset has changed since last saved.
 
@@ -335,7 +335,6 @@ Total variables: 111
   (641,372 bytes saved)
 
 . save "derived/merged_main_pre.dta", replace
-(file derived/merged_main_pre.dta not found)
 file derived/merged_main_pre.dta saved
 
 . 

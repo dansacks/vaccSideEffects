@@ -46,13 +46,13 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `duration_sec`
 - **Type:** Numeric (continuous)
 - **Label:** Survey duration (seconds)
-- **Summary Statistics (N=3,558):**
+- **Summary Statistics (N=3,538):**
 
 | Statistic | Value |
 |-----------|-------|
-| Mean | 412.2 |
-| SD | 1,056.3 |
-| Min | 35 |
+| Mean | 405.0 |
+| SD | 981.9 |
+| Min | 49 |
 | Median | 317 |
 | Max | 56,447 |
 
@@ -89,8 +89,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,518 (98.88%) |
-| 1 | Yes | 40 (1.12%) |
+| 0 | No | 3,526 (99.66%) |
+| 1 | Yes | 12 (0.34%) |
 
 ### `failed_attn`
 - **Type:** Binary
@@ -99,7 +99,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,558 (100.00%) |
+| 0 | No | 3,538 (100.00%) |
 | 1 | Yes | - |
 
 ### `pid_mismatch`
@@ -108,7 +108,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,556 (99.94%) |
+| 0 | No | 3,536 (99.94%) |
 | 1 | Yes | 2 (0.06%) |
 
 ### `duplicate_pid`
@@ -117,8 +117,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,558 (100.00%) |
-| 1 | Yes | - |
+| 0 | No | 3,529 (99.75%) |
+| 1 | Yes | 9 (0.25%) |
 
 ### `attn_check`
 - **Type:** Numeric
@@ -134,10 +134,10 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | Control | 890 (25.01%) |
-| 1 | Industry | 890 (25.01%) |
-| 2 | Academic | 887 (24.93%) |
-| 3 | Personal | 891 (25.04%) |
+| 0 | Control | 885 (25.01%) |
+| 1 | Industry | 885 (25.01%) |
+| 2 | Academic | 882 (24.93%) |
+| 3 | Personal | 886 (25.04%) |
 
 ### `arm`
 - **Type:** String
@@ -150,8 +150,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,668 (74.99%) |
-| 1 | Yes | 890 (25.01%) |
+| 0 | No | 2,653 (74.99%) |
+| 1 | Yes | 885 (25.01%) |
 
 ### `arm_industry`
 - **Type:** Binary
@@ -159,8 +159,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,668 (74.99%) |
-| 1 | Yes | 890 (25.01%) |
+| 0 | No | 2,653 (74.99%) |
+| 1 | Yes | 885 (25.01%) |
 
 ### `arm_academic`
 - **Type:** Binary
@@ -168,8 +168,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,671 (75.07%) |
-| 1 | Yes | 887 (24.93%) |
+| 0 | No | 2,656 (75.07%) |
+| 1 | Yes | 882 (24.93%) |
 
 ### `arm_personal`
 - **Type:** Binary
@@ -177,8 +177,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,667 (74.96%) |
-| 1 | Yes | 891 (25.04%) |
+| 0 | No | 2,652 (74.96%) |
+| 1 | Yes | 886 (25.04%) |
 
 ---
 
@@ -191,13 +191,13 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Would definitely not | 749 (21.05%) |
-| 2 | Very unlikely | 1,353 (38.03%) |
-| 3 | Somewhat unlikely | 529 (14.87%) |
-| 4 | Neither likely nor unlikely | 238 (6.69%) |
-| 5 | Somewhat likely | 446 (12.54%) |
-| 6 | Very likely | 184 (5.17%) |
-| 7 | Would definitely | 59 (1.66%) |
+| 1 | Would definitely not | 745 (21.06%) |
+| 2 | Very unlikely | 1,349 (38.13%) |
+| 3 | Somewhat unlikely | 525 (14.84%) |
+| 4 | Neither likely nor unlikely | 237 (6.70%) |
+| 5 | Somewhat likely | 442 (12.49%) |
+| 6 | Very likely | 181 (5.12%) |
+| 7 | Would definitely | 59 (1.67%) |
 
 ### `prior_self_vacc`
 - **Type:** Categorical (7-point)
@@ -206,18 +206,18 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Would definitely not | 98 (2.75%) |
-| 2 | Very unlikely | 557 (15.65%) |
-| 3 | Somewhat unlikely | 619 (17.40%) |
-| 4 | Neither likely nor unlikely | 371 (10.43%) |
-| 5 | Somewhat likely | 1,098 (30.86%) |
-| 6 | Very likely | 594 (16.69%) |
-| 7 | Would definitely | 221 (6.21%) |
+| 1 | Would definitely not | 97 (2.74%) |
+| 2 | Very unlikely | 553 (15.63%) |
+| 3 | Somewhat unlikely | 614 (17.35%) |
+| 4 | Neither likely nor unlikely | 368 (10.40%) |
+| 5 | Somewhat likely | 1,097 (31.01%) |
+| 6 | Very likely | 590 (16.68%) |
+| 7 | Would definitely | 219 (6.19%) |
 
 ### `prior_diff`
 - **Type:** Numeric (derived)
 - **Label:** Prior belief difference (vacc - placebo)
-- **Summary Statistics (N=3,558):**
+- **Summary Statistics (N=3,538):**
 
 | Statistic | Value |
 |-----------|-------|
@@ -235,12 +235,12 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `post_trial`
 - **Type:** Numeric (continuous)
 - **Label:** Post-trial side effect estimate (0-100)
-- **Summary Statistics (N=3,539):**
+- **Summary Statistics (N=3,538):**
 
 | Statistic | Value |
 |-----------|-------|
-| Mean | 16.1 |
-| SD | 19.1 |
+| Mean | 16.0 |
+| SD | 19.0 |
 | Min | 0 |
 | Median | 6 |
 | Max | 98 |
@@ -273,12 +273,12 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `posterior_novacc`
 - **Type:** Numeric (continuous, 0-100)
 - **Label:** Posterior: SE probability without vaccine
-- **Summary Statistics (N=3,536):**
+- **Summary Statistics (N=3,538):**
 
 | Statistic | Value |
 |-----------|-------|
-| Mean | 12.6 |
-| SD | 20.3 |
+| Mean | 12.5 |
+| SD | 20.2 |
 | Min | 0 |
 | Median | 3 |
 | Max | 100 |
@@ -287,7 +287,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `posterior_vacc`
 - **Type:** Numeric (continuous, 0-100)
 - **Label:** Posterior: SE probability with vaccine
-- **Summary Statistics (N=3,530):**
+- **Summary Statistics (N=3,538):**
 
 | Statistic | Value |
 |-----------|-------|
@@ -301,7 +301,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `delta`
 - **Type:** Numeric (derived)
 - **Label:** Posterior difference (vacc - novacc)
-- **Summary Statistics (N=3,530):**
+- **Summary Statistics (N=3,538):**
 
 | Statistic | Value |
 |-----------|-------|
@@ -322,17 +322,17 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | 0 | 196 (5.56%) |
-| 1 | 1 | 82 (2.33%) |
-| 2 | 2 | 189 (5.36%) |
-| 3 | 3 | 231 (6.55%) |
-| 4 | 4 | 287 (8.14%) |
-| 5 | 5 | 804 (22.81%) |
-| 6 | 6 | 448 (12.71%) |
-| 7 | 7 | 519 (14.72%) |
-| 8 | 8 | 479 (13.59%) |
-| 9 | 9 | 178 (5.05%) |
-| 10 | 10 | 112 (3.18%) |
+| 0 | 0 | 196 (5.55%) |
+| 1 | 1 | 82 (2.32%) |
+| 2 | 2 | 189 (5.35%) |
+| 3 | 3 | 231 (6.54%) |
+| 4 | 4 | 287 (8.12%) |
+| 5 | 5 | 805 (22.79%) |
+| 6 | 6 | 450 (12.74%) |
+| 7 | 7 | 520 (14.72%) |
+| 8 | 8 | 480 (13.59%) |
+| 9 | 9 | 180 (5.09%) |
+| 10 | 10 | 113 (3.20%) |
 
 ### `relevant_trial`
 - **Type:** Categorical (0-10)
@@ -340,17 +340,17 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | 0 | 483 (13.70%) |
-| 1 | 1 | 153 (4.34%) |
-| 2 | 2 | 222 (6.30%) |
-| 3 | 3 | 230 (6.52%) |
-| 4 | 4 | 211 (5.99%) |
-| 5 | 5 | 578 (16.40%) |
-| 6 | 6 | 386 (10.95%) |
-| 7 | 7 | 447 (12.68%) |
-| 8 | 8 | 362 (10.27%) |
-| 9 | 9 | 232 (6.58%) |
-| 10 | 10 | 221 (6.27%) |
+| 0 | 0 | 484 (13.70%) |
+| 1 | 1 | 153 (4.33%) |
+| 2 | 2 | 222 (6.28%) |
+| 3 | 3 | 230 (6.51%) |
+| 4 | 4 | 213 (6.03%) |
+| 5 | 5 | 579 (16.39%) |
+| 6 | 6 | 387 (10.95%) |
+| 7 | 7 | 447 (12.65%) |
+| 8 | 8 | 365 (10.33%) |
+| 9 | 9 | 232 (6.57%) |
+| 10 | 10 | 221 (6.26%) |
 
 ### `trust_academic`
 - **Type:** Categorical (0-10)
@@ -359,17 +359,17 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | 0 | 80 (4.54%) |
+| 0 | 0 | 80 (4.53%) |
 | 1 | 1 | 36 (2.04%) |
 | 2 | 2 | 58 (3.29%) |
-| 3 | 3 | 75 (4.26%) |
-| 4 | 4 | 122 (6.93%) |
-| 5 | 5 | 378 (21.47%) |
-| 6 | 6 | 235 (13.34%) |
-| 7 | 7 | 300 (17.04%) |
-| 8 | 8 | 271 (15.39%) |
-| 9 | 9 | 141 (8.01%) |
-| 10 | 10 | 65 (3.69%) |
+| 3 | 3 | 75 (4.25%) |
+| 4 | 4 | 122 (6.91%) |
+| 5 | 5 | 378 (21.42%) |
+| 6 | 6 | 236 (13.37%) |
+| 7 | 7 | 303 (17.17%) |
+| 8 | 8 | 271 (15.35%) |
+| 9 | 9 | 141 (7.99%) |
+| 10 | 10 | 65 (3.68%) |
 
 ### `relevant_academic`
 - **Type:** Categorical (0-10)
@@ -378,17 +378,17 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | 0 | 275 (15.62%) |
-| 1 | 1 | 74 (4.20%) |
-| 2 | 2 | 102 (5.79%) |
-| 3 | 3 | 117 (6.64%) |
-| 4 | 4 | 112 (6.36%) |
-| 5 | 5 | 261 (14.82%) |
-| 6 | 6 | 197 (11.19%) |
-| 7 | 7 | 215 (12.21%) |
-| 8 | 8 | 207 (11.75%) |
-| 9 | 9 | 107 (6.08%) |
-| 10 | 10 | 94 (5.34%) |
+| 0 | 0 | 275 (15.58%) |
+| 1 | 1 | 74 (4.19%) |
+| 2 | 2 | 102 (5.78%) |
+| 3 | 3 | 118 (6.69%) |
+| 4 | 4 | 111 (6.29%) |
+| 5 | 5 | 262 (14.84%) |
+| 6 | 6 | 199 (11.27%) |
+| 7 | 7 | 215 (12.18%) |
+| 8 | 8 | 208 (11.78%) |
+| 9 | 9 | 107 (6.06%) |
+| 10 | 10 | 94 (5.33%) |
 
 ---
 
@@ -398,12 +398,12 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 - **Type:** Categorical
 - **Label:** Flu vaccine intentions
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | No, do not intend | 2,198 (62.41%) |
-| 2 | May or may not | 1,031 (29.27%) |
-| 3 | Intend to get | 225 (6.39%) |
-| 4 | Already got | 67 (1.90%) |
+| Code | Label |
+|------|-------|
+| 1 | No, do not intend |
+| 2 | May or may not |
+| 3 | Intend to get |
+| 4 | Already got |
 
 ### `maybe`
 - **Type:** Binary (derived)
@@ -412,8 +412,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,230 (91.71%) |
-| 1 | Yes | 292 (8.29%) |
+| 0 | No | 3,238 (91.73%) |
+| 1 | Yes | 292 (8.27%) |
 
 ---
 
@@ -426,8 +426,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,511 (98.68%) |
-| 1 | Yes | 47 (1.32%) |
+| 0 | No | 3,490 (98.64%) |
+| 1 | Yes | 48 (1.36%) |
 
 ### `link1_clicked`
 - **Type:** Binary
@@ -435,8 +435,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,535 (99.35%) |
-| 1 | Yes | 23 (0.65%) |
+| 0 | No | 3,514 (99.32%) |
+| 1 | Yes | 24 (0.68%) |
 
 ### `link2_clicked`
 - **Type:** Binary
@@ -444,7 +444,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,537 (99.41%) |
+| 0 | No | 3,517 (99.41%) |
 | 1 | Yes | 21 (0.59%) |
 
 ### `link3_clicked`
@@ -453,7 +453,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,541 (99.52%) |
+| 0 | No | 3,521 (99.52%) |
 | 1 | Yes | 17 (0.48%) |
 
 ### `link4_clicked`
@@ -462,7 +462,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,547 (99.69%) |
+| 0 | No | 3,527 (99.69%) |
 | 1 | Yes | 11 (0.31%) |
 
 ---
@@ -476,10 +476,10 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 | Code | Label | N (%) |
 |------|-------|-------|
 | 1 | Under 18 | - |
-| 2 | 18-34 | 1,185 (33.65%) |
-| 3 | 35-49 | 1,405 (39.89%) |
-| 4 | 50-64 | 777 (22.06%) |
-| 5 | 65+ | 147 (4.17%) |
+| 2 | 18-34 | 1,190 (33.71%) |
+| 3 | 35-49 | 1,407 (39.86%) |
+| 4 | 50-64 | 778 (22.04%) |
+| 5 | 65+ | 147 (4.16%) |
 | -99 | Prefer not to say | 1 (0.03%) |
 
 ### `gender`
@@ -488,8 +488,8 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Male | 1,530 (43.44%) |
-| 2 | Female | 1,949 (55.34%) |
+| 1 | Male | 1,534 (43.46%) |
+| 2 | Female | 1,953 (55.33%) |
 | 3 | Other | 32 (0.91%) |
 | -99 | Prefer not to say | - |
 
@@ -500,10 +500,10 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 | Code | Label | N (%) |
 |------|-------|-------|
 | 1 | Less than HS | 19 (0.54%) |
-| 2 | HS | 517 (14.68%) |
-| 3 | Some college | 1,171 (33.25%) |
-| 4 | 4-year degree | 1,285 (36.48%) |
-| 5 | More than 4-year | 517 (14.68%) |
+| 2 | HS | 518 (14.67%) |
+| 3 | Some college | 1,174 (33.26%) |
+| 4 | 4-year degree | 1,289 (36.52%) |
+| 5 | More than 4-year | 517 (14.65%) |
 | -99 | Prefer not to say | - |
 
 ### `income`
@@ -512,11 +512,11 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | <$25k | 489 (13.88%) |
-| 2 | $25-50k | 787 (22.35%) |
-| 3 | $50-75k | 743 (21.10%) |
-| 4 | $75-100k | 558 (15.84%) |
-| 5 | >$100k | 858 (24.36%) |
+| 1 | <$25k | 490 (13.88%) |
+| 2 | $25-50k | 792 (22.44%) |
+| 3 | $50-75k | 743 (21.05%) |
+| 4 | $75-100k | 559 (15.84%) |
+| 5 | >$100k | 859 (24.33%) |
 | -99 | Prefer not to say | - |
 
 ### `race`
@@ -525,10 +525,10 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | White | 2,648 (75.18%) |
-| 2 | Black | 478 (13.57%) |
+| 1 | White | 2,653 (75.16%) |
+| 2 | Black | 480 (13.60%) |
 | 3 | Asian | 25 (0.71%) |
-| 4 | Am Indian/Alaska Native | 206 (5.85%) |
+| 4 | Am Indian/Alaska Native | 207 (5.86%) |
 | 5 | Other | 6 (0.17%) |
 | -99 | Prefer not to say | - |
 
@@ -539,7 +539,7 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 | Code | Label | N (%) |
 |------|-------|-------|
 | 0 | No | - |
-| 1 | Yes | 323 (9.17%) |
+| 1 | Yes | 323 (9.15%) |
 | -99 | Prefer not to say | - |
 
 ### `polviews`
@@ -548,13 +548,13 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Very liberal | 331 (9.40%) |
-| 2 | Liberal | 618 (17.55%) |
-| 3 | Slightly liberal | 428 (12.15%) |
-| 4 | Moderate | 811 (23.03%) |
-| 5 | Slightly conservative | 397 (11.27%) |
-| 6 | Conservative | 638 (18.11%) |
-| 7 | Very conservative | 260 (7.38%) |
+| 1 | Very liberal | 331 (9.38%) |
+| 2 | Liberal | 621 (17.59%) |
+| 3 | Slightly liberal | 430 (12.18%) |
+| 4 | Moderate | 812 (23.00%) |
+| 5 | Slightly conservative | 397 (11.25%) |
+| 6 | Conservative | 640 (18.13%) |
+| 7 | Very conservative | 260 (7.37%) |
 
 ---
 

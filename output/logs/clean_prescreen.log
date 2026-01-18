@@ -21,7 +21,7 @@ Notes:
       3. More than 2 billion observations are allowed; see help obs_advice.
       4. Maximum number of variables is set to 5,000; see help set_maxvar.
 
-. do C:/Users/sacks/Box/VaccSideEffects/code/clean_prescreen.do 
+. do code/clean_prescreen.do 
 
 . /*===========================================================================
 > ===
@@ -94,7 +94,7 @@ C:\Users\sacks\Box\VaccSideEffects
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_prescreen.log
   log type:  text
- opened on:  18 Jan 2026, 09:39:22
+ opened on:  18 Jan 2026, 10:55:14
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prescreen ===
 .     di "Log: output/logs/$scriptname.log"
@@ -1022,7 +1022,6 @@ Final sample: 8003
   (975,562 bytes saved)
 
 . save "derived/prescreen_clean.dta", replace
-(file derived/prescreen_clean.dta not found)
 file derived/prescreen_clean.dta saved
 
 . 

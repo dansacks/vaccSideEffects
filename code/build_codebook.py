@@ -53,16 +53,31 @@ def read_continuous_stats(filepath):
     return stats
 
 
-def read_categorical_stats(filepath): 
+def read_categorical_stats(filepath):
     """Read categorical variable statistics from CSV."""
     stats = {}
     with open(filepath, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            var = row['variable']
-            val = row['value']
-            n = int(float(row['n']))
-            pct = float(row['pct'])
+            # Skip rows with missing required fields
+            if not row.get('variable') or not row.get('value') or not row.get('n') or not row.get('pct'):
+                continue
+
+            var = row['variable'].strip()
+            val = row['value'].strip()
+            n_str = row['n'].strip()
+            pct_str = row['pct'].strip()
+
+            # Skip rows with empty values (malformed CSV)
+            if not var or not n_str or not pct_str:
+                continue
+
+            try:
+                n = int(float(n_str))
+                pct = float(pct_str)
+            except ValueError:
+                # Skip rows that can't be parsed
+                continue
 
             if var not in stats:
                 stats[var] = {}

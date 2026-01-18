@@ -1,9 +1,104 @@
+
+  ___  ____  ____  ____  ____ ©
+ /__    /   ____/   /   ____/      17.0
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-STATA-PC        https://www.stata.com
+                                   979-696-4600        stata@stata.com
+
+Stata license: Single-user 4-core  perpetual
+Serial number: 501709220187
+  Licensed to: Dan Sacks
+               Indiana University
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+
+. do C:/Users/sacks/Box/VaccSideEffects/code/clean_prolific_demographics.do 
+
+. /*===========================================================================
+> ===
+>     Clean Prolific Demographic Exports
+> 
+>     Input:  raw_data/prolific_demographic_export_*.csv
+>     Output: derived/prolific_demographics_prescreen.dta
+>             derived/prolific_demographics_main.dta
+>             derived/prolific_demographics_main_morepay.dta
+>             derived/prolific_demographics_followup.dta
+> 
+>     Cleans prolific demographic data for merging with survey data.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "clean_prolific_demographics"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory
+. local usr `c(username)'
+
+. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+
+. cd "$projdir"
+C:\Users\sacks\Box\VaccSideEffects
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. * Conditional logging: only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_prolific_demo
 > graphics.log
   log type:  text
- opened on:  13 Jan 2026, 16:36:01
+ opened on:  18 Jan 2026, 11:01:20
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prolific_demographics ===
 .     di "Log: output/logs/$scriptname.log"
@@ -144,10 +239,11 @@ end of do-file
 . 
 . * Prescreen (long string filename)
 . clean_prolific ///
->     "data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
->     "data/prolific_demographics_prescreen.dta"
+>     "raw_data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
+>     "derived/prolific_demographics_prescreen.dta"
 
-=== Cleaning: data/prolific_demographic_export_692494f77a877e57e000eb60.csv ===
+=== Cleaning: raw_data/prolific_demographic_export_692494f77a877e57e000eb60.csv
+>  ===
 (encoding automatically selected: ISO-8859-1)
 (26 vars, 8,216 obs)
 prolific_age: contains nonnumeric characters; replaced as int
@@ -179,18 +275,18 @@ Duplicates in terms of prolific_pid
   variable prolific_not_working was double now byte
   variable prolific_unemployed was double now byte
   (427,232 bytes saved)
-(file data/prolific_demographics_prescreen.dta not found)
-file data/prolific_demographics_prescreen.dta saved
-Saved: data/prolific_demographics_prescreen.dta
+(file derived/prolific_demographics_prescreen.dta not found)
+file derived/prolific_demographics_prescreen.dta saved
+Saved: derived/prolific_demographics_prescreen.dta
 Observations: 8216
 
 . 
 . * Main
 . clean_prolific ///
->     "data/prolific_demographic_export_main.csv" ///
->     "data/prolific_demographics_main.dta"
+>     "raw_data/prolific_demographic_export_main.csv" ///
+>     "derived/prolific_demographics_main.dta"
 
-=== Cleaning: data/prolific_demographic_export_main.csv ===
+=== Cleaning: raw_data/prolific_demographic_export_main.csv ===
 (encoding automatically selected: ISO-8859-1)
 (30 vars, 2,752 obs)
 prolific_age: contains nonnumeric characters; replaced as byte
@@ -222,18 +318,18 @@ Duplicates in terms of prolific_pid
   variable prolific_not_working was double now byte
   variable prolific_unemployed was double now byte
   (143,104 bytes saved)
-(file data/prolific_demographics_main.dta not found)
-file data/prolific_demographics_main.dta saved
-Saved: data/prolific_demographics_main.dta
+(file derived/prolific_demographics_main.dta not found)
+file derived/prolific_demographics_main.dta saved
+Saved: derived/prolific_demographics_main.dta
 Observations: 2752
 
 . 
 . * Main morepay
 . clean_prolific ///
->     "data/prolific_demographic_export_main_morepay.csv" ///
->     "data/prolific_demographics_main_morepay.dta"
+>     "raw_data/prolific_demographic_export_main_morepay.csv" ///
+>     "derived/prolific_demographics_main_morepay.dta"
 
-=== Cleaning: data/prolific_demographic_export_main_morepay.csv ===
+=== Cleaning: raw_data/prolific_demographic_export_main_morepay.csv ===
 (encoding automatically selected: ISO-8859-1)
 (30 vars, 904 obs)
 prolific_age: contains nonnumeric characters; replaced as byte
@@ -265,18 +361,18 @@ Duplicates in terms of prolific_pid
   variable prolific_not_working was double now byte
   variable prolific_unemployed was double now byte
   (47,008 bytes saved)
-(file data/prolific_demographics_main_morepay.dta not found)
-file data/prolific_demographics_main_morepay.dta saved
-Saved: data/prolific_demographics_main_morepay.dta
+(file derived/prolific_demographics_main_morepay.dta not found)
+file derived/prolific_demographics_main_morepay.dta saved
+Saved: derived/prolific_demographics_main_morepay.dta
 Observations: 904
 
 . 
 . * Followup
 . clean_prolific ///
->     "data/prolific_demographic_export_followup.csv" ///
->     "data/prolific_demographics_followup.dta"
+>     "raw_data/prolific_demographic_export_followup.csv" ///
+>     "derived/prolific_demographics_followup.dta"
 
-=== Cleaning: data/prolific_demographic_export_followup.csv ===
+=== Cleaning: raw_data/prolific_demographic_export_followup.csv ===
 (encoding automatically selected: ISO-8859-1)
 (25 vars, 3,192 obs)
 prolific_age: contains nonnumeric characters; replaced as byte
@@ -308,9 +404,9 @@ Duplicates in terms of prolific_pid
   variable prolific_not_working was double now byte
   variable prolific_unemployed was double now byte
   (165,984 bytes saved)
-(file data/prolific_demographics_followup.dta not found)
-file data/prolific_demographics_followup.dta saved
-Saved: data/prolific_demographics_followup.dta
+(file derived/prolific_demographics_followup.dta not found)
+file derived/prolific_demographics_followup.dta saved
+Saved: derived/prolific_demographics_followup.dta
 Observations: 3192
 
 . 
@@ -328,3 +424,6 @@ Observations: 3192
 
 . 
 . capture log close
+
+. 
+end of do-file

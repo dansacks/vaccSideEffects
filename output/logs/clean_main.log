@@ -93,7 +93,7 @@ C:\Users\sacks\Box\VaccSideEffects
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_main.log
   log type:  text
- opened on:  18 Jan 2026, 09:41:08
+ opened on:  18 Jan 2026, 10:55:18
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -1060,7 +1060,6 @@ Flu vaccine intentions |      Freq.     Percent        Cum.
   (409,696 bytes saved)
 
 . save "derived/main_clean.dta", replace
-(file derived/main_clean.dta not found)
 file derived/main_clean.dta saved
 
 . 

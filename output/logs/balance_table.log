@@ -97,7 +97,7 @@ C:\Users\sacks\Box\VaccSideEffects
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/balance_table.log
   log type:  text
- opened on:  18 Jan 2026, 10:27:21
+ opened on:  18 Jan 2026, 10:55:27
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: balance_table ===
 .     di "Log: output/logs/$scriptname.log"

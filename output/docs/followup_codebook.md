@@ -37,13 +37,13 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 ### `duration_sec`
 - **Type:** Numeric (continuous)
 - **Label:** Survey duration (seconds)
-- **Summary Statistics (N=3,062):**
+- **Summary Statistics (N=3,078):**
 
 | Statistic | Value |
 |-----------|-------|
-| Mean | 386.3 |
-| SD | 3,411.9 |
-| Min | 18 |
+| Mean | 385.4 |
+| SD | 3,403.1 |
+| Min | 11 |
 | Median | 233 |
 | Max | 176,003 |
 
@@ -62,7 +62,7 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 | Code | Label | N (%) |
 |------|-------|-------|
 | 0 | No | - |
-| 1 | Yes | 3,062 (100.00%) |
+| 1 | Yes | 3,078 (100.00%) |
 
 ### `final_sample`
 - **Type:** Binary
@@ -80,8 +80,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,027 (98.86%) |
-| 1 | Yes | 35 (1.14%) |
+| 0 | No | 3,042 (98.83%) |
+| 1 | Yes | 36 (1.17%) |
 
 ### `failed_attn`
 - **Type:** Binary
@@ -90,7 +90,7 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,062 (100.00%) |
+| 0 | No | 3,078 (100.00%) |
 | 1 | Yes | - |
 
 ### `pid_mismatch`
@@ -99,7 +99,7 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,038 (99.22%) |
+| 0 | No | 3,054 (99.22%) |
 | 1 | Yes | 24 (0.78%) |
 
 ### `duplicate_pid`
@@ -108,8 +108,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,062 (100.00%) |
-| 1 | Yes | - |
+| 0 | No | 3,062 (99.48%) |
+| 1 | Yes | 16 (0.52%) |
 
 ### `is_preview`
 - **Type:** Binary
@@ -117,7 +117,7 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 3,062 (100.00%) |
+| 0 | No | 3,078 (100.00%) |
 | 1 | Yes | - |
 
 ### `attn_check`
@@ -140,8 +140,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 2,099 (68.55%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 2,101 (68.26%) |
 
 ### `med_grocery`
 - **Type:** Binary
@@ -150,8 +150,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 1,205 (39.35%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 1,208 (39.25%) |
 
 ### `med_independent`
 - **Type:** Binary
@@ -159,8 +159,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 397 (12.97%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 397 (12.90%) |
 
 ### `med_mail_order`
 - **Type:** Binary
@@ -168,8 +168,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 278 (9.08%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 279 (9.06%) |
 
 ### `med_online`
 - **Type:** Binary
@@ -177,8 +177,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 227 (7.41%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 228 (7.41%) |
 
 ### `med_provider`
 - **Type:** Binary
@@ -186,8 +186,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 712 (23.25%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 712 (23.13%) |
 
 ### `med_other`
 - **Type:** Binary
@@ -195,7 +195,7 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
+| 0 | No | 33 (1.07%) |
 | 1 | Yes | 16 (0.52%) |
 
 ### `med_none`
@@ -204,8 +204,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 21 (0.69%) |
-| 1 | Yes | 111 (3.63%) |
+| 0 | No | 33 (1.07%) |
+| 1 | Yes | 111 (3.61%) |
 
 ### `pharmacy_chain`
 - **Type:** String (multi-select)
@@ -226,10 +226,10 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Price | 927 (31.69%) |
-| 2 | Convenience | 1,577 (53.91%) |
-| 3 | Quality/reputation | 339 (11.59%) |
-| 4 | Pharmacist access | 54 (1.85%) |
+| 1 | Price | 928 (31.68%) |
+| 2 | Convenience | 1,578 (53.88%) |
+| 3 | Quality/reputation | 341 (11.64%) |
+| 4 | Pharmacist access | 54 (1.84%) |
 | 5 | None important | 28 (0.96%) |
 
 ### `price_compare`
@@ -239,9 +239,9 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Yes, at least once | 621 (20.49%) |
-| 2 | No | 1,696 (55.96%) |
-| 3 | Did not shop for medicines | 714 (23.56%) |
+| 1 | Yes, at least once | 623 (20.53%) |
+| 2 | No | 1,698 (55.95%) |
+| 3 | Did not shop for medicines | 714 (23.53%) |
 
 ### `use_coupons`
 - **Type:** Categorical
@@ -250,9 +250,9 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Yes, at least once | 605 (19.96%) |
-| 2 | No | 1,734 (57.21%) |
-| 3 | Did not shop for medicines | 692 (22.83%) |
+| 1 | Yes, at least once | 607 (20.00%) |
+| 2 | No | 1,736 (57.20%) |
+| 3 | Did not shop for medicines | 692 (22.80%) |
 
 ---
 
@@ -266,8 +266,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,823 (93.63%) |
-| 1 | Yes | 192 (6.37%) |
+| 0 | No | 2,827 (93.64%) |
+| 1 | Yes | 192 (6.36%) |
 
 ### `got_flu_vacc`
 - **Type:** Binary
@@ -277,8 +277,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,832 (94.02%) |
-| 1 | Yes | 180 (5.98%) |
+| 0 | No | 2,836 (94.03%) |
+| 1 | Yes | 180 (5.97%) |
 
 ### `got_covid_vacc`
 - **Type:** Binary
@@ -288,7 +288,7 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,964 (98.34%) |
+| 0 | No | 2,968 (98.34%) |
 | 1 | Yes | 50 (1.66%) |
 
 ---
@@ -312,8 +312,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 95 (3.10%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 95 (3.09%) |
 
 ### `flu_why_side_effects`
 - **Type:** Binary
@@ -321,8 +321,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 1,163 (37.98%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 1,164 (37.82%) |
 
 ### `flu_why_bad_flu`
 - **Type:** Binary
@@ -331,8 +331,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 323 (10.55%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 323 (10.49%) |
 
 ### `flu_why_needles`
 - **Type:** Binary
@@ -340,8 +340,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 461 (15.06%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 462 (15.01%) |
 
 ### `flu_why_time`
 - **Type:** Binary
@@ -349,8 +349,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 175 (5.72%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 175 (5.69%) |
 
 ### `flu_why_location`
 - **Type:** Binary
@@ -359,8 +359,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 104 (3.40%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 104 (3.38%) |
 
 ### `flu_why_cost`
 - **Type:** Binary
@@ -368,8 +368,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 194 (6.34%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 196 (6.37%) |
 
 ### `flu_why_none`
 - **Type:** Binary
@@ -377,8 +377,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 234 (7.64%) |
-| 1 | Yes | 1,103 (36.02%) |
+| 0 | No | 246 (7.99%) |
+| 1 | Yes | 1,105 (35.90%) |
 
 ---
 
@@ -391,14 +391,14 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Yes | 761 (25.17%) |
-| 2 | No | 483 (15.98%) |
-| 3 | Don't remember | 1,779 (58.85%) |
+| 1 | Yes | 764 (25.24%) |
+| 2 | No | 483 (15.96%) |
+| 3 | Don't remember | 1,780 (58.80%) |
 
 ### `guess_placebo`
 - **Type:** Numeric (continuous)
 - **Label:** Guessed placebo arm SE rate
-- **Summary Statistics (N=3,002):**
+- **Summary Statistics (N=3,016):**
 
 | Statistic | Value |
 |-----------|-------|
@@ -413,12 +413,12 @@ These variables are parsed from the multi-select question asked of those who did
 ### `guess_vaccine`
 - **Type:** Numeric (continuous)
 - **Label:** Guessed vaccine arm SE rate
-- **Summary Statistics (N=3,006):**
+- **Summary Statistics (N=3,019):**
 
 | Statistic | Value |
 |-----------|-------|
 | Mean | 14.1 |
-| SD | 17.4 |
+| SD | 17.3 |
 | Min | -99 |
 | Median | 7 |
 | Max | 100 |
@@ -432,8 +432,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,356 (78.48%) |
-| 1 | Yes | 646 (21.52%) |
+| 0 | No | 2,429 (78.91%) |
+| 1 | Yes | 649 (21.09%) |
 
 ### `vaccine_correct`
 - **Type:** Binary
@@ -442,8 +442,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 2,631 (87.61%) |
-| 1 | Yes | 372 (12.39%) |
+| 0 | No | 2,702 (87.78%) |
+| 1 | Yes | 376 (12.22%) |
 
 ### `recall_manufacturer`
 - **Type:** Categorical
@@ -452,9 +452,9 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Yes | 972 (38.39%) |
-| 2 | No | 646 (25.51%) |
-| 3 | Don't remember study | 914 (36.10%) |
+| 1 | Yes | 973 (38.38%) |
+| 2 | No | 648 (25.56%) |
+| 3 | Don't remember study | 914 (36.06%) |
 
 ### `recall_university`
 - **Type:** Categorical
@@ -463,9 +463,9 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Yes | 1,285 (50.75%) |
-| 2 | No | 339 (13.39%) |
-| 3 | Don't remember study | 908 (35.86%) |
+| 1 | Yes | 1,287 (50.77%) |
+| 2 | No | 340 (13.41%) |
+| 3 | Don't remember study | 908 (35.82%) |
 
 ### `recall_gavi`
 - **Type:** Categorical
@@ -474,9 +474,9 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Yes | 272 (10.74%) |
-| 2 | No | 1,140 (45.02%) |
-| 3 | Don't remember study | 1,120 (44.23%) |
+| 1 | Yes | 274 (10.81%) |
+| 2 | No | 1,141 (45.01%) |
+| 3 | Don't remember study | 1,120 (44.18%) |
 
 ### `found_trustworthy`
 - **Type:** Categorical
@@ -485,10 +485,10 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Don't remember study | 856 (33.81%) |
-| 2 | Trustworthy | 583 (23.03%) |
-| 3 | Somewhat trustworthy | 950 (37.52%) |
-| 4 | Not trustworthy | 143 (5.65%) |
+| 1 | Don't remember study | 856 (33.77%) |
+| 2 | Trustworthy | 585 (23.08%) |
+| 3 | Somewhat trustworthy | 951 (37.51%) |
+| 4 | Not trustworthy | 143 (5.64%) |
 
 ---
 
