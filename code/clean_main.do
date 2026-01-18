@@ -16,7 +16,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-import spss using "data/flu_survey_main_January+9,+2026_08.08.sav", clear
+import spss using "raw_data/flu_survey_main_January+9,+2026_08.08.sav", clear
 
 * Verify we have data
 assert _N > 0
@@ -319,7 +319,11 @@ label var failed_attn "Failed attention check"
 gen pid_mismatch = (prolific_pid != prolific_id_entered)
 label var pid_mismatch "Prolific PID mismatch"
 
-* Duplicate PID
+* Flag first attempt per PID (sort by start_date, keep first)
+bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
+label var first_attempt "First survey attempt for this PID"
+
+* Duplicate PID (for reference/reporting only)
 duplicates tag prolific_pid, gen(duplicate_pid)
 replace duplicate_pid = (duplicate_pid > 0)
 label var duplicate_pid "Duplicate Prolific PID"
@@ -330,11 +334,11 @@ egen n_missing = rowmiss(posterior_vacc posterior_novacc post_trial)
 * Update final sample flag
 gen final_sample = (consent == 1 & failed_attn == 0 ///
     & _distchannel == "anonymous" & is_preview == 0 ///
-		& n_missing == 0)
-		
-label var final_sample "Final analysis sample"
+		& n_missing == 0 & first_attempt == 1)
+
+label var final_sample "Final analysis sample (consent, passed attn, non-missing outcomes, first attempt)"
 assert ~missing(arm_n) if final_sample
-gen quality_sample = final_sample & ~duplicate_pid
+gen quality_sample = final_sample
 
 
 * Report quality flags (preliminary)
@@ -392,7 +396,7 @@ label var link3_clicked "Link 3 clicked"
 label var link4_clicked "Link 4 clicked"
 
 * Label all yes/no variables
-foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid is_preview ///
+foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
     arm_control arm_industry arm_academic arm_personal maybe link_click {
     label values `var' yesno
 }
@@ -411,7 +415,7 @@ rename Progress progress
 * Order variables logically
 order response_id prolific_pid prolific_id_entered ///
       start_date end_date duration_sec progress ///
-      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid is_preview ///
+      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
       attn_check ///
       arm_n arm arm_control arm_industry arm_academic arm_personal ///
       prior_self_placebo prior_self_vacc prior_diff ///
@@ -464,10 +468,10 @@ tab vacc_intent if final_sample == 1, m
 
 * Compress and save
 compress
-save "data/main_clean.dta", replace
+save "derived/main_clean.dta", replace
 
 di ""
 di "=== CLEANING COMPLETE ==="
-di "Saved: data/main_clean.dta"
+di "Saved: derived/main_clean.dta"
 
 capture log close

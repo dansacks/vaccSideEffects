@@ -1,9 +1,106 @@
+
+  ___  ____  ____  ____  ____ ©
+ /__    /   ____/   /   ____/      17.0
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-STATA-PC        https://www.stata.com
+                                   979-696-4600        stata@stata.com
+
+Stata license: Single-user 4-core  perpetual
+Serial number: 501709220187
+  Licensed to: Dan Sacks
+               Indiana University
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+
+. do C:/Users/sacks/Box/VaccSideEffects/code/summary_stats_prescreen.do 
+
+. /*===========================================================================
+> ===
+>     Summary Statistics: Prescreen Data
+> 
+>     Input:  data/prescreen_clean.dta
+>     Output:
+>       - output/stats_continuous.csv (for Python codebook builder)
+>       - output/stats_categorical.csv (for Python codebook builder)
+>       - output/prescreen_summary_stats.txt (human-readable log)
+> 
+>     Produces summary statistics for valid observations (final_sample == 1):
+>     - Continuous variables: mean, SD, percentiles
+>     - Categorical variables: frequency distribution
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "summary_stats_prescreen"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory
+. local usr `c(username)'
+
+. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+
+. cd "$projdir"
+C:\Users\sacks\Box\VaccSideEffects
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. * Conditional logging: only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/summary_stats_presc
 > reen.log
   log type:  text
- opened on:   9 Jan 2026, 20:56:57
+ opened on:  18 Jan 2026, 09:39:26
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_prescreen ===
 .     di "Log: output/logs/$scriptname.log"
@@ -17,15 +114,15 @@ end of do-file
 
 . 
 . * Load cleaned data
-. use "data/prescreen_clean.dta", clear
+. use "derived/prescreen_clean.dta", clear
 
 . 
 . * Keep only valid observations
 . keep if final_sample == 1
-(237 observations deleted)
+(195 observations deleted)
 
 . count
-  7,961
+  8,003
 
 . local n_valid = r(N) 
 
@@ -47,17 +144,17 @@ end of do-file
                   Survey duration (seconds)
 -------------------------------------------------------------
       Percentiles      Smallest
- 1%           76             11
- 5%           97             14
-10%          110             15       Obs               7,961
-25%          139             15       Sum of wgt.       7,961
+ 1%           74             10
+ 5%           96             11
+10%          109             12       Obs               8,003
+25%          138             12       Sum of wgt.       8,003
 
-50%          188                      Mean           259.1114
-                        Largest       Std. dev.      847.3208
-75%          271           5900
-90%          421          14816       Variance       717952.6
-95%          580          45820       Skewness        54.8297
-99%         1074          55342       Kurtosis       3305.887
+50%          188                      Mean           258.4858
+                        Largest       Std. dev.      845.2238
+75%          270           5900
+90%          420          14816       Variance       714403.3
+95%          579          45820       Skewness       54.95113
+99%         1065          55342       Kurtosis       3321.453
 
 . file write contcsv "duration_sec," (r(N)) "," (r(mean)) "," (r(sd)) "," (r(mi
 > n)) "," (r(p50)) "," (r(max)) _n
@@ -139,394 +236,58 @@ delimiter now cr
     vaccine |
   last year |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,448       43.55       43.55
-     1. Yes |      4,470       56.45      100.00
+      0. No |      3,455       43.53       43.53
+     1. Yes |      4,482       56.47      100.00
 ------------+-----------------------------------
-      Total |      7,918      100.00
+      Total |      7,937      100.00
 
      Prior vaccine |
            history |      Freq.     Percent        Cum.
 -------------------+-----------------------------------
-1. Neither vaccine |        869       10.97       10.97
-       2. Flu only |        968       12.23       23.20
-     3. COVID only |        989       12.49       35.69
-  4. Both vaccines |      5,092       64.31      100.00
+1. Neither vaccine |        872       10.99       10.99
+       2. Flu only |        970       12.22       23.21
+     3. COVID only |        991       12.49       35.69
+  4. Both vaccines |      5,104       64.31      100.00
 -------------------+-----------------------------------
-             Total |      7,918      100.00
+             Total |      7,937      100.00
 
   Flu vaccine intent |
          this season |      Freq.     Percent        Cum.
 ---------------------+-----------------------------------
-1. No, do not intend |      2,998       37.86       37.86
-   2. May or may not |      1,517       19.16       57.02
-    3. Intend to get |      1,139       14.38       71.41
-      4. Already got |      2,264       28.59      100.00
+1. No, do not intend |      3,005       37.86       37.86
+   2. May or may not |      1,520       19.15       57.01
+    3. Intend to get |      1,141       14.38       71.39
+      4. Already got |      2,271       28.61      100.00
 ---------------------+-----------------------------------
-               Total |      7,918      100.00
+               Total |      7,937      100.00
 
   Had prior |
       COVID |
     vaccine |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      1,837       23.20       23.20
-     1. Yes |      6,081       76.80      100.00
+      0. No |      1,842       23.21       23.21
+     1. Yes |      6,095       76.79      100.00
 ------------+-----------------------------------
-      Total |      7,918      100.00
+      Total |      7,937      100.00
 
   Had prior |
       COVID |
     vaccine |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      1,837       23.20       23.20
-     1. Yes |      6,081       76.80      100.00
+      0. No |      1,842       23.21       23.21
+     1. Yes |      6,095       76.79      100.00
 ------------+-----------------------------------
-      Total |      7,918      100.00
+      Total |      7,937      100.00
 
   Had prior |
 flu vaccine |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      1,858       23.47       23.47
-     1. Yes |      6,060       76.53      100.00
+      0. No |      1,863       23.47       23.47
+     1. Yes |      6,074       76.53      100.00
 ------------+-----------------------------------
-      Total |      7,918      100.00
+      Total |      7,937      100.00
+variable covid_reaction not found
+r(111);
 
-COVID vaccine reaction |      Freq.     Percent        Cum.
------------------------+-----------------------------------
-   0. No prior vaccine |      1,837       23.22       23.22
-1. None/don't remember |      2,701       34.14       57.36
-  2. Mild (not severe) |      2,591       32.75       90.10
-             3. Severe |        783        9.90      100.00
------------------------+-----------------------------------
-                 Total |      7,912      100.00
-
-  Flu vaccine reaction |      Freq.     Percent        Cum.
------------------------+-----------------------------------
-   0. No prior vaccine |      1,858       23.49       23.49
-1. None/don't remember |      3,507       44.34       67.83
-  2. Mild (not severe) |      2,184       27.61       95.44
-             3. Severe |        361        4.56      100.00
------------------------+-----------------------------------
-                 Total |      7,910      100.00
-
-  No health |
- conditions |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      1,706       21.43       21.43
-      0. No |         61        0.77       22.20
-     1. Yes |      6,194       77.80      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
- Has asthma |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      6,884       86.47       86.47
-      0. No |         61        0.77       87.24
-     1. Yes |      1,016       12.76      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-        Has |
-   diabetes |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      7,365       92.51       92.51
-      0. No |         61        0.77       93.28
-     1. Yes |        535        6.72      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-  Has heart |
-    disease |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      7,678       96.45       96.45
-      0. No |         61        0.77       97.21
-     1. Yes |        222        2.79      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-   Has lung |
-    disease |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      7,799       97.97       97.97
-      0. No |         61        0.77       98.73
-     1. Yes |        101        1.27      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
- Has kidney |
-    disease |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      7,794       97.90       97.90
-      0. No |         61        0.77       98.67
-     1. Yes |        106        1.33      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-     Health |
-conditions: |
- rather not |
-        say |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |      7,861       98.74       98.74
-      0. No |         61        0.77       99.51
-     1. Yes |         39        0.49      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-  Has health |
-   insurance |      Freq.     Percent        Cum.
--------------+-----------------------------------
--1. Not sure |        871       11.03       11.03
-       0. No |         76        0.96       11.99
-      1. Yes |      6,953       88.01      100.00
--------------+-----------------------------------
-       Total |      7,900      100.00
-
-  Trust government info about |
-                  flu vaccine |      Freq.     Percent        Cum.
-------------------------------+-----------------------------------
-         1. Strongly disagree |        688        8.71        8.71
-         2. Somewhat disagree |      1,118       14.16       22.87
-3. Neither agree nor disagree |      1,691       21.41       44.28
-            4. Somewhat agree |      3,038       38.47       82.75
-            5. Strongly agree |      1,362       17.25      100.00
-------------------------------+-----------------------------------
-                        Total |      7,897      100.00
-
-    Prior trust in government |
-                         info |      Freq.     Percent        Cum.
-------------------------------+-----------------------------------
-         1. Strongly disagree |        468        5.93        5.93
-         2. Somewhat disagree |        783        9.92       15.85
-3. Neither agree nor disagree |      1,234       15.63       31.48
-            4. Somewhat agree |      2,707       34.29       65.76
-            5. Strongly agree |      2,703       34.24      100.00
-------------------------------+-----------------------------------
-                        Total |      7,895      100.00
-
-    Generally follow doctor's |
-               vaccine advice |      Freq.     Percent        Cum.
-------------------------------+-----------------------------------
-         1. Strongly disagree |        481        6.09        6.09
-         2. Somewhat disagree |        738        9.35       15.44
-3. Neither agree nor disagree |        967       12.25       27.68
-            4. Somewhat agree |      2,737       34.66       62.34
-            5. Strongly agree |      2,974       37.66      100.00
-------------------------------+-----------------------------------
-                        Total |      7,897      100.00
-
-Most important health |
-          info source |      Freq.     Percent        Cum.
-----------------------+-----------------------------------
-            1. Doctor |      5,572       70.65       70.65
-      2. Social media |        400        5.07       75.72
-          3. Podcasts |        130        1.65       77.37
-               4. CDC |        769        9.75       87.12
-5. News organizations |        253        3.21       90.33
- 6. None of the above |        763        9.67      100.00
-----------------------+-----------------------------------
-                Total |      7,887      100.00
-
-       Main |
-    source: |
-     Doctor |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      2,315       29.35       29.35
-     1. Yes |      5,572       70.65      100.00
-------------+-----------------------------------
-      Total |      7,887      100.00
-
-       Main |
-    source: |
-     Social |
-      media |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,487       94.93       94.93
-     1. Yes |        400        5.07      100.00
-------------+-----------------------------------
-      Total |      7,887      100.00
-
-       Main |
-    source: |
-   Podcasts |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,757       98.35       98.35
-     1. Yes |        130        1.65      100.00
-------------+-----------------------------------
-      Total |      7,887      100.00
-
-       Main |
-source: CDC |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,118       90.25       90.25
-     1. Yes |        769        9.75      100.00
-------------+-----------------------------------
-      Total |      7,887      100.00
-
-       Main |
-    source: |
-       News |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,634       96.79       96.79
-     1. Yes |        253        3.21      100.00
-------------+-----------------------------------
-      Total |      7,887      100.00
-
-       Main |
-    source: |
-None of the |
-      above |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,124       90.33       90.33
-     1. Yes |        763        9.67      100.00
-------------+-----------------------------------
-      Total |      7,887      100.00
-
-Get info from |
-       doctor |      Freq.     Percent        Cum.
---------------+-----------------------------------
--1. No doctor |        414        5.26        5.26
-     1. Never |         65        0.83        6.08
-    2. Rarely |        752        9.55       15.63
- 3. Sometimes |      3,888       49.37       64.99
-     4. Often |      2,757       35.01      100.00
---------------+-----------------------------------
-        Total |      7,876      100.00
-
-    Get info |
- from social |
-       media |      Freq.     Percent        Cum.
--------------+-----------------------------------
-    1. Never |      2,237       28.40       28.40
-   2. Rarely |      2,898       36.80       65.20
-3. Sometimes |      2,276       28.90       94.10
-    4. Often |        465        5.90      100.00
--------------+-----------------------------------
-       Total |      7,876      100.00
-
-    Get info |
-        from |
-    podcasts |      Freq.     Percent        Cum.
--------------+-----------------------------------
-    1. Never |      4,324       54.90       54.90
-   2. Rarely |      2,117       26.88       81.78
-3. Sometimes |      1,257       15.96       97.74
-    4. Often |        178        2.26      100.00
--------------+-----------------------------------
-       Total |      7,876      100.00
-
-    Get info |
-    from CDC |      Freq.     Percent        Cum.
--------------+-----------------------------------
-    1. Never |        946       12.01       12.01
-   2. Rarely |      2,337       29.67       41.68
-3. Sometimes |      3,703       47.02       88.70
-    4. Often |        890       11.30      100.00
--------------+-----------------------------------
-       Total |      7,876      100.00
-
-    Get info |
-   from news |      Freq.     Percent        Cum.
--------------+-----------------------------------
-    1. Never |      2,111       26.80       26.80
-   2. Rarely |      2,875       36.50       63.31
-3. Sometimes |      2,507       31.83       95.14
-    4. Often |        383        4.86      100.00
--------------+-----------------------------------
-       Total |      7,876      100.00
-
-    Get info |
-        from |
-  university |
-    research |      Freq.     Percent        Cum.
--------------+-----------------------------------
-    1. Never |      1,842       23.42       23.42
-   2. Rarely |      2,313       29.41       52.82
-3. Sometimes |      3,076       39.11       91.93
-    4. Often |        635        8.07      100.00
--------------+-----------------------------------
-       Total |      7,866      100.00
-
-    Find doctor info |
-            reliable |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-     1. Not reliable |         27        0.41        0.41
-2. Somewhat reliable |      1,673       25.18       25.59
-    3. Yes, reliable |      4,943       74.41      100.00
----------------------+-----------------------------------
-               Total |      6,643      100.00
-
-   Find social media |
-       info reliable |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-     1. Not reliable |        406       14.81       14.81
-2. Somewhat reliable |      2,047       74.68       89.49
-    3. Yes, reliable |        288       10.51      100.00
----------------------+-----------------------------------
-               Total |      2,741      100.00
-
-   Find podcast info |
-            reliable |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-     1. Not reliable |         63        4.39        4.39
-2. Somewhat reliable |      1,125       78.40       82.79
-    3. Yes, reliable |        247       17.21      100.00
----------------------+-----------------------------------
-               Total |      1,435      100.00
-
-       Find CDC info |
-            reliable |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-     1. Not reliable |        137        2.98        2.98
-2. Somewhat reliable |      1,965       42.78       45.77
-    3. Yes, reliable |      2,491       54.23      100.00
----------------------+-----------------------------------
-               Total |      4,593      100.00
-
-      Find news info |
-            reliable |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-     1. Not reliable |        147        5.09        5.09
-2. Somewhat reliable |      2,152       74.46       79.55
-    3. Yes, reliable |        591       20.45      100.00
----------------------+-----------------------------------
-               Total |      2,890      100.00
-
-     Find university |
-   research reliable |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-     1. Not reliable |        414        5.26        5.26
-2. Somewhat reliable |      3,951       50.23       55.49
-    3. Yes, reliable |      3,501       44.51      100.00
----------------------+-----------------------------------
-               Total |      7,866      100.00
-
- Incomplete |
-   response |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,892       99.13       99.13
-     1. Yes |         69        0.87      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-   Prolific |
-        PID |
-   mismatch |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,955       99.92       99.92
-     1. Yes |          6        0.08      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-  Duplicate |
-   Prolific |
-        PID |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,961      100.00      100.00
-------------+-----------------------------------
-      Total |      7,961      100.00
-
-. 
-. 
-. file close catcsv
-
-. capture log close 
+end of do-file
+r(111);

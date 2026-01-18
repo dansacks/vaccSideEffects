@@ -16,7 +16,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-import spss using "data/vacc_se_prescreen_full_January+9,+2026_19.47.sav", clear
+import spss using "raw_data/vacc_se_prescreen_full_January+9,+2026_19.47.sav", clear
 
 * Verify we have data
 assert _N > 0
@@ -259,16 +259,21 @@ label var failed_attn "Failed attention check"
 gen pid_mismatch = (prolific_pid != prolific_id_entered)
 label var pid_mismatch "Prolific PID mismatch"
 
-* Duplicate PID
+* Flag first attempt per PID (sort by start_date, keep first)
+bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
+label var first_attempt "First survey attempt for this PID"
+label values first_attempt yesno
+
+* Duplicate PID (for reference/reporting only)
 duplicates tag prolific_pid, gen(duplicate_pid)
 replace duplicate_pid = (duplicate_pid > 0)
 label var duplicate_pid "Duplicate Prolific PID"
 
 * Final sample flag (exclude previews)
-gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & ~is_preview)
-label var final_sample "Final analysis sample (consent, passsed attention)"
-gen quality_sample = final_sample & duplicate_pid == 0 
-label var quality_sample "Final sample + non-duplicate" 
+gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & ~is_preview & first_attempt == 1)
+label var final_sample "Final analysis sample (consent, passed attention, first attempt)"
+gen quality_sample = final_sample
+label var quality_sample "Final sample" 
 
 * Report quality flags
 di "=== QUALITY FLAG SUMMARY ==="
@@ -395,7 +400,7 @@ label var cond_kidney "Has kidney disease"
 label var cond_rather_not_say "Health conditions: rather not say"
 
 * Label all yes/no variables
-foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid is_preview ///
+foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
     had_prior_covid had_prior_flu cond_* source_doctor source_sm source_podcasts source_cdc source_news source_none {
     label values `var' yesno
 }
@@ -410,7 +415,7 @@ drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _userlan
 * Order variables logically
 order response_id prolific_pid prolific_id_entered ///
       start_date end_date duration_sec progress ///
-      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid ///
+      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt ///
       favorite_number is_preview ///
       flu_vacc_lastyear prior_vaccines vacc_intent ///
       had_prior_covid_vacc had_prior_flu_vacc covid_vacc_reaction flu_vacc_reaction ///
@@ -444,10 +449,10 @@ tab vacc_intent if final_sample == 1, m
 
 * Compress and save
 compress
-save "data/prescreen_clean.dta", replace
+save "derived/prescreen_clean.dta", replace
 
 di ""
 di "=== CLEANING COMPLETE ==="
-di "Saved: data/prescreen_clean.dta"
+di "Saved: derived/prescreen_clean.dta"
 
 capture log close

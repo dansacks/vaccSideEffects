@@ -42,7 +42,7 @@ global controls "$prior_beliefs i.pre_vacc_intent $vacc_experience $demographics
     2. Load data and prepare variables
 ------------------------------------------------------------------------------*/
 
-use "data/merged_all.dta", clear
+use "derived/merged_all.dta", clear
 
 * Create link_click if not already present (max of link1-4)
 capture confirm variable link_click

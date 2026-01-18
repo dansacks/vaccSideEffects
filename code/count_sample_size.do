@@ -1,91 +1,174 @@
 /*==============================================================================
-		Count sample sizes at various inclusion criteria
-    Input:  data/prescreen_clean
-						data/main_clean.dta
-            data/followup_clean.dta
-    Output: data/counts.csv
+    Count Sample Sizes at Various Inclusion Criteria
 
-    Created by Dan 
+    Input:  derived/prescreen_clean.dta
+            derived/main_clean.dta
+            derived/followup_clean.dta
+    Output: output/tables/counts.csv
+
+    Counts sample sizes as observations pass through sequential filters.
+
+    Created by Dan + Claude Code
 ==============================================================================*/
 
 clear all
-global scriptname "merge_prescreen_main"
+global scriptname "count_sample_size"
 do "code/_config.do"
 
 
 /*------------------------------------------------------------------------------
     1. Counts for pre-screen
+
+    Sequential filters:
+    1. started prescreen (# non preview survey attempt)
+    2. consented
+    3. passed prescreen attention check
+    4. first attempt only
+    5. hesitant (vacc_intent is "don't intend" or "may or may not", i.e. <= 2)
 ------------------------------------------------------------------------------*/
 
-
-use data/prescreen_clean if ~is_preview, clear 
-
-gen started  = 1
-gen attention = failed_attn == 0 
-gen single = duplicate_pid == 0
-gen hesitant = vacc_intent <= 2 
+use "derived/prescreen_clean.dta" if ~is_preview, clear
 
 capture file close fout
 file open fout using "output/tables/counts.csv", write replace
-file write fout "Condition, count" _n
-file write fout "Prescreen survey" _n
-foreach cond in started consent attention single hesitant {
-	keep if `cond'
-	
-	file write fout "`cond', `=_N'" _n
-}
+file write fout "Survey,Condition,Count" _n
+file write fout "Prescreen,Started (non-preview),`=_N'" _n
 
+* Count after each sequential filter
+local n_started = _N
+keep if consent == 1
+local n_consent = _N
+file write fout "Prescreen,Consented,`=_N'" _n
 
-keep prolific_pid 
-tempfile prescreen
-save `prescreen'
+keep if failed_attn == 0
+local n_attn = _N
+file write fout "Prescreen,Passed attention check,`=_N'" _n
 
-/*------------------------------------------------------------------------------
-    2. Counts for main
-------------------------------------------------------------------------------*/
-use data/main_clean if ~is_preview, clear 
-merge m:1 prolific_pid using `prescreen', keep(3) 
+keep if first_attempt == 1
+local n_first = _N
+file write fout "Prescreen,First attempt only,`=_N'" _n
 
-gen started = 1
-gen attention = failed_attn == 0 
-gen single = duplicate_pid == 0
-gen outcome = n_missing == 0 
+keep if vacc_intent <= 2
+local n_hesitant = _N
+file write fout "Prescreen,Hesitant (final prescreen sample),`=_N'" _n
 
-
-file write fout _n
-file write fout "Main survey" _n
-foreach cond in started consent attention outcome single {
-	keep if `cond'
-	
-	file write fout "`cond', `=_N'" _n
-}
-
+* Save prescreen final sample PIDs for linking
 keep prolific_pid
-tempfile main_pre  
-save `main_pre'
+tempfile prescreen_final
+save `prescreen_final'
 
+di ""
+di "=== PRESCREEN SUMMARY ==="
+di "Started (non-preview): `n_started'"
+di "Consented: `n_consent'"
+di "Passed attention: `n_attn'"
+di "First attempt: `n_first'"
+di "Hesitant (final): `n_hesitant'"
 
 /*------------------------------------------------------------------------------
-    3. Counts for followup
+    2. Counts for main survey
+
+    Sequential filters:
+    1. started (# non preview survey attempt)
+    2. linked to the final set from prescreen (hesitant + pass all other checks)
+    3. consented
+    4. passed attention check in main
+    5. non-missing value of delta (and no -99 in posterior_vacc, posterior_novacc)
+    6. first attempt only - this is the main survey sample
 ------------------------------------------------------------------------------*/
-use data/followup_clean if ~is_preview, clear 
-merge m:1 prolific_pid using `main_pre', keep(3)
 
-gen started = 1
-gen attention = failed_attn == 0 
-gen single = duplicate_pid == 0
-gen outcome = ~missing(got_flu_vacc)
-
+use "derived/main_clean.dta" if ~is_preview, clear
 
 file write fout _n
-file write fout "Followup survey" _n
-foreach cond in started consent attention outcome single {
-	keep if `cond'
-	
-	file write fout "`cond', `=_N'" _n
-}
+file write fout "Main,Started (non-preview),`=_N'" _n
+local n_started = _N
 
+* Merge with prescreen final sample
+merge m:1 prolific_pid using `prescreen_final', keep(1 3)
+keep if _merge == 3
+drop _merge
+local n_linked = _N
+file write fout "Main,Linked to prescreen final,`=_N'" _n
+
+keep if consent == 1
+local n_consent = _N
+file write fout "Main,Consented,`=_N'" _n
+
+keep if failed_attn == 0
+local n_attn = _N
+file write fout "Main,Passed attention check,`=_N'" _n
+
+* Non-missing delta and no -99 values in posteriors
+keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99
+local n_outcome = _N
+file write fout "Main,Non-missing delta (valid posteriors),`=_N'" _n
+
+keep if first_attempt == 1
+local n_first = _N
+file write fout "Main,First attempt only (final main sample),`=_N'" _n
+
+* Save main final sample PIDs for linking
+keep prolific_pid
+tempfile main_final
+save `main_final'
+
+di ""
+di "=== MAIN SURVEY SUMMARY ==="
+di "Started (non-preview): `n_started'"
+di "Linked to prescreen: `n_linked'"
+di "Consented: `n_consent'"
+di "Passed attention: `n_attn'"
+di "Non-missing delta: `n_outcome'"
+di "First attempt (final): `n_first'"
+
+/*------------------------------------------------------------------------------
+    3. Counts for followup survey
+
+    Sequential filters:
+    1. started (# non preview attempt)
+    2. linked to the final set from main survey
+    3. passed attention check in follow up
+    4. has non-missing outcome (got_flu_vacc)
+    5. first attempt only
+------------------------------------------------------------------------------*/
+
+use "derived/followup_clean.dta" if ~is_preview, clear
+
+file write fout _n
+file write fout "Followup,Started (non-preview),`=_N'" _n
+local n_started = _N
+
+* Merge with main final sample
+merge m:1 prolific_pid using `main_final', keep(1 3)
+keep if _merge == 3
+drop _merge
+local n_linked = _N
+file write fout "Followup,Linked to main final,`=_N'" _n
+
+keep if failed_attn == 0
+local n_attn = _N
+file write fout "Followup,Passed attention check,`=_N'" _n
+
+keep if ~missing(got_flu_vacc)
+local n_outcome = _N
+file write fout "Followup,Has non-missing outcome,`=_N'" _n
+
+keep if first_attempt == 1
+local n_first = _N
+file write fout "Followup,First attempt only (final followup sample),`=_N'" _n
+
+di ""
+di "=== FOLLOWUP SUMMARY ==="
+di "Started (non-preview): `n_started'"
+di "Linked to main: `n_linked'"
+di "Passed attention: `n_attn'"
+di "Non-missing outcome: `n_outcome'"
+di "First attempt (final): `n_first'"
 
 file close fout
 
+di ""
+di "=== SAMPLE SIZE COUNTS COMPLETE ==="
+di "Saved: output/tables/counts.csv"
 
+capture log close
