@@ -1,7 +1,7 @@
 /*==============================================================================
     Treatment Effects Regressions
 
-    Input:  data/merged_all.dta
+    Input:  derived/merged_all.dta
     Output: output/tables/treatment_effects.tex
 
     Estimates treatment effects of information source on:
@@ -9,7 +9,9 @@
     - delta: Posterior difference (vacc - novacc)
     - main_maybe: Binary vaccination intention
     - link_click: Any link clicked
-    - got_flu_vacc: Got flu vaccine (followup)
+    - vacc_post: Got flu vaccine or already had it (followup)
+
+    Requires: code/ado/regression_table.ado
 
     Created by Dan + Claude Code
 ==============================================================================*/
@@ -21,9 +23,8 @@ do "code/_config.do"
 /*------------------------------------------------------------------------------
     1. Define controls
 ------------------------------------------------------------------------------*/
+
 do "code/_set_controls.do"
-
-
 
 /*------------------------------------------------------------------------------
     2. Load data and prepare variables
@@ -43,141 +44,20 @@ foreach var in age gender education income race ethnicity {
     replace `var' = . if `var' == -99
 }
 
-* Treatment indicators (control is omitted category)
-* arm_industry, arm_academic, arm_personal already exist
+* Create vaccination outcome (got vaccine or already had it)
+gen vacc_post = got_flu_vacc == 1 | flu_why_already == 1 if ~missing(got_flu_vacc)
+
+* Label treatment indicators
+label var arm_industry "Industry"
+label var arm_academic "Academic"
+label var arm_personal "Personal"
 
 /*------------------------------------------------------------------------------
-    3. Run regressions and store results
-------------------------------------------------------------------------------*/
-gen vacc_post = got_flu_vacc ==1 | flu_why_already == 1 if ~missing(got_flu_vacc)
-
-local outcomes "post_trial delta main_maybe link_click vacc_post"
-local n_outcomes : word count `outcomes'
-
-* Initialize matrices for results
-matrix b_treat = J(3, `n_outcomes', .)
-matrix se_treat = J(3, `n_outcomes', .)
-matrix N_obs = J(1, `n_outcomes', .)
-matrix R2 = J(1, `n_outcomes', .)
-
-local col = 1
-foreach outcome of local outcomes {
-    di ""
-    di "=== Regression: `outcome' ==="
-
-    * Run regression
-    reg `outcome' arm_industry arm_academic arm_personal $controls, robust
-
-    * Store sample size and R-squared
-    matrix N_obs[1, `col'] = e(N)
-    matrix R2[1, `col'] = e(r2)
-
-    * Store coefficients and standard errors for treatment arms
-    matrix b_treat[1, `col'] = _b[arm_industry]
-    matrix b_treat[2, `col'] = _b[arm_academic]
-    matrix b_treat[3, `col'] = _b[arm_personal]
-
-    matrix se_treat[1, `col'] = _se[arm_industry]
-    matrix se_treat[2, `col'] = _se[arm_academic]
-    matrix se_treat[3, `col'] = _se[arm_personal]
-
-    local ++col
-}
-
-/*------------------------------------------------------------------------------
-    4. Calculate control group means
+    3. Generate treatment effects table
 ------------------------------------------------------------------------------*/
 
-matrix ctrl_mean = J(1, `n_outcomes', .)
-local col = 1
-foreach outcome of local outcomes {
-    qui sum `outcome' if arm_control == 1
-    matrix ctrl_mean[1, `col'] = r(mean)
-    local ++col
-}
-
-/*------------------------------------------------------------------------------
-    5. Output results to tex file
-------------------------------------------------------------------------------*/
-
-capture file close fout
-file open fout using "output/tables/treatment_effects.tex", write replace
-
-* Industry arm coefficient
-file write fout "Industry       "
-forvalues col = 1/`n_outcomes' {
-    local b = b_treat[1, `col']
-    file write fout " & " %9.3f (`b')
-}
-file write fout " \\" _n
-
-* Industry SE
-file write fout "               "
-forvalues col = 1/`n_outcomes' {
-    local se = se_treat[1, `col']
-    file write fout " & (" %7.3f (`se') ")"
-}
-file write fout " \\" _n
-
-* Academic arm coefficient
-file write fout "Academic       "
-forvalues col = 1/`n_outcomes' {
-    local b = b_treat[2, `col']
-    file write fout " & " %9.3f (`b')
-}
-file write fout " \\" _n
-
-* Academic SE
-file write fout "               "
-forvalues col = 1/`n_outcomes' {
-    local se = se_treat[2, `col']
-    file write fout " & (" %7.3f (`se') ")"
-}
-file write fout " \\" _n
-
-* Personal arm coefficient
-file write fout "Personal       "
-forvalues col = 1/`n_outcomes' {
-    local b = b_treat[3, `col']
-    file write fout " & " %9.3f (`b')
-}
-file write fout " \\" _n
-
-* Personal SE
-file write fout "               "
-forvalues col = 1/`n_outcomes' {
-    local se = se_treat[3, `col']
-    file write fout " & (" %7.3f (`se') ")"
-}
-file write fout " \\" _n
-
-* Control mean
-file write fout "Control mean   "
-forvalues col = 1/`n_outcomes' {
-    local mean = ctrl_mean[1, `col']
-    file write fout " & " %9.3f (`mean')
-}
-file write fout " \\" _n
-
-* N
-file write fout "N              "
-forvalues col = 1/`n_outcomes' {
-    local n = N_obs[1, `col']
-    file write fout " & " %9.0fc (`n')
-}
-file write fout " \\" _n
-
-* R-squared
-file write fout "R-squared      "
-forvalues col = 1/`n_outcomes' {
-    local r2 = R2[1, `col']
-    file write fout " & " %9.3f (`r2')
-}
-file write fout _n
-
-file close fout
-
-di ""
-di "=== Table saved to output/tables/treatment_effects.tex ==="
+regression_table post_trial delta main_maybe link_click vacc_post, ///
+    keyvars(arm_industry arm_academic arm_personal) ///
+    controls($controls) saving(output/tables/treatment_effects.tex)
 
 capture log close

@@ -2,11 +2,12 @@
     Balance Table for Main Survey Sample
 
     Input:  derived/merged_main_pre.dta
-    Output: output/tables/balance_table.csv
-            output/tables/balance_table.tex (table body only, no headers/metadata)
+    Output: output/tables/balance_table.tex (table body only, no headers/metadata)
 
     Creates balance table with treatment arm means and joint equality tests.
     Each row is a variable, each column is a treatment arm + p-value.
+
+    Requires: code/ado/balance_table.ado
 
     Created by Dan + Claude Code
 ==============================================================================*/
@@ -88,186 +89,13 @@ gen college = (education == 4 | education == 5) if ~missing(education) & educati
 label var college "College degree"
 
 /*------------------------------------------------------------------------------
-    3. Define variable list for balance table
+    3. Generate balance table
 ------------------------------------------------------------------------------*/
 
-local balance_vars ///
-    prior_vacc_likely ///
-    pre_no_intent ///
-    pre_had_flu ///
-    pre_had_covid ///
-    severe_flu_reaction ///
-    severe_covid_reaction ///
-    has_condition ///
-    age_18_34 ///
-    age_35_49 ///
-    race_white ///
-    hispanic ///
-    income_lt50k ///
-    trust_govt_high ///
-    follow_doc_high ///
-    college
-
-/*------------------------------------------------------------------------------
-    4. Calculate sample sizes by arm
-------------------------------------------------------------------------------*/
-
-* Get sample sizes for each arm (using a variable with no missings for full sample)
-count if arm_n == 0
-local N0 = r(N)
-count if arm_n == 1
-local N1 = r(N)
-count if arm_n == 2
-local N2 = r(N)
-count if arm_n == 3
-local N3 = r(N)
-local N_total = `N0' + `N1' + `N2' + `N3'
-
-di "Sample sizes: Control=`N0' Industry=`N1' Academic=`N2' Personal=`N3' Total=`N_total'"
-
-/*------------------------------------------------------------------------------
-    5. Program to calculate balance stats for a variable
-------------------------------------------------------------------------------*/
-
-capture program drop calc_balance_stats
-program define calc_balance_stats, rclass
-    syntax varname
-
-    * Get means by arm
-    quietly {
-        sum `varlist' if arm_n == 0
-        local mean0 = r(mean)
-
-        sum `varlist' if arm_n == 1
-        local mean1 = r(mean)
-
-        sum `varlist' if arm_n == 2
-        local mean2 = r(mean)
-
-        sum `varlist' if arm_n == 3
-        local mean3 = r(mean)
-    }
-
-    * Test joint equality (F-test from regression with robust SEs)
-    quietly regress `varlist' i.arm_n, vce(robust)
-    quietly testparm i.arm_n
-    local pval = r(p)
-
-    * Return results
-    return scalar mean0 = `mean0'
-    return scalar mean1 = `mean1'
-    return scalar mean2 = `mean2'
-    return scalar mean3 = `mean3'
-    return scalar pval = `pval'
-end
-
-/*------------------------------------------------------------------------------
-    6. Calculate means by treatment arm and p-values
-------------------------------------------------------------------------------*/
-
-* Open output files
-capture file close csvout
-capture file close texout
-file open csvout using "output/tables/balance_table.csv", write replace
-file open texout using "output/tables/balance_table.tex", write replace
-
-* Write CSV header
-file write csvout "Variable,Control,Industry,Academic,Personal,P-value" _n
-
-foreach var of local balance_vars {
-    * Get variable label for display
-    local varlabel: variable label `var'
-    if "`varlabel'" == "" local varlabel "`var'"
-
-    * Calculate stats
-    calc_balance_stats `var'
-
-    * Format means (3 decimal places)
-    local mean0_fmt: di %6.3f r(mean0)
-    local mean1_fmt: di %6.3f r(mean1)
-    local mean2_fmt: di %6.3f r(mean2)
-    local mean3_fmt: di %6.3f r(mean3)
-    local pval_fmt: di %6.3f r(pval)
-
-    * Write to CSV
-    file write csvout "`varlabel',`mean0_fmt',`mean1_fmt',`mean2_fmt',`mean3_fmt',`pval_fmt'" _n
-
-    * Write to LaTeX
-    file write texout "`varlabel' & `mean0_fmt' & `mean1_fmt' & `mean2_fmt' & `mean3_fmt' & `pval_fmt' \\" _n
-
-    di "`varlabel': Control=`mean0_fmt' Industry=`mean1_fmt' Academic=`mean2_fmt' Personal=`mean3_fmt' p=`pval_fmt'"
-}
-
-/*------------------------------------------------------------------------------
-    7. Joint F-test for all variables (SUR approach)
-------------------------------------------------------------------------------*/
-
-di ""
-di "=== JOINT BALANCE TEST ==="
-
-* Use seemingly unrelated regression for joint test
-quietly {
-    preserve
-
-    * Run suest for joint test across all variables
-    local nvars: word count `balance_vars'
-    local i = 1
-    local est_names ""
-    foreach var of local balance_vars {
-        quietly regress `var' i.arm_n
-        estimates store est`i'
-        local est_names "`est_names' est`i'"
-        local ++i
-    }
-
-    * Joint test using suest
-    suest `est_names', vce(robust)
-
-    * Test all arm coefficients jointly
-    local test_terms ""
-    forvalues i = 1/`nvars' {
-        local test_terms "`test_terms' [est`i'_mean]1.arm_n [est`i'_mean]2.arm_n [est`i'_mean]3.arm_n"
-    }
-
-    test `test_terms'
-    local joint_chi2 = r(chi2)
-    local joint_df = r(df)
-    local joint_p = r(p)
-
-    restore
-}
-
-di "Joint chi-squared(`joint_df') = " %8.3f `joint_chi2'
-di "Joint p-value = " %6.3f `joint_p'
-
-/*------------------------------------------------------------------------------
-    8. Write joint test and sample sizes to output files
-------------------------------------------------------------------------------*/
-
-* Format joint test results
-local joint_chi2_fmt: di %8.3f `joint_chi2'
-local joint_p_fmt: di %6.3f `joint_p'
-
-* Append to CSV
-file write csvout _n
-file write csvout "Joint test,chi2(`joint_df')=`joint_chi2_fmt',,,`joint_p_fmt'" _n
-file write csvout _n
-file write csvout "N,`N0',`N1',`N2',`N3'," _n
-
-* Append to LaTeX
-file write texout "\addlinespace" _n
-local joint_chi2_tex: di %5.3f `joint_chi2'
-local joint_p_tex: di %5.3f `joint_p'
-file write texout "Joint test & \multicolumn{4}{c}{\$\chi^2(`joint_df')=`joint_chi2_tex'\$} & `joint_p_tex' \\" _n
-file write texout "\addlinespace" _n
-file write texout "N & `N0' & `N1' & `N2' & `N3' &" _n
-
-file close csvout
-file close texout
-
-di ""
-di "=== BALANCE TABLE COMPLETE ==="
-di "Saved: output/tables/balance_table.csv"
-di "Saved: output/tables/balance_table.tex"
+balance_table prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid ///
+    severe_flu_reaction severe_covid_reaction has_condition ///
+    age_18_34 age_35_49 race_white hispanic income_lt50k ///
+    trust_govt_high follow_doc_high college, ///
+    group(arm_n) saving(output/tables/balance_table.tex) jointtest
 
 capture log close
