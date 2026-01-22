@@ -1,41 +1,26 @@
-*! regression_table v1.0 - Generate regression results tables
+*! regression_table v1.1 - Generate regression results tables
 *! Created by Dan + Claude Code
 
 program define regression_table
     version 14.0
-    syntax varlist, keyvars(varlist) [controls(varlist) saving(string) sample(varname)]
+    syntax varlist [if] [in], keyvars(varlist) [controls(varlist) saving(string)]
 
     /*--------------------------------------------------------------------------
-        1. Validate inputs
+        1. Mark sample and validate inputs
     --------------------------------------------------------------------------*/
 
-    * Check sample variable if specified
-    if "`sample'" != "" {
-        capture confirm numeric variable `sample'
-        if _rc {
-            di as error "sample() variable must be numeric"
-            exit 109
-        }
+    marksample touse
+
+    * Check we have observations
+    quietly count if `touse'
+    if r(N) == 0 {
+        di as error "no observations"
+        exit 2000
     }
 
     * Set default saving filename
     if "`saving'" == "" {
         local saving "regression_table.tex"
-    }
-
-    * Build sample condition
-    if "`sample'" != "" {
-        local if_sample "if `sample' == 1"
-    }
-    else {
-        local if_sample ""
-    }
-
-    * Check we have observations
-    quietly count `if_sample'
-    if r(N) == 0 {
-        di as error "no observations after sample restriction"
-        exit 2000
     }
 
     /*--------------------------------------------------------------------------
@@ -64,7 +49,7 @@ program define regression_table
         di as text "=== Regression: `outcome' ==="
 
         * Run regression
-        quietly regress `outcome' `keyvars' `controls' `if_sample', robust
+        quietly regress `outcome' `keyvars' `controls' if `touse', robust
 
         * Store sample size
         matrix n_obs[1, `col'] = e(N)
@@ -97,12 +82,7 @@ program define regression_table
             }
         }
 
-        if "`if_sample'" != "" {
-            quietly sum `outcome' if `ctrl_condition' & `sample' == 1
-        }
-        else {
-            quietly sum `outcome' if `ctrl_condition'
-        }
+        quietly sum `outcome' if `ctrl_condition' & `touse'
         matrix ctrl_means[1, `col'] = r(mean)
 
         local ++col
@@ -116,63 +96,63 @@ program define regression_table
     }
 
     /*--------------------------------------------------------------------------
-        4. Print to console
+        4. Print to console (truncate long lines at 78 chars)
     --------------------------------------------------------------------------*/
 
-    * Calculate column widths
-    local varlabel_width = 28
-    local col_width = 12
+    local maxwidth = 78
 
-    * Header
     di as text ""
     di as text "Regression Table"
-    di as text "{hline 80}"
+    di as text "{hline `maxwidth'}"
 
-    * Column headers (outcome variable names)
-    local header_line = "{col `=`varlabel_width'+3'}|"
-    local col_pos = `varlabel_width' + 5
+    * Build header with outcome names
+    local header = ""
     foreach outcome of varlist `varlist' {
-        local outcome_short = abbrev("`outcome'", `=`col_width'-2')
-        local header_line = "`header_line'" + "{col `col_pos'}`outcome_short'"
-        local col_pos = `col_pos' + `col_width'
+        local outcome_short = abbrev("`outcome'", 10)
+        local header = "`header'" + string(`outcome_short', "%12s")
     }
-    di as text "`header_line'"
-    di as text "{hline `varlabel_width'}|{hline `=`col_pos' - `varlabel_width'}"
+    if strlen("`header'") > `maxwidth' {
+        local header = substr("`header'", 1, `maxwidth')
+    }
+    di as text "`header'"
+    di as text "{hline `maxwidth'}"
 
     * Coefficient and SE rows for each keyvar
     local row = 1
     foreach keyvar of varlist `keyvars' {
         local varlabel : variable label `keyvar'
         if "`varlabel'" == "" local varlabel "`keyvar'"
-        local varlabel = abbrev("`varlabel'", `varlabel_width')
+        local varlabel = abbrev("`varlabel'", 20)
 
         * Coefficient row
-        local coef_line = "`varlabel'{col `=`varlabel_width'+3'}|"
-        local col_pos = `varlabel_width' + 5
+        local coef_line = "`varlabel'"
         forvalues col = 1/`n_outcomes' {
             local b = coefs[`row', `col']
             if `b' == . {
-                local coef_line = "`coef_line'" + "{col `col_pos'}."
+                local coef_line = "`coef_line'" + "           ."
             }
             else {
-                local coef_line = "`coef_line'" + "{col `col_pos'}" + string(`b', "%`col_width'.3f")
+                local coef_line = "`coef_line'" + string(`b', "%12.3f")
             }
-            local col_pos = `col_pos' + `col_width'
+        }
+        if strlen("`coef_line'") > `maxwidth' {
+            local coef_line = substr("`coef_line'", 1, `maxwidth')
         }
         di as text "`coef_line'"
 
         * SE row
-        local se_line = "{col `=`varlabel_width'+3'}|"
-        local col_pos = `varlabel_width' + 5
+        local se_line = ""
         forvalues col = 1/`n_outcomes' {
             local se = ses[`row', `col']
             if `se' == . {
-                local se_line = "`se_line'" + "{col `col_pos'}."
+                local se_line = "`se_line'" + "           ."
             }
             else {
-                local se_line = "`se_line'" + "{col `col_pos'}(" + string(`se', "%9.3f") + ")"
+                local se_line = "`se_line'" + "    (" + string(`se', "%6.3f") + ")"
             }
-            local col_pos = `col_pos' + `col_width'
+        }
+        if strlen("`se_line'") > `maxwidth' {
+            local se_line = substr("`se_line'", 1, `maxwidth')
         }
         di as text "`se_line'"
 
@@ -180,26 +160,28 @@ program define regression_table
     }
 
     * Control mean row
-    di as text "{hline `varlabel_width'}|{hline `=`col_pos' - `varlabel_width'}"
-    local mean_line = "Control mean{col `=`varlabel_width'+3'}|"
-    local col_pos = `varlabel_width' + 5
+    di as text "{hline `maxwidth'}"
+    local mean_line = "Control mean"
     forvalues col = 1/`n_outcomes' {
         local m = ctrl_means[1, `col']
-        local mean_line = "`mean_line'" + "{col `col_pos'}" + string(`m', "%`col_width'.3f")
-        local col_pos = `col_pos' + `col_width'
+        local mean_line = "`mean_line'" + string(`m', "%12.3f")
+    }
+    if strlen("`mean_line'") > `maxwidth' {
+        local mean_line = substr("`mean_line'", 1, `maxwidth')
     }
     di as text "`mean_line'"
 
     * N row
-    local n_line = "N{col `=`varlabel_width'+3'}|"
-    local col_pos = `varlabel_width' + 5
+    local n_line = "N"
     forvalues col = 1/`n_outcomes' {
         local n = n_obs[1, `col']
-        local n_line = "`n_line'" + "{col `col_pos'}" + string(`n', "%`col_width'.0fc")
-        local col_pos = `col_pos' + `col_width'
+        local n_line = "`n_line'" + string(`n', "%12.0fc")
+    }
+    if strlen("`n_line'") > `maxwidth' {
+        local n_line = substr("`n_line'", 1, `maxwidth')
     }
     di as text "`n_line'"
-    di as text "{hline 80}"
+    di as text "{hline `maxwidth'}"
 
     /*--------------------------------------------------------------------------
         5. Write to .tex file

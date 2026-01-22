@@ -1,13 +1,15 @@
-*! balance_table v1.0 - Generate balance tables with group means and p-values
+*! balance_table v1.1 - Generate balance tables with group means and p-values
 *! Created by Dan + Claude Code
 
 program define balance_table
     version 14.0
-    syntax varlist, group(varname) [saving(string) jointtest]
+    syntax varlist [if] [in], group(varname) [saving(string) jointtest]
 
     /*--------------------------------------------------------------------------
-        1. Validate inputs
+        1. Mark sample and validate inputs
     --------------------------------------------------------------------------*/
+
+    marksample touse
 
     * Check group variable is numeric
     capture confirm numeric variable `group'
@@ -16,8 +18,18 @@ program define balance_table
         exit 109
     }
 
-    * Get group levels
-    quietly levelsof `group', local(group_levels)
+    * Mark sample must also have non-missing group
+    markout `touse' `group'
+
+    * Check we have observations
+    quietly count if `touse'
+    if r(N) == 0 {
+        di as error "no observations"
+        exit 2000
+    }
+
+    * Get group levels (only among touse observations)
+    quietly levelsof `group' if `touse', local(group_levels)
     local n_groups : word count `group_levels'
 
     * Warn if many groups
@@ -27,7 +39,7 @@ program define balance_table
 
     * Check for empty groups
     foreach g of local group_levels {
-        quietly count if `group' == `g'
+        quietly count if `group' == `g' & `touse'
         if r(N) == 0 {
             di as error "no observations for `group' == `g'"
             exit 2000
@@ -36,7 +48,7 @@ program define balance_table
 
     * Check all variables exist and have observations
     foreach var of varlist `varlist' {
-        quietly count if !missing(`var')
+        quietly count if !missing(`var') & `touse'
         if r(N) == 0 {
             di as error "variable `var' has no non-missing observations"
             exit 2000
@@ -52,11 +64,9 @@ program define balance_table
         2. Get sample sizes by group
     --------------------------------------------------------------------------*/
 
-    local group_ns ""
     foreach g of local group_levels {
-        quietly count if `group' == `g'
+        quietly count if `group' == `g' & `touse'
         local n_`g' = r(N)
-        local group_ns "`group_ns' `r(N)'"
     }
 
     /*--------------------------------------------------------------------------
@@ -74,13 +84,13 @@ program define balance_table
         * Get means by group
         local col = 1
         foreach g of local group_levels {
-            quietly sum `var' if `group' == `g'
+            quietly sum `var' if `group' == `g' & `touse'
             matrix means[`row', `col'] = r(mean)
             local ++col
         }
 
         * F-test for joint equality
-        quietly regress `var' i.`group', vce(robust)
+        quietly regress `var' i.`group' if `touse', vce(robust)
         quietly testparm i.`group'
         matrix pvals[`row', 1] = r(p)
 
@@ -100,7 +110,7 @@ program define balance_table
         local est_names ""
         local i = 1
         foreach var of varlist `varlist' {
-            quietly regress `var' i.`group'
+            quietly regress `var' i.`group' if `touse'
             estimates store _bt_est`i'
             local est_names "`est_names' _bt_est`i'"
             local ++i
@@ -131,72 +141,71 @@ program define balance_table
     }
 
     /*--------------------------------------------------------------------------
-        5. Print to console
+        5. Print to console (truncate long lines at 78 chars)
     --------------------------------------------------------------------------*/
 
-    * Calculate column widths
-    local varlabel_width = 28
-    local col_width = 10
+    local maxwidth = 78
 
-    * Header
     di ""
     di as text "Balance Table: group(`group')"
-    di as text "{hline 80}"
+    di as text "{hline `maxwidth'}"
 
-    * Column headers
-    local header_line = "Variable"
-    local header_line = abbrev("`header_line'", `varlabel_width')
-    local header_line = "`header_line'" + "{col `=`varlabel_width'+3'}|"
-    local col_pos = `varlabel_width' + 5
+    * Build and display header
+    local header = "Variable"
     foreach g of local group_levels {
-        local header_line = "`header_line'" + "{col `col_pos'}" + string(`g', "%`col_width'.0f")
-        local col_pos = `col_pos' + `col_width'
+        local header = "`header'" + "  " + string(`g', "%7.0f")
     }
-    local header_line = "`header_line'" + "{col `col_pos'}P-value"
-    di as text "`header_line'"
-    di as text "{hline `varlabel_width'}|{hline `=`col_pos' - `varlabel_width' + 5'}"
+    local header = "`header'" + "  P-value"
+    if strlen("`header'") > `maxwidth' {
+        local header = substr("`header'", 1, `maxwidth')
+    }
+    di as text "`header'"
+    di as text "{hline `maxwidth'}"
 
     * Data rows
     local row = 1
     foreach var of varlist `varlist' {
         local varlabel : variable label `var'
         if "`varlabel'" == "" local varlabel "`var'"
-        local varlabel = abbrev("`varlabel'", `varlabel_width')
+        local varlabel = abbrev("`varlabel'", 24)
 
-        local data_line = "`varlabel'"
-        local data_line = "`data_line'" + "{col `=`varlabel_width'+3'}|"
-        local col_pos = `varlabel_width' + 5
-
+        local line = "`varlabel'"
         forvalues col = 1/`n_groups' {
             local val = means[`row', `col']
-            local data_line = "`data_line'" + "{col `col_pos'}" + string(`val', "%`col_width'.3f")
-            local col_pos = `col_pos' + `col_width'
+            local line = "`line'" + string(`val', "%9.3f")
         }
-
         local pval = pvals[`row', 1]
-        local data_line = "`data_line'" + "{col `col_pos'}" + string(`pval', "%8.3f")
+        local line = "`line'" + string(`pval', "%9.3f")
 
-        di as text "`data_line'"
+        if strlen("`line'") > `maxwidth' {
+            local line = substr("`line'", 1, `maxwidth')
+        }
+        di as text "`line'"
         local ++row
     }
 
     * Joint test row (if computed)
     if `joint_p' != . {
-        di as text "{hline `varlabel_width'}|{hline `=`col_pos' - `varlabel_width' + 5'}"
+        di as text "{hline `maxwidth'}"
         local joint_chi2_fmt = string(`joint_chi2', "%8.3f")
-        di as text "Joint test{col `=`varlabel_width'+3'}|{col `=`varlabel_width'+5'}chi2(`joint_df') = `joint_chi2_fmt'{col `col_pos'}" string(`joint_p', "%8.3f")
+        local jline = "Joint test: chi2(`joint_df') = `joint_chi2_fmt', p = " + string(`joint_p', "%5.3f")
+        if strlen("`jline'") > `maxwidth' {
+            local jline = substr("`jline'", 1, `maxwidth')
+        }
+        di as text "`jline'"
     }
 
     * Sample size row
-    di as text "{hline `varlabel_width'}|{hline `=`col_pos' - `varlabel_width' + 5'}"
-    local n_line = "N{col `=`varlabel_width'+3'}|"
-    local col_pos = `varlabel_width' + 5
+    di as text "{hline `maxwidth'}"
+    local nline = "N"
     foreach g of local group_levels {
-        local n_line = "`n_line'" + "{col `col_pos'}" + string(`n_`g'', "%`col_width'.0fc")
-        local col_pos = `col_pos' + `col_width'
+        local nline = "`nline'" + string(`n_`g'', "%9.0fc")
     }
-    di as text "`n_line'"
-    di as text "{hline 80}"
+    if strlen("`nline'") > `maxwidth' {
+        local nline = substr("`nline'", 1, `maxwidth')
+    }
+    di as text "`nline'"
+    di as text "{hline `maxwidth'}"
 
     /*--------------------------------------------------------------------------
         6. Write to .tex file
@@ -234,15 +243,12 @@ program define balance_table
 
     * Joint test row (if computed)
     if `joint_p' != . {
-        file write _bt_fout "\addlinespace" _n
         local joint_chi2_fmt : di %5.3f `joint_chi2'
         local joint_p_fmt : di %5.3f `joint_p'
-        local n_groups_minus1 = `n_groups' - 1
         file write _bt_fout "Joint test & \multicolumn{`n_groups'}{c}{\$\chi^2(`joint_df')=`joint_chi2_fmt'\$} & `joint_p_fmt' \\" _n
     }
 
     * Sample size row (no trailing \\)
-    file write _bt_fout "\addlinespace" _n
     local n_line = "N"
     foreach g of local group_levels {
         local n_line = "`n_line' & `n_`g''"
