@@ -47,8 +47,9 @@ The input part should therefore not contain any environment information (no \beg
 it should not include column headers (which might contain specification numbers or variable
 names). Those get created once in a latex document, not every time the code generates table.tex.
 
-Do not include vertical space in the tables. In the final line of the table, do not include the
-delimiter \\ because tex wants to see it in the main doc, not the input file.
+Do not include vertical space in the tables - no \addlinespace, \vspace, or blank lines. In the
+final line of the table, do not include the delimiter \\ because tex wants to see it in the main
+doc, not the input file.
 
 ## Build System
 The project uses Make for build automation. Works on both Windows (Git Bash) and macOS:

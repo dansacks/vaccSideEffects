@@ -2,6 +2,7 @@
     Test Cases for regression_table command
 
     Run interactively to verify regression_table.ado works correctly.
+    Test cases 1-2 use deterministic data with known expected output.
 
     Created by Dan + Claude Code
 ==============================================================================*/
@@ -11,65 +12,71 @@ global scriptname "test_regression_table"
 do "code/_config.do"
 
 /*------------------------------------------------------------------------------
-    Test Case 1: Basic regression table
+    Test Case 1: Deterministic regression table
 ------------------------------------------------------------------------------*/
 
 di ""
 di "=============================================="
-di "=== TEST CASE 1: Basic regression table"
+di "=== TEST CASE 1: Deterministic regression"
 di "=============================================="
 
 clear
-set seed 12345
-set obs 500
+input arm_a arm_b y1 y2 x
+0 0 10 5 1
+0 0 10 5 1
+1 0 12 6 1
+1 0 12 6 1
+0 1 11 4 1
+0 1 11 4 1
+end
+label var arm_a "Treatment A"
+label var arm_b "Treatment B"
 
-* Create treatment indicators (mutually exclusive)
-gen u = runiform()
-gen arm_ind = u > 0.75
-gen arm_acad = u > 0.5 & u <= 0.75
-gen arm_pers = u > 0.25 & u <= 0.5
-gen control = u <= 0.25
-
-* Control variable
-gen x = rnormal()
-
-* Outcomes with known effects
-gen y1 = 10 + 2*arm_ind + 1*arm_acad + 0.5*arm_pers + x + rnormal()
-gen y2 = 5 + 1*arm_ind - 0.5*arm_acad + 0*arm_pers + 0.5*x + rnormal()
-
-label var arm_ind "Industry"
-label var arm_acad "Academic"
-label var arm_pers "Personal"
-label var y1 "Outcome 1"
-label var y2 "Outcome 2"
-
-regression_table y1 y2, keyvars(arm_ind arm_acad arm_pers) controls(x) ///
+regression_table y1 y2, keyvars(arm_a arm_b) controls(x) ///
     saving(output/tables/test_regression_basic.tex)
 
+* Verify output
 di ""
-di "Expected coefficients (approximately):"
-di "  y1: Industry~2, Academic~1, Personal~0.5, Control mean~10"
-di "  y2: Industry~1, Academic~-0.5, Personal~0, Control mean~5"
+di "=== Verifying output ==="
+type output/tables/test_regression_basic.tex
+
 di ""
+di "Expected coefficients (exact due to perfect fit):"
+di "  y1: arm_a = 2.000, arm_b = 1.000, control mean = 10.000"
+di "  y2: arm_a = 1.000, arm_b = -1.000, control mean = 5.000"
+di "  N = 6 for both"
 
 /*------------------------------------------------------------------------------
-    Test Case 2: Regression with sample restriction
+    Test Case 2: Regression with if condition
 ------------------------------------------------------------------------------*/
 
 di ""
 di "=============================================="
-di "=== TEST CASE 2: With sample restriction"
+di "=== TEST CASE 2: With if condition"
 di "=============================================="
 
-* Create sample indicator (keep ~70%)
-gen followup = runiform() > 0.3
+clear
+input arm_a y1 insample
+0 10 1
+0 10 1
+1 12 1
+1 12 0
+end
+label var arm_a "Treatment A"
 
-regression_table y1 y2, keyvars(arm_ind arm_acad arm_pers) controls(x) ///
-    sample(followup) saving(output/tables/test_regression_sample.tex)
+di "Full sample: N=4, arm_a coef = 2.0"
+di "Restricted (insample==1): N=3, arm_a coef = 2.0"
+
+regression_table y1 if insample==1, keyvars(arm_a) ///
+    saving(output/tables/test_regression_if.tex)
+
+* Verify output
+di ""
+di "=== Verifying output ==="
+type output/tables/test_regression_if.tex
 
 di ""
-di "Expected: N should be ~350 (70% of 500)"
-di ""
+di "Expected: N = 3, arm_a = 2.000, control mean = 10.000"
 
 /*------------------------------------------------------------------------------
     Test Case 3: Single outcome
@@ -80,12 +87,27 @@ di "=============================================="
 di "=== TEST CASE 3: Single outcome"
 di "=============================================="
 
-regression_table y1, keyvars(arm_ind arm_acad arm_pers) controls(x) ///
-    saving(output/tables/test_regression_single.tex)
+clear
+input arm_a arm_b y1
+0 0 5
+0 0 5
+1 0 8
+1 0 8
+0 1 6
+0 1 6
+end
+label var arm_a "Treatment A"
+label var arm_b "Treatment B"
+
+regression_table y1, keyvars(arm_a arm_b) saving(output/tables/test_regression_single.tex)
+
+* Verify output
+di ""
+di "=== Verifying output ==="
+type output/tables/test_regression_single.tex
 
 di ""
-di "Expected: Single column with y1 results"
-di ""
+di "Expected: arm_a = 3.000, arm_b = 1.000, control mean = 5.000, N = 6"
 
 /*------------------------------------------------------------------------------
     Test Case 4: Replicate existing treatment_effects.do output
@@ -128,7 +150,6 @@ di "Compare output/tables/test_replicate_treatment.tex with output/tables/treatm
 di "Values should match within floating point precision"
 di ""
 di "Note: treatment_effects.tex includes R-squared row which our command omits"
-di ""
 
 /*------------------------------------------------------------------------------
     Summary
@@ -140,7 +161,7 @@ di "=== TEST SUMMARY ==="
 di "=============================================="
 di "Test files created:"
 di "  - output/tables/test_regression_basic.tex"
-di "  - output/tables/test_regression_sample.tex"
+di "  - output/tables/test_regression_if.tex"
 di "  - output/tables/test_regression_single.tex"
 di "  - output/tables/test_replicate_treatment.tex"
 di ""

@@ -6,17 +6,19 @@ Create two reusable Stata ado-files for generating standardized LaTeX tables:
 1. `balance_table` - Balance/summary tables showing means by group
 2. `regression_table` - Regression results tables
 
-Both will output .tex fragments (no `\begin{table}`, no headers) per CLAUDE.md conventions.
+Both will output .tex fragments (no `\begin{table}`, no headers, no vertical spacing) per
+CLAUDE.md conventions.
 
 ## 1. balance_table Command
 
 ### Syntax
 ```stata
-balance_table VARLIST, group(varname) [saving(filename) jointtest]
+balance_table VARLIST [if], group(varname) [saving(filename) jointtest]
 ```
 
 ### Parameters
 - `VARLIST` - Variables to include as rows (balance variables)
+- `if` - Standard Stata if condition for sample restriction
 - `group(varname)` - Grouping variable defining columns (e.g., treatment arm)
 - `saving(filename)` - Output .tex file path (optional, default: balance_table.tex)
 - `jointtest` - Include joint significance test row (optional)
@@ -25,18 +27,18 @@ balance_table VARLIST, group(varname) [saving(filename) jointtest]
 ```
 varlabel & mean_g0 & mean_g1 & ... & mean_gK & pval \\
 ...
-\addlinespace
 Joint test & \multicolumn{K}{c}{$\chi^2(df)=X.XX$} & p \\
-\addlinespace
 N & n0 & n1 & ... & nK &
 ```
+
+Note: No `\addlinespace` or other vertical spacing. Final row has no `\\`.
 
 ### Implementation Notes
 - Auto-detect number of groups from `group()` variable
 - Use variable labels for row names (fall back to varname if no label)
 - F-test p-values from `regress var i.group, vce(robust)` then `testparm`
 - Joint test via `suest` across all variables
-- Final row has no `\\` per CLAUDE.md
+- Use `marksample touse` for standard Stata if/in handling
 
 ### Key Design Decisions
 1. Group variable can have any number of levels (not hardcoded to 4 arms)
@@ -50,15 +52,15 @@ N & n0 & n1 & ... & nK &
 
 ### Syntax
 ```stata
-regression_table YVARS, keyvars(varlist) [controls(varlist) saving(filename) sample(varname)]
+regression_table YVARS [if], keyvars(varlist) [controls(varlist) saving(filename)]
 ```
 
 ### Parameters
 - `YVARS` - Outcome variables (each becomes a column)
+- `if` - Standard Stata if condition for sample restriction
 - `keyvars(varlist)` - Variables whose coefficients to report (e.g., treatment indicators)
 - `controls(varlist)` - Control variables (coefficients not reported)
 - `saving(filename)` - Output .tex file path (optional, default: regression_table.tex)
-- `sample(varname)` - Restrict sample to observations where varname==1
 
 ### Output Format
 ```
@@ -71,18 +73,20 @@ Control mean   & mean_y1 & mean_y2 & ... \\
 N              & n_y1    & n_y2    & ...
 ```
 
+Note: No `\addlinespace` or other vertical spacing. Final row has no `\\`.
+
 ### Implementation Notes
-- Each column runs: `reg Y keyvars controls, robust`
+- Each column runs: `reg Y keyvars controls if touse, robust`
 - Control mean = mean of Y where all keyvars == 0 (omitted category)
 - Assumes first level of factor/indicator is omitted (control group)
 - Store results in matrices, write row-by-row
-- Final row has no `\\` per CLAUDE.md
+- Use `marksample touse` for standard Stata if/in handling
 
 ### Key Design Decisions
 1. keyvars must be simple variables (not factor notation) - user creates arm_industry etc.
 2. Control mean assumes omitted category is the reference group
 3. All regressions use robust standard errors
-4. No R-squared row by default (can add option later)
+4. No R-squared row
 
 ---
 
@@ -106,110 +110,111 @@ adopath + "$projdir/code/ado"
 
 ## 4. Test Cases
 
-### Test Case 1: balance_table - Basic (2 groups)
+### Test Case 1: balance_table - Deterministic 2 groups
 ```stata
-* Create test data
 clear
-set seed 12345
-set obs 200
-gen group = runiform() > 0.5
-gen x1 = rnormal(0, 1) + 0.1*group
-gen x2 = rnormal(0.5, 1)
-label var x1 "Outcome 1"
-label var x2 "Outcome 2"
+input group x1 x2
+0 1.0 2.0
+0 1.2 2.1
+0 0.8 1.9
+1 1.5 2.0
+1 1.7 2.2
+1 1.3 1.8
+end
+label var x1 "Variable One"
+label var x2 "Variable Two"
 
-* Run balance table
-balance_table x1 x2, group(group) saving(test_balance_2group.tex)
+balance_table x1 x2, group(group) saving(output/tables/test_balance_2group.tex)
 
-* Expected: 2 columns (group 0, group 1) + p-value column
-* x1 should show ~0.1 difference, x2 should show ~0 difference
+* Expected output (test_balance_2group.tex):
+* Variable One & 1.000 & 1.500 & 0.014 \\
+* Variable Two & 2.000 & 2.000 & 1.000 \\
+* N & 3 & 3 &
 ```
 
 ### Test Case 2: balance_table - 4 groups with joint test
 ```stata
-* Create test data mimicking treatment arms
 clear
-set seed 12345
-set obs 400
-gen arm = floor(runiform() * 4)
-gen x1 = rnormal(0, 1)
-gen x2 = rnormal(0, 1) + 0.3*(arm==1)  // Industry effect
-gen x3 = rnormal(0, 1)
-label var x1 "Balanced var"
-label var x2 "Imbalanced var"
-label var x3 "Another balanced var"
+input arm x1 x2 x3
+0 1.0 1.0 1.0
+0 1.1 1.1 1.1
+1 1.0 2.0 1.0
+1 1.1 2.1 1.1
+2 1.0 1.0 1.0
+2 1.1 1.1 1.1
+3 1.0 1.0 1.0
+3 1.1 1.1 1.1
+end
+label var x1 "Balanced"
+label var x2 "Imbalanced"
+label var x3 "Also Balanced"
 
-balance_table x1 x2 x3, group(arm) saving(test_balance_4group.tex) jointtest
+balance_table x1 x2 x3, group(arm) saving(output/tables/test_balance_4group.tex) jointtest
 
-* Expected: x2 should have low p-value, x1 and x3 should have high p-values
-* Joint test should detect imbalance
+* Expected: x2 should have low p-value (imbalanced in arm 1)
+* x1 and x3 should have p-value = 1.000 (identical across arms)
 ```
 
-### Test Case 3: regression_table - Basic
+### Test Case 3: regression_table - Deterministic
 ```stata
-* Create test data
 clear
-set seed 12345
-set obs 500
-gen arm_ind = runiform() > 0.75
-gen arm_acad = runiform() > 0.75 & arm_ind==0
-gen arm_pers = runiform() > 0.75 & arm_ind==0 & arm_acad==0
-gen control = arm_ind==0 & arm_acad==0 & arm_pers==0
-gen x = rnormal()
-gen y1 = 10 + 2*arm_ind + 1*arm_acad + 0.5*arm_pers + x + rnormal()
-gen y2 = 5 + 1*arm_ind - 0.5*arm_acad + 0*arm_pers + 0.5*x + rnormal()
-label var arm_ind "Industry"
-label var arm_acad "Academic"
-label var arm_pers "Personal"
+input arm_a arm_b y1 y2 x
+0 0 10 5 1
+0 0 10 5 1
+1 0 12 6 1
+1 0 12 6 1
+0 1 11 4 1
+0 1 11 4 1
+end
+label var arm_a "Treatment A"
+label var arm_b "Treatment B"
 
-regression_table y1 y2, keyvars(arm_ind arm_acad arm_pers) controls(x) ///
-    saving(test_regression.tex)
+regression_table y1 y2, keyvars(arm_a arm_b) controls(x) ///
+    saving(output/tables/test_regression_basic.tex)
 
-* Expected:
-* - y1 column: Industry~2, Academic~1, Personal~0.5, Control mean~10
-* - y2 column: Industry~1, Academic~-0.5, Personal~0, Control mean~5
+* Expected coefficients:
+* y1: arm_a = 2.000, arm_b = 1.000, control mean = 10.000
+* y2: arm_a = 1.000, arm_b = -1.000, control mean = 5.000
 ```
 
-### Test Case 4: regression_table - With sample restriction
+### Test Case 4: regression_table - With if condition
 ```stata
-* Using test data from Test Case 3
-gen followup = runiform() > 0.3
+clear
+input arm_a y1 insample
+0 10 1
+0 10 1
+1 12 1
+1 12 0
+end
+label var arm_a "Treatment A"
 
-regression_table y1, keyvars(arm_ind arm_acad arm_pers) controls(x) ///
-    sample(followup) saving(test_regression_sample.tex)
+regression_table y1 if insample==1, keyvars(arm_a) saving(output/tables/test_regression_if.tex)
 
-* Expected: N should be ~70% of full sample
+* Expected: N = 3 (one observation excluded)
+* arm_a coefficient = 2.000
 ```
 
 ### Test Case 5: Replicate existing balance_table.do output
 ```stata
-* Load actual project data
 use "derived/merged_main_pre.dta", clear
+* ... (create indicator variables as in balance_table.do)
 
-* Create same indicator variables as balance_table.do
-* ... (variable creation code)
-
-* Run new command
 balance_table prior_vacc_likely pre_no_intent ... college, ///
-    group(arm_n) saving(test_replicate_balance.tex) jointtest
+    group(arm_n) saving(output/tables/test_replicate_balance.tex) jointtest
 
-* Compare output to existing output/tables/balance_table.tex
-* Should match within floating point precision
+* Compare with output/tables/balance_table.tex
 ```
 
 ### Test Case 6: Replicate existing treatment_effects.do output
 ```stata
-* Load actual project data
 use "derived/merged_all.dta", clear
 do "code/_set_controls.do"
 
-* Run new command
 regression_table post_trial delta main_maybe link_click vacc_post, ///
     keyvars(arm_industry arm_academic arm_personal) ///
-    controls($controls) saving(test_replicate_treatment.tex)
+    controls($controls) saving(output/tables/test_replicate_treatment.tex)
 
-* Compare output to existing output/tables/treatment_effects.tex
-* Should match within floating point precision
+* Compare with output/tables/treatment_effects.tex
 ```
 
 ---
@@ -232,44 +237,46 @@ regression_table post_trial delta main_maybe link_click vacc_post, ///
 2. **Star significance**: No - not included
 3. **CSV output**: No - .tex only
 4. **Column headers**: No - user defines headers in the main .tex document
+5. **Vertical spacing**: No - no `\addlinespace` or similar commands
+6. **Sample restriction**: Use standard Stata `if` syntax with `marksample touse`
 
 ## 7. Console Output
 
-Both commands print a formatted table to the console for immediate inspection. This mirrors the
-.tex output but uses plain text formatting:
+Both commands print a formatted table to the console for immediate inspection. Long lines are
+truncated rather than wrapped to maintain readability. The full output is always in the .tex file.
 
 **balance_table console output:**
 ```
 Balance Table: group(arm_n)
---------------------------------------------------------------------------------
-Variable                    | Control  Industry  Academic  Personal   P-value
-----------------------------|-------------------------------------------------------
-Prior: SE likely with vacc  |   0.551     0.541     0.533     0.529     0.794
-Do not intend to vaccinate  |   0.655     0.666     0.674     0.662     0.870
+------------------------------------------------------------------------------
+Variable                    | Grp 0    Grp 1    Grp 2    Grp 3   P-value
+----------------------------|---------------------------------------------
+Prior: SE likely with vacc  |  0.551   0.541   0.533   0.529     0.794
+Do not intend to vaccinate  |  0.655   0.666   0.674   0.662     0.870
 ...
-----------------------------|-------------------------------------------------------
-Joint test                  |            chi2(45) = 42.508              0.578
-N                           |     885       885       882       886
---------------------------------------------------------------------------------
+----------------------------|---------------------------------------------
+Joint test                  |         chi2(45) = 42.508           0.578
+N                           |    885     885     882     886
+------------------------------------------------------------------------------
 Saved: output/tables/balance_table.tex
 ```
 
 **regression_table console output:**
 ```
 Regression Table
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
                             |    y1        y2        y3
-----------------------------|-------------------------------------------
-Industry                    |   -7.971    -3.303    -0.000
-                            |   (0.853)   (1.022)   (0.012)
-Academic                    |   -4.392    -2.857     0.031
-                            |   (0.874)   (1.010)   (0.013)
-Personal                    |   -4.728     0.387     0.024
-                            |   (0.878)   (1.018)   (0.013)
-----------------------------|-------------------------------------------
-Control mean                |   20.193    15.410     0.069
-N                           |    3,516     3,516     3,516
---------------------------------------------------------------------------------
+----------------------------|---------------------------------------------
+Industry                    |  -7.971   -3.303   -0.000
+                            |  (0.853)  (1.022)  (0.012)
+Academic                    |  -4.392   -2.857    0.031
+                            |  (0.874)  (1.010)  (0.013)
+Personal                    |  -4.728    0.387    0.024
+                            |  (0.878)  (1.018)  (0.013)
+----------------------------|---------------------------------------------
+Control mean                |  20.193   15.410    0.069
+N                           |   3,516    3,516    3,516
+------------------------------------------------------------------------------
 Saved: output/tables/regression_table.tex
 ```
 
@@ -277,60 +284,29 @@ Saved: output/tables/regression_table.tex
 
 ### Missing Variables
 - If a variable in VARLIST or keyvars doesn't exist: **exit with error**
-  ```
-  variable xyz not found
-  r(111);
-  ```
 - Standard Stata behavior - fail fast so user knows immediately
 
 ### Empty Groups
 - If a group level has zero observations: **exit with error**
-  ```
-  no observations for group == 2
-  r(2000);
-  ```
 - Prevents misleading output with missing columns
 
 ### All-Missing Variable
 - If a balance variable is entirely missing: **exit with error**
-  ```
-  variable xyz has no non-missing observations
-  r(2000);
-  ```
 - User must fix data or remove variable from list
 
 ### Collinearity in Regression
 - If keyvars are collinear: **warn but continue**
-  ```
-  warning: arm_personal omitted due to collinearity
-  ```
 - Report coefficient as "." (missing) in output
-- This can happen legitimately (e.g., if sample restriction drops a group)
 
-### Sample Restriction Drops All Observations
-- If `sample()` restriction results in zero obs: **exit with error**
-  ```
-  no observations after sample restriction
-  r(2000);
-  ```
+### If Condition Drops All Observations
+- If `if` condition results in zero obs: **exit with error**
 
 ### Invalid Group Variable
 - If group variable is string: **exit with error**
-  ```
-  group() variable must be numeric
-  r(109);
-  ```
 - If group variable has more than 10 levels: **warn but continue**
-  ```
-  warning: group variable has 15 levels - table may be very wide
-  ```
 
 ### File Write Errors
 - If saving() path is invalid or not writable: **exit with error**
-  ```
-  cannot write to file: /invalid/path/table.tex
-  r(603);
-  ```
 
 ### General Approach
 - **Fail fast**: Check inputs at the start before any computation
