@@ -8,6 +8,7 @@
 ==============================================================================*/
 
 clear all
+discard
 global scriptname "test_balance_table"
 do "code/_config.do"
 

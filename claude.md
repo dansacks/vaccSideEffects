@@ -83,6 +83,16 @@ $(STATA) -e do $(CODE)/your_script.do
 
 Without `-e`, Stata will hang waiting for user input on errors, blocking the build.
 
+### Stata Executable Paths (workstation-specific)
+These paths vary by machine. Use the appropriate one for running Stata from the command line:
+```bash
+# macOS (Dan's laptop)
+/Applications/StataNow/StataSE.app/Contents/MacOS/stata-se
+
+# Windows (to be added when known)
+# C:/Program Files/Stata18/StataSE-64.exe
+```
+
 ## Code Conventions
 
 ### Stata Do-Files
