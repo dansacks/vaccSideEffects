@@ -105,8 +105,8 @@ program define regression_table
     di as text "Regression Table"
     di as text "{hline `maxwidth'}"
 
-    * Build header with outcome names
-    local header = ""
+    * Build header with outcome names (20-char label column + 12-char data columns)
+    local header = "                    "
     foreach outcome of varlist `varlist' {
         local outcome_short = abbrev("`outcome'", 10)
         local outcome_fmt : di %12s "`outcome_short'"
@@ -123,10 +123,10 @@ program define regression_table
     foreach keyvar of varlist `keyvars' {
         local varlabel : variable label `keyvar'
         if "`varlabel'" == "" local varlabel "`keyvar'"
-        local varlabel = abbrev("`varlabel'", 20)
+        local varlabel_fmt : di %-20s abbrev("`varlabel'", 20)
 
         * Coefficient row
-        local coef_line = "`varlabel'"
+        local coef_line = "`varlabel_fmt'"
         forvalues col = 1/`n_outcomes' {
             local b = coefs[`row', `col']
             if `b' == . {
@@ -142,8 +142,8 @@ program define regression_table
         }
         di as text "`coef_line'"
 
-        * SE row
-        local se_line = ""
+        * SE row (20-char padding to align with label column)
+        local se_line = "                    "
         forvalues col = 1/`n_outcomes' {
             local se = ses[`row', `col']
             if `se' == . {
@@ -164,7 +164,8 @@ program define regression_table
 
     * Control mean row
     di as text "{hline `maxwidth'}"
-    local mean_line = "Control mean"
+    local mean_label : di %-20s "Control mean"
+    local mean_line = "`mean_label'"
     forvalues col = 1/`n_outcomes' {
         local m = ctrl_means[1, `col']
         local m_fmt : di %12.3f `m'
@@ -176,7 +177,8 @@ program define regression_table
     di as text "`mean_line'"
 
     * N row
-    local n_line = "N"
+    local n_label : di %-20s "N"
+    local n_line = "`n_label'"
     forvalues col = 1/`n_outcomes' {
         local n = n_obs[1, `col']
         local n_fmt : di %12.0fc `n'
