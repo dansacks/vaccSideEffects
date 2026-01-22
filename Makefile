@@ -16,20 +16,18 @@
 #   make clean-all   - Remove all generated files
 #   make help        - Show available targets
 #
-# Run from Git Bash (Windows): cd /c/Users/sacks/Box/VaccSideEffects && make all
-# Run from Terminal (macOS): cd ~/Library/CloudStorage/Box-Box/VaccSideEffects && make all
+# Run from project directory: cd /path/to/VaccSideEffects && make all
 #===============================================================================
 
-# Configuration - OS detection
+# Configuration - OS detection and auto-detect project directory
 UNAME_S := $(shell uname -s)
+PROJDIR := $(CURDIR)
 ifeq ($(UNAME_S),Darwin)
     # macOS
     STATA := /Applications/StataNow/StataSE.app/Contents/MacOS/stata-se
-    PROJDIR := /Users/$(shell whoami)/Library/CloudStorage/Box-Box/VaccSideEffects
 else
     # Windows (Git Bash)
     STATA := "/c/Program Files/Stata17/StataMP-64.exe"
-    PROJDIR := C:/Users/sacks/Box/VaccSideEffects
 endif
 PYTHON := python3
 
