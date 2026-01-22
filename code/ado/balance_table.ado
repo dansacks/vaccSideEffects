@@ -9,7 +9,7 @@ program define balance_table
         1. Mark sample and validate inputs
     --------------------------------------------------------------------------*/
 
-    marksample touse
+    marksample touse, novarlist
 
     * Check group variable is numeric
     capture confirm numeric variable `group'
@@ -106,37 +106,63 @@ program define balance_table
     local joint_p = .
 
     if "`jointtest'" != "" & `n_vars' > 1 {
-        * Store estimates for suest
-        local est_names ""
-        local i = 1
-        foreach var of varlist `varlist' {
-            quietly regress `var' i.`group' if `touse'
-            estimates store _bt_est`i'
-            local est_names "`est_names' _bt_est`i'"
-            local ++i
+        * Create common sample marker (non-missing on ALL variables)
+        tempvar joint_touse
+        quietly gen byte `joint_touse' = `touse'
+        markout `joint_touse' `varlist' `group'
+
+        * Check we have observations for joint test
+        quietly count if `joint_touse'
+        if r(N) == 0 {
+            di as text "warning: no common sample for joint test (skipping)"
         }
+        else {
+            * Preserve data and keep only common sample for suest
+            preserve
+            quietly keep if `joint_touse'
 
-        * Joint test using suest
-        quietly suest `est_names', vce(robust)
-
-        * Build test terms for all group coefficients
-        local test_terms ""
-        forvalues j = 1/`n_vars' {
-            foreach g of local group_levels {
-                if `g' != `: word 1 of `group_levels'' {
-                    local test_terms "`test_terms' [_bt_est`j'_mean]`g'.`group'"
-                }
+            * Store estimates for suest
+            local est_names ""
+            local i = 1
+            foreach var of varlist `varlist' {
+                quietly regress `var' i.`group'
+                estimates store _bt_est`i'
+                local est_names "`est_names' _bt_est`i'"
+                local ++i
             }
-        }
 
-        quietly test `test_terms'
-        local joint_chi2 = r(chi2)
-        local joint_df = r(df)
-        local joint_p = r(p)
+            * Joint test using suest
+            capture quietly suest `est_names', vce(robust)
+            if _rc {
+                di as text "warning: joint test failed - skipping"
+                * Clean up estimates and restore data
+                forvalues j = 1/`n_vars' {
+                    capture estimates drop _bt_est`j'
+                }
+                restore
+            }
+            else {
+                * Build test terms for all group coefficients
+                local test_terms ""
+                forvalues j = 1/`n_vars' {
+                    foreach g of local group_levels {
+                        if `g' != `: word 1 of `group_levels'' {
+                            local test_terms "`test_terms' [_bt_est`j'_mean]`g'.`group'"
+                        }
+                    }
+                }
 
-        * Clean up estimates
-        forvalues j = 1/`n_vars' {
-            estimates drop _bt_est`j'
+                quietly test `test_terms'
+                local joint_chi2 = r(chi2)
+                local joint_df = r(df)
+                local joint_p = r(p)
+
+                * Clean up estimates and restore data
+                forvalues j = 1/`n_vars' {
+                    estimates drop _bt_est`j'
+                }
+                restore
+            }
         }
     }
 
