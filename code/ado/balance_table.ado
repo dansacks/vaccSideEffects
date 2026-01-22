@@ -211,8 +211,14 @@ program define balance_table
         local varlabel : variable label `var'
         if "`varlabel'" == "" local varlabel "`var'"
 
+        * Escape special LaTeX characters
+        local varlabel_tex = subinstr("`varlabel'", "$", "\$", .)
+        local varlabel_tex = subinstr("`varlabel_tex'", "%", "\%", .)
+        local varlabel_tex = subinstr("`varlabel_tex'", "&", "\&", .)
+        local varlabel_tex = subinstr("`varlabel_tex'", "_", "\_", .)
+
         * Build row: label & mean1 & mean2 & ... & pval \\
-        local tex_line = "`varlabel'"
+        local tex_line = "`varlabel_tex'"
         forvalues col = 1/`n_groups' {
             local val = means[`row', `col']
             local val_fmt : di %5.3f `val'
