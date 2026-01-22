@@ -1,10 +1,12 @@
 # VaccSideEffects Project
 
 ## Lab Notebook
-**Review `notes/lab_notebook.md` at the start of each session** for recent changes and context. Update it throughout sessions with significant changes, decisions, or issues encountered.
+**Review `notes/lab_notebook.md` at the start of each session** for recent changes and context.
+Update it throughout sessions with significant changes, decisions, or issues encountered.
 
 ## Overview
-Research study examining vaccine side effects. Uses Stata for data processing/analysis and Python for documentation generation.
+Research study examining vaccine side effects. Uses Stata for data processing/analysis and
+Python for documentation generation.
 
 ## Directory Structure
 ```
@@ -23,20 +25,30 @@ VaccSideEffects/
 ```
 
 ## Assumptions and text
-Do not make any assumptions about the meaning of variables. For example you once assumed that the personal arm meant "testimonial" and wrote that in table notes. It doesn't mean that - it is academic research with a framing to seem personally relevant. The table notes should provide context from the code for what is in the table (e.g. table shows regression coefficient from a regression of y on treatment arm indicators), but should not provide info beyond what's in the code.
+Do not make any assumptions about the meaning of variables. For example you once assumed that
+the personal arm meant "testimonial" and wrote that in table notes. It doesn't mean that - it
+is academic research with a framing to seem personally relevant. The table notes should provide
+context from the code for what is in the table (e.g. table shows regression coefficient from a
+regression of y on treatment arm indicators), but should not provide info beyond what's in the
+code.
 
-## table formatting
-We use stata to export .tex files containing tables, for example table.tex.  These are used 
-in a larger document with an input command, as in this example:
+## Table formatting
+We use Stata to export .tex files containing tables, for example table.tex. These are used in a
+larger document with an input command, as in this example:
+```latex
 \begin{table}
 \begin{tabular}{l cc} \\ \toprule
 Header row c1 & Header row c2 & Header row c3 \\ \midrule
-\input{table.tex} \\ 
+\input{table.tex} \\
 \end{tabular}
 \end{table}
-The input part should therefore not contain any environment information (no \begin{table}) and it should not include column headers (which might contain specification numbers or variable names). Those get created once in a latex document, not every time the code generates table.tex.
+```
+The input part should therefore not contain any environment information (no \begin{table}) and
+it should not include column headers (which might contain specification numbers or variable
+names). Those get created once in a latex document, not every time the code generates table.tex.
 
-Do not include vertical space in the tables. In the final line of the table, do not include the delimiter \\ because tex wants to see it in the main doc, not the input file.
+Do not include vertical space in the tables. In the final line of the table, do not include the
+delimiter \\ because tex wants to see it in the main doc, not the input file.
 
 ## Build System
 The project uses Make for build automation. Works on both Windows (Git Bash) and macOS:
@@ -94,10 +106,13 @@ capture log close
 - End scripts with `capture log close` (handles both modes gracefully)
 - Use forward slashes in paths (works on Windows and Unix)
 
-When there are comments in the code, for example about observation counts, they should be enforced with an assert.
-For example if the comment says "Note 40 obs have var1 missing" there should be a line 
-count if missing(var1) 
+When there are comments in the code, for example about observation counts, they should be
+enforced with an assert. For example if the comment says "Note 40 obs have var1 missing" there
+should be a line:
+```stata
+count if missing(var1)
 assert r(N)==40
+```
 
 ### Python Scripts
 - Located in `code/`
