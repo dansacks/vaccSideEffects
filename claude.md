@@ -23,10 +23,20 @@ VaccSideEffects/
 ```
 
 ## Assumptions and text
-Do not make any assumptions about the meaning of variables. For example you once assumed that the personal arm meant "testimonial" and wrote that in table notes. It doesn't mean that - it is academic resreach with a framing to seem personally relevant. The table notes should provide context from the code for what is in the table (e.g. table shows regression coefficient from a regression of y on treatment arm indicators), but should not provide info beyond what's in the code.
+Do not make any assumptions about the meaning of variables. For example you once assumed that the personal arm meant "testimonial" and wrote that in table notes. It doesn't mean that - it is academic research with a framing to seem personally relevant. The table notes should provide context from the code for what is in the table (e.g. table shows regression coefficient from a regression of y on treatment arm indicators), but should not provide info beyond what's in the code.
 
 ## table formatting
-Do not include vertical space in the tables. 
+We use stata to export .tex files containing tables, for example table.tex.  These are used 
+in a larger document with an input command, as in this example:
+\begin{table}
+\begin{tabular}{l cc} \\ \toprule
+Header row c1 & Header row c2 & Header row c3 \\ \midrule
+\input{table.tex} \\ 
+\end{tabular}
+\end{table}
+The input part should therefore not contain any environment information (no \begin{table}) and it should not include column headers (which might contain specification numbers or variable names). Those get created once in a latex document, not every time the code generates table.tex.
+
+Do not include vertical space in the tables. In the final line of the table, do not include the delimiter \\ because tex wants to see it in the main doc, not the input file.
 
 ## Build System
 The project uses Make for build automation. Works on both Windows (Git Bash) and macOS:
@@ -126,6 +136,3 @@ Final samples are defined as first attempt per PID passing all quality checks:
 - `Makefile` - Build automation and dependency tracking
 - `output/docs/prescreen_codebook.md` - Prescreen variable documentation
 - `output/docs/main_codebook.md` - Main survey variable documentation
-
-### plotting
-any time you export a plot (typically as a png or pdf), also export a .csv containing the plotted variables. This csv can go under version control and we can do diffs to compare. There should be a user written program plot_to_csv which is created by one of the utisl. 
