@@ -156,10 +156,10 @@ program define balance_table
     }
 
     /*--------------------------------------------------------------------------
-        5. Print to console (truncate long lines at 78 chars)
+        5. Print to console
     --------------------------------------------------------------------------*/
 
-    local maxwidth = 78
+    local maxwidth = c(linesize)
 
     di ""
     di as text "Balance Table: group(`group')"
@@ -172,9 +172,6 @@ program define balance_table
         local header = "`header'`g_fmt'"
     }
     local header = "`header'   P-value"
-    if strlen("`header'") > `maxwidth' {
-        local header = substr("`header'", 1, `maxwidth')
-    }
     di as text "`header'"
     di as text "{hline `maxwidth'}"
 
@@ -195,9 +192,6 @@ program define balance_table
         local pval_fmt : di %9.3f `pval'
         local line = "`line'`pval_fmt'"
 
-        if strlen("`line'") > `maxwidth' {
-            local line = substr("`line'", 1, `maxwidth')
-        }
         di as text "`line'"
         local ++row
     }
@@ -208,9 +202,6 @@ program define balance_table
         local joint_chi2_fmt : di %8.3f `joint_chi2'
         local joint_p_fmt : di %5.3f `joint_p'
         local jline = "Joint test: chi2(`joint_df') = `joint_chi2_fmt', p = `joint_p_fmt'"
-        if strlen("`jline'") > `maxwidth' {
-            local jline = substr("`jline'", 1, `maxwidth')
-        }
         di as text "`jline'"
     }
 
@@ -220,9 +211,6 @@ program define balance_table
     foreach g of local group_levels {
         local n_fmt : di %9.0fc `n_`g''
         local nline = "`nline'`n_fmt'"
-    }
-    if strlen("`nline'") > `maxwidth' {
-        local nline = substr("`nline'", 1, `maxwidth')
     }
     di as text "`nline'"
     di as text "{hline `maxwidth'}"

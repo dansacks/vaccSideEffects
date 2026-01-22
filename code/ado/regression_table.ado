@@ -96,10 +96,11 @@ program define regression_table
     }
 
     /*--------------------------------------------------------------------------
-        4. Print to console (truncate long lines at 78 chars)
+        4. Print to console
     --------------------------------------------------------------------------*/
 
-    local maxwidth = 78
+    * Use linesize for hline, but don't truncate data rows
+    local maxwidth = c(linesize)
 
     di as text ""
     di as text "Regression Table"
@@ -111,9 +112,6 @@ program define regression_table
         local outcome_short = abbrev("`outcome'", 10)
         local outcome_fmt : di %12s "`outcome_short'"
         local header = "`header'`outcome_fmt'"
-    }
-    if strlen("`header'") > `maxwidth' {
-        local header = substr("`header'", 1, `maxwidth')
     }
     di as text "`header'"
     di as text "{hline `maxwidth'}"
@@ -137,9 +135,6 @@ program define regression_table
                 local coef_line = "`coef_line'`b_fmt'"
             }
         }
-        if strlen("`coef_line'") > `maxwidth' {
-            local coef_line = substr("`coef_line'", 1, `maxwidth')
-        }
         di as text "`coef_line'"
 
         * SE row (20-char padding to align with label column)
@@ -153,9 +148,6 @@ program define regression_table
                 local se_fmt : di %6.3f `se'
                 local se_line = "`se_line'    (`se_fmt')"
             }
-        }
-        if strlen("`se_line'") > `maxwidth' {
-            local se_line = substr("`se_line'", 1, `maxwidth')
         }
         di as text "`se_line'"
 
@@ -171,9 +163,6 @@ program define regression_table
         local m_fmt : di %12.3f `m'
         local mean_line = "`mean_line'`m_fmt'"
     }
-    if strlen("`mean_line'") > `maxwidth' {
-        local mean_line = substr("`mean_line'", 1, `maxwidth')
-    }
     di as text "`mean_line'"
 
     * N row
@@ -183,9 +172,6 @@ program define regression_table
         local n = n_obs[1, `col']
         local n_fmt : di %12.0fc `n'
         local n_line = "`n_line'`n_fmt'"
-    }
-    if strlen("`n_line'") > `maxwidth' {
-        local n_line = substr("`n_line'", 1, `maxwidth')
     }
     di as text "`n_line'"
     di as text "{hline `maxwidth'}"
