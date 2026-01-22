@@ -153,9 +153,10 @@ program define balance_table
     * Build and display header
     local header = "Variable"
     foreach g of local group_levels {
-        local header = "`header'" + "  " + string(`g', "%7.0f")
+        local g_fmt : di %9.0f `g'
+        local header = "`header'`g_fmt'"
     }
-    local header = "`header'" + "  P-value"
+    local header = "`header'   P-value"
     if strlen("`header'") > `maxwidth' {
         local header = substr("`header'", 1, `maxwidth')
     }
@@ -172,10 +173,12 @@ program define balance_table
         local line = "`varlabel'"
         forvalues col = 1/`n_groups' {
             local val = means[`row', `col']
-            local line = "`line'" + string(`val', "%9.3f")
+            local val_fmt : di %9.3f `val'
+            local line = "`line'`val_fmt'"
         }
         local pval = pvals[`row', 1]
-        local line = "`line'" + string(`pval', "%9.3f")
+        local pval_fmt : di %9.3f `pval'
+        local line = "`line'`pval_fmt'"
 
         if strlen("`line'") > `maxwidth' {
             local line = substr("`line'", 1, `maxwidth')
@@ -187,8 +190,9 @@ program define balance_table
     * Joint test row (if computed)
     if `joint_p' != . {
         di as text "{hline `maxwidth'}"
-        local joint_chi2_fmt = string(`joint_chi2', "%8.3f")
-        local jline = "Joint test: chi2(`joint_df') = `joint_chi2_fmt', p = " + string(`joint_p', "%5.3f")
+        local joint_chi2_fmt : di %8.3f `joint_chi2'
+        local joint_p_fmt : di %5.3f `joint_p'
+        local jline = "Joint test: chi2(`joint_df') = `joint_chi2_fmt', p = `joint_p_fmt'"
         if strlen("`jline'") > `maxwidth' {
             local jline = substr("`jline'", 1, `maxwidth')
         }
@@ -199,7 +203,8 @@ program define balance_table
     di as text "{hline `maxwidth'}"
     local nline = "N"
     foreach g of local group_levels {
-        local nline = "`nline'" + string(`n_`g'', "%9.0fc")
+        local n_fmt : di %9.0fc `n_`g''
+        local nline = "`nline'`n_fmt'"
     }
     if strlen("`nline'") > `maxwidth' {
         local nline = substr("`nline'", 1, `maxwidth')
@@ -253,7 +258,6 @@ program define balance_table
     foreach g of local group_levels {
         local n_line = "`n_line' & `n_`g''"
     }
-    local n_line = "`n_line' &"
     file write _bt_fout "`n_line'" _n
 
     file close _bt_fout

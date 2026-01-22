@@ -109,7 +109,8 @@ program define regression_table
     local header = ""
     foreach outcome of varlist `varlist' {
         local outcome_short = abbrev("`outcome'", 10)
-        local header = "`header'" + string(`outcome_short', "%12s")
+        local outcome_fmt : di %12s "`outcome_short'"
+        local header = "`header'`outcome_fmt'"
     }
     if strlen("`header'") > `maxwidth' {
         local header = substr("`header'", 1, `maxwidth')
@@ -129,10 +130,11 @@ program define regression_table
         forvalues col = 1/`n_outcomes' {
             local b = coefs[`row', `col']
             if `b' == . {
-                local coef_line = "`coef_line'" + "           ."
+                local coef_line = "`coef_line'           ."
             }
             else {
-                local coef_line = "`coef_line'" + string(`b', "%12.3f")
+                local b_fmt : di %12.3f `b'
+                local coef_line = "`coef_line'`b_fmt'"
             }
         }
         if strlen("`coef_line'") > `maxwidth' {
@@ -145,10 +147,11 @@ program define regression_table
         forvalues col = 1/`n_outcomes' {
             local se = ses[`row', `col']
             if `se' == . {
-                local se_line = "`se_line'" + "           ."
+                local se_line = "`se_line'           ."
             }
             else {
-                local se_line = "`se_line'" + "    (" + string(`se', "%6.3f") + ")"
+                local se_fmt : di %6.3f `se'
+                local se_line = "`se_line'    (`se_fmt')"
             }
         }
         if strlen("`se_line'") > `maxwidth' {
@@ -164,7 +167,8 @@ program define regression_table
     local mean_line = "Control mean"
     forvalues col = 1/`n_outcomes' {
         local m = ctrl_means[1, `col']
-        local mean_line = "`mean_line'" + string(`m', "%12.3f")
+        local m_fmt : di %12.3f `m'
+        local mean_line = "`mean_line'`m_fmt'"
     }
     if strlen("`mean_line'") > `maxwidth' {
         local mean_line = substr("`mean_line'", 1, `maxwidth')
@@ -175,7 +179,8 @@ program define regression_table
     local n_line = "N"
     forvalues col = 1/`n_outcomes' {
         local n = n_obs[1, `col']
-        local n_line = "`n_line'" + string(`n', "%12.0fc")
+        local n_fmt : di %12.0fc `n'
+        local n_line = "`n_line'`n_fmt'"
     }
     if strlen("`n_line'") > `maxwidth' {
         local n_line = substr("`n_line'", 1, `maxwidth')
