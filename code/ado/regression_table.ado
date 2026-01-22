@@ -214,8 +214,14 @@ program define regression_table
         local varlabel : variable label `keyvar'
         if "`varlabel'" == "" local varlabel "`keyvar'"
 
+        * Escape special LaTeX characters
+        local varlabel_tex = subinstr("`varlabel'", "$", "\$", .)
+        local varlabel_tex = subinstr("`varlabel_tex'", "%", "\%", .)
+        local varlabel_tex = subinstr("`varlabel_tex'", "&", "\&", .)
+        local varlabel_tex = subinstr("`varlabel_tex'", "_", "\_", .)
+
         * Coefficient row
-        local tex_line = "`varlabel'"
+        local tex_line = "`varlabel_tex'"
         forvalues col = 1/`n_outcomes' {
             local b = coefs[`row', `col']
             if `b' == . {
