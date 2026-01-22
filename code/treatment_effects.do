@@ -186,7 +186,7 @@ forvalues col = 1/`n_outcomes' {
     local r2 = R2[1, `col']
     file write fout " & " %9.3f (`r2')
 }
-file write fout " \\" _n
+file write fout _n
 
 file close fout
 

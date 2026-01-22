@@ -1,0 +1,36 @@
+Data (raw, binary, large)
+data/
+slides/
+figures/
+images/
+
+# Non-code project materials
+design_materials/
+grants/
+irb/
+notes/
+package_inserts/
+prior_study_qualitrics/
+procurement/
+
+# Binary/document formats
+*.pdf
+*.doc
+*.docx
+*.dta
+*.sav
+*.xlsx
+*.xls
+*.html
+
+# System/editor
+.DS_Store
+Thumbs.db
+.claude/
+tmpclaude-*
+/*.log
+.git
+
+# Python
+__pycache__/
+*.pyc

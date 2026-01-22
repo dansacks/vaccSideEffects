@@ -7,25 +7,37 @@
 #   make followup    - Clean followup data
 #   make merge       - Merge prescreen and main data
 #   make counts      - Generate sample size counts
-#   make balance     - Generate balance table
+#   make balance     - Generate main balance table
+#   make balance-full - Generate balance tables by domain + omnibus test
+#   make exhibits    - Compile exhibits.pdf (all tables/figures)
 #   make all         - Run prescreen, main, and followup pipelines
 #   make dirs        - Create output subdirectories
 #   make clean-data  - Remove .dta files only (force rebuild)
 #   make clean-all   - Remove all generated files
 #   make help        - Show available targets
 #
-# Run from Git Bash: cd /c/Users/sacks/Box/VaccSideEffects && make all
+# Run from Git Bash (Windows): cd /c/Users/sacks/Box/VaccSideEffects && make all
+# Run from Terminal (macOS): cd ~/Library/CloudStorage/Box-Box/VaccSideEffects && make all
 #===============================================================================
 
-# Configuration
-STATA := "/c/Program Files/Stata17/StataMP-64.exe"
-PYTHON := python
-PROJDIR := C:/Users/sacks/Box/VaccSideEffects
+# Configuration - OS detection
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    # macOS
+    STATA := /Applications/StataNow/StataSE.app/Contents/MacOS/stata-se
+    PROJDIR := /Users/$(shell whoami)/Library/CloudStorage/Box-Box/VaccSideEffects
+else
+    # Windows (Git Bash)
+    STATA := "/c/Program Files/Stata17/StataMP-64.exe"
+    PROJDIR := C:/Users/sacks/Box/VaccSideEffects
+endif
+PYTHON := python3
 
 # Directories
 RAW_DATA := $(PROJDIR)/raw_data
 DERIVED := $(PROJDIR)/derived
 CODE := $(PROJDIR)/code
+INCLUDE := $(CODE)/include
 OUTPUT := $(PROJDIR)/output
 OUT_LOGS := $(OUTPUT)/logs
 OUT_TABLES := $(OUTPUT)/tables
@@ -35,24 +47,27 @@ OUT_FIGURES := $(OUTPUT)/figures
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific counts balance analysis dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis beliefs exhibits dirs clean-data clean-all help
 
 all: prescreen main followup prolific counts balance
 
 help:
 	@echo "Available targets:"
-	@echo "  prescreen   - Clean prescreen data and build codebook"
-	@echo "  main        - Clean main study data and build codebook"
-	@echo "  followup    - Clean followup data and build codebook"
-	@echo "  merge       - Merge prescreen, main, and followup data"
-	@echo "  prolific    - Clean prolific demographic exports"
-	@echo "  counts      - Generate sample size counts"
-	@echo "  balance     - Generate balance table"
-	@echo "  analysis    - Run treatment effects regressions"
-	@echo "  all         - Run prescreen, main, followup, and prolific pipelines"
-	@echo "  dirs        - Create output subdirectories"
-	@echo "  clean-data  - Remove .dta files only (force rebuild)"
-	@echo "  clean-all   - Remove all generated files"
+	@echo "  prescreen    - Clean prescreen data and build codebook"
+	@echo "  main         - Clean main study data and build codebook"
+	@echo "  followup     - Clean followup data and build codebook"
+	@echo "  merge        - Merge prescreen, main, and followup data"
+	@echo "  prolific     - Clean prolific demographic exports"
+	@echo "  counts       - Generate sample size counts"
+	@echo "  balance      - Generate main balance table"
+	@echo "  balance-full - Generate balance tables by domain + omnibus test"
+	@echo "  analysis     - Run treatment effects regressions"
+	@echo "  beliefs      - Generate belief distribution figures"
+	@echo "  exhibits     - Compile exhibits.pdf (all tables/figures)"
+	@echo "  all          - Run prescreen, main, followup, and prolific pipelines"
+	@echo "  dirs         - Create output subdirectories"
+	@echo "  clean-data   - Remove .dta files only (force rebuild)"
+	@echo "  clean-all    - Remove all generated files"
 
 # Create output directories
 dirs:
@@ -71,8 +86,12 @@ PRESCREEN_CODEBOOK := $(OUT_DOCS)/prescreen_codebook.md
 
 prescreen: dirs $(PRESCREEN_CODEBOOK)
 
+# Include files (shared across cleaning scripts)
+INCLUDE_FILES := $(INCLUDE)/_rename_qualtrics_metadata.do $(INCLUDE)/_define_value_labels.do \
+                 $(INCLUDE)/_create_quality_flags.do $(INCLUDE)/_report_sample_quality.do
+
 # Step 1: Clean raw SPSS data (imports directly from .sav file)
-$(PRESCREEN_CLEAN): $(PRESCREEN_SPSS) $(CODE)/clean_prescreen.do $(CODE)/_config.do
+$(PRESCREEN_CLEAN): $(PRESCREEN_SPSS) $(CODE)/clean_prescreen.do $(CODE)/_config.do $(INCLUDE_FILES)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_prescreen.do && mv clean_prescreen.log $(OUT_LOGS)/
 
 # Step 2: Generate summary statistics (both outputs from single run)
@@ -97,7 +116,7 @@ MAIN_CODEBOOK := $(OUT_DOCS)/main_codebook.md
 main: dirs $(MAIN_CODEBOOK)
 
 # Step 1: Clean raw SPSS data (imports directly from .sav file)
-$(MAIN_CLEAN): $(MAIN_SPSS) $(CODE)/clean_main.do $(CODE)/_config.do
+$(MAIN_CLEAN): $(MAIN_SPSS) $(CODE)/clean_main.do $(CODE)/_config.do $(INCLUDE_FILES)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_main.do && mv clean_main.log $(OUT_LOGS)/
 
 # Step 2: Generate summary statistics (both outputs from single run)
@@ -135,11 +154,26 @@ $(COUNTS): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(FOLLOWUP_CLEAN) \
 		$(CODE)/count_sample_size.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/count_sample_size.do && mv count_sample_size.log $(OUT_LOGS)/
 
-# Balance table
+# Balance table (main)
 balance: $(BALANCE_CSV)
 
 $(BALANCE_CSV) $(BALANCE_TEX) &: $(MERGED_PRE) $(CODE)/balance_table.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_table.do && mv balance_table.log $(OUT_LOGS)/
+
+# Full balance tables by domain
+BALANCE_PRIOR := $(OUT_TABLES)/balance_prior_beliefs.tex
+BALANCE_INTENT := $(OUT_TABLES)/balance_vacc_intent.tex
+BALANCE_VACC_EXP := $(OUT_TABLES)/balance_vacc_experience.tex
+BALANCE_DEMO := $(OUT_TABLES)/balance_demographics.tex
+BALANCE_TRUST := $(OUT_TABLES)/balance_trust_health.tex
+BALANCE_OMNI := $(OUT_TABLES)/balance_omnibus.tex
+
+balance-full: $(BALANCE_OMNI)
+
+$(BALANCE_PRIOR) $(BALANCE_INTENT) $(BALANCE_VACC_EXP) $(BALANCE_DEMO) $(BALANCE_TRUST) $(BALANCE_OMNI) &: $(MERGED_PRE) $(CODE)/balance_tables_full.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_tables_full.do && mv balance_tables_full.log $(OUT_LOGS)/
+	@# Escape $ followed by digits for LaTeX (e.g., $25k -> \$25k)
+	sed -i '' 's/\$$\([0-9]\)/\\$$\1/g' $(OUT_TABLES)/balance_demographics.tex
 
 #-------------------------------------------------------------------------------
 # FOLLOWUP PIPELINE
@@ -155,7 +189,7 @@ FOLLOWUP_CODEBOOK := $(OUT_DOCS)/followup_codebook.md
 followup: dirs $(FOLLOWUP_CODEBOOK)
 
 # Step 1: Clean raw SPSS data (imports directly from .sav file)
-$(FOLLOWUP_CLEAN): $(FOLLOWUP_SPSS) $(CODE)/clean_followup.do $(CODE)/_config.do
+$(FOLLOWUP_CLEAN): $(FOLLOWUP_SPSS) $(CODE)/clean_followup.do $(CODE)/_config.do $(INCLUDE_FILES)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_followup.do && mv clean_followup.log $(OUT_LOGS)/
 
 # Step 2: Generate summary statistics (both outputs from single run)
@@ -196,6 +230,35 @@ analysis: $(TREATMENT_EFFECTS)
 
 $(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/treatment_effects.do && mv treatment_effects.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# BELIEF ANALYSIS FIGURES
+#-------------------------------------------------------------------------------
+BELIEFS_POOLED := $(OUT_FIGURES)/beliefs_pooled.png
+BELIEFS_VACC := $(OUT_FIGURES)/delta_by_vacc_reaction.png
+BELIEFS_TRUST := $(OUT_FIGURES)/delta_by_trust.png
+BELIEFS_BY_ARM := $(OUT_FIGURES)/belief_cdf_by_arm.png
+
+beliefs: $(BELIEFS_POOLED) $(BELIEFS_BY_ARM)
+
+# explore_beliefs.do produces pooled CDF, vaccine reaction, and trust figures
+$(BELIEFS_POOLED) $(BELIEFS_VACC) $(BELIEFS_TRUST) &: $(MERGED_PRE) $(CODE)/explore_beliefs.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/explore_beliefs.do && mv explore_beliefs.log $(OUT_LOGS)/
+
+# plot_beliefs_by_arm.do produces CDF by treatment arm
+$(BELIEFS_BY_ARM): $(MERGED_PRE) $(CODE)/plot_beliefs_by_arm.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/plot_beliefs_by_arm.do && mv plot_beliefs_by_arm.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# EXHIBITS DOCUMENT
+#-------------------------------------------------------------------------------
+EXHIBITS_TEX := $(OUTPUT)/exhibits.tex
+EXHIBITS_PDF := $(OUTPUT)/exhibits.pdf
+
+exhibits: $(EXHIBITS_PDF)
+
+$(EXHIBITS_PDF): $(EXHIBITS_TEX) $(BALANCE_TEX) $(BALANCE_OMNI) $(TREATMENT_EFFECTS) $(BELIEFS_POOLED) $(BELIEFS_BY_ARM)
+	cd $(OUTPUT) && pdflatex exhibits.tex && pdflatex exhibits.tex
 
 #-------------------------------------------------------------------------------
 # Clean targets

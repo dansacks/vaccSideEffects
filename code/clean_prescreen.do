@@ -31,22 +31,10 @@ drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
     3. Rename variables to clean names
 ------------------------------------------------------------------------------*/
 
-* Rename Qualtrics metadata
-rename StartDate start_date
-rename EndDate end_date
-rename Duration__in_seconds_ duration_sec
-rename Finished _finished
-rename ResponseId response_id
-rename IPAddress _ipaddress
-rename LocationLatitude _lat
-rename LocationLongitude _long
-rename Status _status
-rename RecordedDate _recordeddate
-rename DistributionChannel _distchannel
-rename UserLanguage _userlang
-rename Progress progress
+* Standard Qualtrics metadata renames
+do "code/include/_rename_qualtrics_metadata.do"
 
-* Rename survey variables from SPSS names
+* Rename prescreen-specific variables from SPSS names
 rename Q42 prolific_id_entered
 rename Favorite_Number favorite_number
 rename Vaccine_History flu_vacc_lastyear
@@ -106,90 +94,24 @@ drop SESSION_ID STUDY_ID
     4. Create preview flag from Status
 ------------------------------------------------------------------------------*/
 
-* Status: 0 = IP Address (real), 1 = Survey Preview, etc.
+* Status: 0 = IP Address (real), 1 = Survey Preview
 gen is_preview = (_status == 1) if !mi(_status)
 replace is_preview = 0 if mi(is_preview)
 
 
 /*------------------------------------------------------------------------------
-    5. Define value labels (numbered format)
+    5. Define value labels
 ------------------------------------------------------------------------------*/
 
-* Boolean (Yes/No)
-label define yesno 0 "0. No" 1 "1. Yes"
-
-* Insurance (Yes/No/Not sure)
-label define insurance_lbl -1 "-1. Not sure" 0 "0. No" 1 "1. Yes"
-
-* Likert agreement scale
-label define agree5 ///
-    1 "1. Strongly disagree" ///
-    2 "2. Somewhat disagree" ///
-    3 "3. Neither agree nor disagree" ///
-    4 "4. Somewhat agree" ///
-    5 "5. Strongly agree"
-
-* Frequency scale
-label define freq4 ///
-    1 "1. Never" ///
-    2 "2. Rarely" ///
-    3 "3. Sometimes" ///
-    4 "4. Often"
-
-* Frequency scale with "no doctor" option
-label define freq4_nodoc ///
-    -1 "-1. No doctor" ///
-    1 "1. Never" ///
-    2 "2. Rarely" ///
-    3 "3. Sometimes" ///
-    4 "4. Often"
-
-* Reliability scale
-label define reliable3 ///
-    1 "1. Not reliable" ///
-    2 "2. Somewhat reliable" ///
-    3 "3. Yes, reliable"
-
-* Flu vaccine last year
-label define fluvax_lastyear_lbl 0 "0. No" 1 "1. Yes"
-
-* Prior vaccines
-label define prior_vax_lbl ///
-    1 "1. Neither vaccine" ///
-    2 "2. Flu only" ///
-    3 "3. COVID only" ///
-    4 "4. Both vaccines"
-
-* Flu vaccine intent
-label define flu_intent_lbl ///
-    1 "1. No, do not intend" ///
-    2 "2. May or may not" ///
-    3 "3. Intend to get" ///
-    4 "4. Already got"
-
-* Vaccine reaction
-label define reaction_lbl ///
-    0 "0. No prior vaccine" ///
-    1 "1. None/don't remember" ///
-    2 "2. Mild (not severe)" ///
-    3 "3. Severe"
-
-* Main info source
-label define source_main_lbl ///
-    1 "1. Doctor" ///
-    2 "2. Social media" ///
-    3 "3. Podcasts" ///
-    4 "4. CDC" ///
-    5 "5. News organizations" ///
-    6 "6. None of the above"
+do "code/include/_define_value_labels.do"
 
 /*------------------------------------------------------------------------------
     6. Convert/recode variables
 ------------------------------------------------------------------------------*/
 
-* --- Consent (SPSS: 4=Yes, 5=No, -99=missing-->did not consent) ---
+* --- Consent (SPSS: 4=Yes, 5=No, $PREF_NOT_SAY=missing-->did not consent) ---
 tab consent, m nolabel
-recode consent (4=1) (-99 5=0)
+recode consent (4=1) ($PREF_NOT_SAY 5=0)
 label values consent yesno
 
 * --- Flu vaccine last year (SPSS: 1=Yes, 2=No) ---
@@ -209,7 +131,7 @@ label values vacc_intent flu_intent_lbl
 recode has_insurance (1=-1) (2=0) (3=1),
 label values has_insurance insurance_lbl
 
-tab has_insurance 
+tab has_insurance
 
 * --- Trust/follow scales (SPSS already 1-5 matching) ---
 label values trust_govt agree5
@@ -238,57 +160,28 @@ foreach v in reliable_doctor reliable_sm reliable_podcasts reliable_cdc reliable
 * --- Favorite number (attention check) ---
 destring favorite_number, replace force
 
-* --- Health condition dummies (SPSS: 1=selected, missing=not selected) ---
-foreach v of varlist cond_asthma cond_lung cond_heart cond_diabetes cond_kidney cond_none {
-	replace `v' = 0 if `v' == -99 & cond_rather_not_say ==-99
+* --- Health condition dummies (SPSS: 1=selected, $PREF_NOT_SAY=not selected) ---
+* Recode $PREF_NOT_SAY to 0 for all health conditions (means "did not select this category")
+foreach v of varlist cond_* {
+	replace `v' = 0 if `v' == $PREF_NOT_SAY
 }
 
 /*------------------------------------------------------------------------------
     7. Create quality/sample flags
 ------------------------------------------------------------------------------*/
 
-* Incomplete flag
-gen incomplete = (progress != 100 | _finished != 1)
-label var incomplete "Incomplete response"
+* Set attention check parameters for this survey
+global attn_check_var "favorite_number"
+global attn_check_val = $ATTN_CHECK_PRESCREEN
 
-* Failed attention check (favorite number should be 1965)
-gen failed_attn = (favorite_number != 1965) 
-label var failed_attn "Failed attention check"
+do "code/include/_create_quality_flags.do"
 
-* PID mismatch
-gen pid_mismatch = (prolific_pid != prolific_id_entered)
-label var pid_mismatch "Prolific PID mismatch"
-
-* Flag first attempt per PID (sort by start_date, keep first)
-bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
-label var first_attempt "First survey attempt for this PID"
-label values first_attempt yesno
-
-* Duplicate PID (for reference/reporting only)
-duplicates tag prolific_pid, gen(duplicate_pid)
-replace duplicate_pid = (duplicate_pid > 0)
-label var duplicate_pid "Duplicate Prolific PID"
-
-* Final sample flag (exclude previews)
+* Final sample flag (prescreen-specific criteria: consent + attn + anonymous + first attempt)
 gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & ~is_preview & first_attempt == 1)
 label var final_sample "Final analysis sample (consent, passed attention, first attempt)"
-gen quality_sample = final_sample
-label var quality_sample "Final sample" 
 
 * Report quality flags
-di "=== QUALITY FLAG SUMMARY ==="
-count
-di "Total observations: " r(N)
-count if final_sample == 1
-di "Final sample: " r(N)
-count if incomplete == 1
-di "Incomplete: " r(N)
-count if failed_attn == 1
-di "Failed attention check: " r(N)
-count if pid_mismatch == 1
-di "PID mismatch: " r(N)
-count if duplicate_pid == 1
-di "Duplicate PIDs: " r(N)
+do "code/include/_report_sample_quality.do"
 
 /*------------------------------------------------------------------------------
     8. Consolidate vaccine experience variables
@@ -347,11 +240,11 @@ label var source_cdc "Main source: CDC"
 label var source_news "Main source: News"
 label var source_none "Main source: None of the above"
 
-* Assert source dummies sum to 1 (or all 0 if missing)
-egen _src_sum = rowtotal(source_doctor source_sm source_podcasts source_cdc source_news source_none)
-assert _src_sum == 1 if !mi(info_source_main)
-assert _src_sum == 0 if mi(info_source_main)
-drop _src_sum
+* Assert exactly one source selected (rowtotal check)
+egen _src_check = rowtotal(source_doctor source_sm source_podcasts source_cdc source_news source_none)
+assert _src_check == 1 if !mi(info_source_main)
+assert _src_check == 0 if mi(info_source_main)
+drop _src_check
 
 /*------------------------------------------------------------------------------
     10. Apply variable labels
@@ -406,7 +299,48 @@ foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicat
 }
 
 /*------------------------------------------------------------------------------
-    11. Drop unnecessary variables and reorder
+    11. Create balance table indicator variables
+------------------------------------------------------------------------------*/
+
+* --- Vaccination Intent ---
+* Sample is restricted to hesitant individuals (vacc_intent <= 2)
+gen intent_no = (vacc_intent == 1) if ~missing(vacc_intent)
+label var intent_no "Intent: No, do not intend (vs. may or may not)"
+
+* --- Vaccine Reaction indicators ---
+* covid_vacc_reaction (0=no vaccine, 1=none/don't remember, 2=mild, 3=severe)
+gen covid_react_none = (covid_vacc_reaction == 1) if had_prior_covid_vacc == 1
+gen covid_react_mild = (covid_vacc_reaction == 2) if had_prior_covid_vacc == 1
+gen covid_react_severe = (covid_vacc_reaction == 3) if had_prior_covid_vacc == 1
+
+label var covid_react_none "COVID reaction: None/don't remember"
+label var covid_react_mild "COVID reaction: Mild"
+label var covid_react_severe "COVID reaction: Severe"
+
+* flu_vacc_reaction
+gen flu_react_none = (flu_vacc_reaction == 1) if had_prior_flu_vacc == 1
+gen flu_react_mild = (flu_vacc_reaction == 2) if had_prior_flu_vacc == 1
+gen flu_react_severe = (flu_vacc_reaction == 3) if had_prior_flu_vacc == 1
+
+label var flu_react_none "Flu reaction: None/don't remember"
+label var flu_react_mild "Flu reaction: Mild"
+label var flu_react_severe "Flu reaction: Severe"
+
+* --- Trust government indicators (1-5) ---
+gen trust_strongly_disagree = (trust_govt == 1) if ~missing(trust_govt)
+gen trust_somewhat_disagree = (trust_govt == 2) if ~missing(trust_govt)
+gen trust_neither = (trust_govt == 3) if ~missing(trust_govt)
+gen trust_somewhat_agree = (trust_govt == 4) if ~missing(trust_govt)
+gen trust_strongly_agree = (trust_govt == 5) if ~missing(trust_govt)
+
+label var trust_strongly_disagree "Trust govt: Strongly disagree"
+label var trust_somewhat_disagree "Trust govt: Somewhat disagree"
+label var trust_neither "Trust govt: Neither"
+label var trust_somewhat_agree "Trust govt: Somewhat agree"
+label var trust_strongly_agree "Trust govt: Strongly agree"
+
+/*------------------------------------------------------------------------------
+    12. Drop unnecessary variables and reorder
 ------------------------------------------------------------------------------*/
 
 * Drop temporary variables
