@@ -1,0 +1,424 @@
+%===============================================================================
+% Exhibits Document
+%
+% Compiles all tables and figures from the VaccSideEffects project.
+%
+% To compile:
+%   pdflatex exhibits.tex
+%
+% Created by Dan + Claude Code
+%===============================================================================
+
+\documentclass[11pt]{article}
+
+% Page setup
+\usepackage[margin=1in]{geometry}
+\usepackage{pdflscape}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+
+% Figures
+\usepackage{graphicx}
+\usepackage{float}
+
+% Formatting
+\usepackage{setspace}
+\onehalfspacing
+
+% Caption formatting
+\usepackage{caption}
+\captionsetup{labelfont=bf, justification=raggedright, singlelinecheck=false}
+
+% Title
+\title{VaccSideEffects Study Exhibits}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%===============================================================================
+\section{Sample Counts}
+%===============================================================================
+
+\begin{table}[H]
+\caption{Sample Size by Survey Stage}
+\label{tab:counts}
+\centering
+\begin{tabular}{llr}
+\toprule
+Survey & Condition & Count \\
+\midrule
+\multicolumn{3}{l}{\textit{Prescreen}} \\
+& Started (non-preview) & 8,198 \\
+& Consented & 8,093 \\
+& Passed attention check & 8,052 \\
+& First attempt only & 8,003 \\
+& Hesitant (final prescreen sample) & 4,525 \\
+& Matches to demographics & 4,525 \\
+\addlinespace
+\multicolumn{3}{l}{\textit{Main}} \\
+& Started (non-preview) & 3,651 \\
+& Linked to prescreen final & 3,637 \\
+& Consented & 3,635 \\
+& Passed attention check & 3,619 \\
+& Non-missing delta (valid posteriors) & 3,547 \\
+& First attempt only (final main sample) & 3,526 \\
+& Matches to demographics & 3,526 \\
+\addlinespace
+\multicolumn{3}{l}{\textit{Followup}} \\
+& Started (non-preview) & 3,210 \\
+& Linked to main final & 3,178 \\
+& Passed attention check & 3,134 \\
+& Has non-missing outcome & 3,074 \\
+& First attempt only (final followup sample) & 3,046 \\
+& Matches to demographics & 3,046 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%===============================================================================
+\section{Balance Tables}
+%===============================================================================
+
+%-------------------------------------------------------------------------------
+\subsection{Main Balance Table}
+%-------------------------------------------------------------------------------
+
+\begin{table}[H]
+\caption{Covariate Balance Across Treatment Arms}
+\label{tab:balance_main}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_table.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Cell entries are group means. P-values are from F-tests of joint equality across treatment arms with robust standard errors. Joint test is a chi-squared test of all coefficients jointly equal to zero using seemingly unrelated regression.
+\end{minipage}
+\end{table}
+
+%-------------------------------------------------------------------------------
+\subsection{Balance by Domain}
+%-------------------------------------------------------------------------------
+
+\subsubsection{Prior Beliefs}
+
+\begin{table}[H]
+\caption{Balance Table: Prior Beliefs}
+\label{tab:balance_prior}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_prior_beliefs.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} See Table \ref{tab:balance_main} for details.
+\end{minipage}
+\end{table}
+
+\subsubsection{Vaccination Intent}
+
+\begin{table}[H]
+\caption{Balance Table: Vaccination Intent}
+\label{tab:balance_intent}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_vacc_intent.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} See Table \ref{tab:balance_main} for details.
+\end{minipage}
+\end{table}
+
+\subsubsection{Vaccine Experience}
+
+\begin{table}[H]
+\caption{Balance Table: Vaccine Experience}
+\label{tab:balance_vacc_exp}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_vacc_experience.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Reaction variables are conditional on having received the respective vaccine. See Table \ref{tab:balance_main} for details.
+\end{minipage}
+\end{table}
+
+
+\newpage
+\subsubsection{Demographics}
+
+\begin{landscape}
+\begin{table}[H]
+\caption{Balance Table: Demographics}
+\label{tab:balance_demographics}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_demographics.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} See Table \ref{tab:balance_main} for details.
+\end{minipage}
+\end{table}
+\end{landscape}
+
+
+\subsubsection{Trust and Health Conditions}
+
+\begin{table}[H]
+\caption{Balance Table: Trust and Health Conditions}
+\label{tab:balance_trust}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_trust_health.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} See Table \ref{tab:balance_main} for details.
+\end{minipage}
+\end{table}
+
+%-------------------------------------------------------------------------------
+\subsection{Omnibus Balance Test}
+%-------------------------------------------------------------------------------
+
+\begin{table}[H]
+\caption{Omnibus Balance Test Across All Domains}
+\label{tab:balance_omnibus}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Test & \multicolumn{4}{c}{Statistic} & P-value \\
+\midrule
+\input{tables/balance_omnibus.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Joint chi-squared test of all balance variables across all domains. Uses seemingly unrelated regression with robust standard errors.
+\end{minipage}
+\end{table}
+
+%===============================================================================
+\section{Treatment Effects}
+%===============================================================================
+
+\begin{table}[H]
+\caption{Treatment Effects on Primary Outcomes}
+\label{tab:treatment_effects}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+& \multicolumn{5}{c}{Outcome} \\
+\cmidrule(lr){2-6}
+& Post-Trial & Posterior & Vaccination & Link & Follow-up \\
+& SE Estimate & Difference & Intent & Click & Vaccinated \\
+\midrule
+\input{tables/treatment_effects.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls for prior beliefs, vaccination intent, vaccine experience, demographics, trust in government, and health conditions. Post-Trial SE Estimate is the respondent's estimate of side effect rate (0-100). Posterior Difference is posterior belief with vaccine minus posterior belief without vaccine. Vaccination Intent is 1 if respondent intends to or already got the flu vaccine. Link Click is 1 if respondent clicked any information link. Follow-up Vaccinated is 1 if respondent reported getting flu vaccine or had already been vaccinated.
+\end{minipage}
+\end{table}
+
+%===============================================================================
+\section{Persistence of Information}
+%===============================================================================
+
+%-------------------------------------------------------------------------------
+\subsection{Differential Attrition}
+%-------------------------------------------------------------------------------
+
+\begin{table}[H]
+\caption{Differential Attrition by Treatment Arm}
+\label{tab:persistence_attrition}
+\centering
+\begin{tabular}{lccc}
+\toprule
+& In & Recall & SE \\
+& Followup & Sample & Sample \\
+\midrule
+\input{tables/persistence_attrition.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. Joint p-value is from an F-test of joint significance of treatment arm indicators.
+\end{minipage}
+\end{table}
+
+%-------------------------------------------------------------------------------
+\subsection{Recall of Study Participation}
+%-------------------------------------------------------------------------------
+
+\begin{table}[H]
+\caption{Recall of Study Participation and Information Sources}
+\label{tab:persistence_recall}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+& Recall & Recall & Recall & Recall \\
+& Study & Manufacturer & University & GAVI \\
+\midrule
+\input{tables/persistence_recall.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. Sample restricted to followup respondents with valid recall responses.
+\end{minipage}
+\end{table}
+
+%-------------------------------------------------------------------------------
+\subsection{Memory of Adverse Event Rates}
+%-------------------------------------------------------------------------------
+
+\begin{table}[H]
+\caption{Memory of Clinical Trial Adverse Event Rates}
+\label{tab:persistence_adverse}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+& Guess & Placebo & Guess & Vaccine & Guess \\
+& Placebo & Correct & Vaccine & Correct & Delta \\
+\midrule
+\input{tables/persistence_adverse.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. Sample restricted to followup respondents with valid adverse event rate guesses.
+\end{minipage}
+\end{table}
+
+%===============================================================================
+\section{Belief Distribution Figures}
+%===============================================================================
+
+%-------------------------------------------------------------------------------
+\subsection{Pooled Belief Distribution}
+%-------------------------------------------------------------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/beliefs_pooled.png}
+\caption{Cumulative Distribution of Posterior Believed Side Effect Rate}
+\label{fig:beliefs_pooled}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Shows the CDF of $\Delta$ = posterior belief with vaccine minus posterior belief without vaccine. Clinical trial estimates suggest the true effect is between -1.7 and 1.0 percentage points.
+\end{minipage}
+\end{figure}
+
+%-------------------------------------------------------------------------------
+\subsection{Beliefs by Vaccine Experience}
+%-------------------------------------------------------------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/delta_by_vacc_reaction.png}
+\caption{Mean Posterior Belief by Vaccine Reaction Experience}
+\label{fig:delta_vacc_reaction}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Bars show mean $\Delta$ (posterior belief with vaccine minus without) by self-reported reaction to previous flu and COVID vaccines. Error bars are 95\% confidence intervals.
+\end{minipage}
+\end{figure}
+
+%-------------------------------------------------------------------------------
+\subsection{Beliefs by Trust}
+%-------------------------------------------------------------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/delta_by_trust.png}
+\caption{Mean Posterior Belief by Trust in Government and Doctor Adherence}
+\label{fig:delta_trust}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Bars show mean $\Delta$ by self-reported trust in government vaccine recommendations and likelihood of following doctor's vaccine advice. Error bars are 95\% confidence intervals.
+\end{minipage}
+\end{figure}
+
+%-------------------------------------------------------------------------------
+\subsection{Belief Distribution by Treatment Arm}
+%-------------------------------------------------------------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/belief_cdf_by_arm.png}
+\caption{Belief CDFs by Treatment Arm Relative to Control}
+\label{fig:beliefs_by_arm}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Each panel shows the CDF of $\Delta$ for one treatment arm (colored) compared to the control arm (gray). Treatment arms received information about flu vaccine side effects from different sources: Industry (pharmaceutical company), Academic (university researchers), or Personal (personally relevant framing).
+\end{minipage}
+\end{figure}
+
+\end{document}

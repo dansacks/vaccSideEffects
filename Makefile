@@ -45,7 +45,7 @@ OUT_FIGURES := $(OUTPUT)/figures
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis beliefs exhibits dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis persistence beliefs exhibits dirs clean-data clean-all help
 
 all: prescreen main followup prolific counts balance
 
@@ -60,6 +60,7 @@ help:
 	@echo "  balance      - Generate main balance table"
 	@echo "  balance-full - Generate balance tables by domain + omnibus test"
 	@echo "  analysis     - Run treatment effects regressions"
+	@echo "  persistence  - Run persistence of information analysis"
 	@echo "  beliefs      - Generate belief distribution figures"
 	@echo "  exhibits     - Compile exhibits.pdf (all tables/figures)"
 	@echo "  all          - Run prescreen, main, followup, and prolific pipelines"
@@ -226,8 +227,20 @@ TREATMENT_EFFECTS := $(OUT_TABLES)/treatment_effects.tex
 
 analysis: $(TREATMENT_EFFECTS)
 
-$(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do
+$(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/treatment_effects.do && mv treatment_effects.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# PERSISTENCE ANALYSIS
+#-------------------------------------------------------------------------------
+PERSIST_ATTRITION := $(OUT_TABLES)/persistence_attrition.tex
+PERSIST_RECALL := $(OUT_TABLES)/persistence_recall.tex
+PERSIST_ADVERSE := $(OUT_TABLES)/persistence_adverse.tex
+
+persistence: $(PERSIST_ATTRITION)
+
+$(PERSIST_ATTRITION) $(PERSIST_RECALL) $(PERSIST_ADVERSE) &: $(MERGED_ALL) $(CODE)/explore_persistence.do $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/explore_persistence.do && mv explore_persistence.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
 # BELIEF ANALYSIS FIGURES
@@ -255,7 +268,7 @@ EXHIBITS_PDF := $(OUTPUT)/exhibits.pdf
 
 exhibits: $(EXHIBITS_PDF)
 
-$(EXHIBITS_PDF): $(EXHIBITS_TEX) $(BALANCE_TEX) $(BALANCE_OMNI) $(TREATMENT_EFFECTS) $(BELIEFS_POOLED) $(BELIEFS_BY_ARM)
+$(EXHIBITS_PDF): $(EXHIBITS_TEX) $(BALANCE_TEX) $(BALANCE_OMNI) $(TREATMENT_EFFECTS) $(PERSIST_ATTRITION) $(BELIEFS_POOLED) $(BELIEFS_BY_ARM)
 	cd $(OUTPUT) && pdflatex exhibits.tex && pdflatex exhibits.tex
 
 #-------------------------------------------------------------------------------
