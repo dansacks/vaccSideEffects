@@ -1,151 +1,9 @@
-
-  ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      StataNow 19.5
-___/   /   /___/   /   /___/       SE—Standard Edition
-
- Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
-                                   StataCorp
-                                   4905 Lakeway Drive
-                                   College Station, Texas 77845 USA
-                                   800-782-8272        https://www.stata.com
-                                   979-696-4600        service@stata.com
-
-Stata license: Unlimited-user network, expiring 23 Oct 2026
-Serial number: 401909300710
-  Licensed to: Daniel Sacks
-               
-
-Notes:
-      1. Stata is running in batch mode.
-      2. Unicode is supported; see help unicode_advice.
-      3. Maximum number of variables is set to 5,000 but can be increased;
-          see help set_maxvar.
-
-. do /Users/sacks/Projects/VaccSideEffects/code/balance_table.do 
-
-. /*===========================================================================
-> ===
->     Balance Table for Main Survey Sample
-> 
->     Input:  derived/merged_main_pre.dta
->     Output: output/tables/balance_table.csv
->             output/tables/balance_table.tex (table body only, no headers/meta
-> data)
-> 
->     Creates balance table with treatment arm means and joint equality tests.
->     Each row is a variable, each column is a treatment arm + p-value.
-> 
->     Created by Dan + Claude Code
-> =============================================================================
-> =*/
-. 
-. clear all
-
-. global scriptname "balance_table"
-
-. do "code/_config.do"
-
-. /*===========================================================================
-> ===
->     Project Configuration
-> 
->     Set the project directory once here; all other scripts include this file.
-> 
->     Usage: Include at the top of each do-file:
->         global scriptname "my_script"
->         do "code/_config.do"
-> 
->     In batch mode (stata -e), logs to output/logs/{scriptname}.log
->     In interactive mode, no logging occurs.
-> 
->     Created by Dan + Claude Code
-> =============================================================================
-> =*/
-. 
-. * Settings for both batch and interactive mode
-. set more off
-
-. set rmsg off
-
-. 
-. * Set project directory based on operating system
-. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
-. local usr `c(username)'
-
-. if "`c(os)'" == "Windows" {
-.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
-. }
-
-. else {
-.     * macOS (Unix or MacOSX)
-.     global projdir "/Users/`usr'/Library/CloudStorage/Box-Box/VaccSideEffects
-> "
-. }
-
-. cd "$projdir"
-/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects
-
-. 
-. * Add local ado files to path (for plot_to_csv and other custom programs)
-. adopath + "$projdir/code/include"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
-  [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/c
-> ode/include"
-
-. 
-. * Create output subdirectories if they don't exist
-. capture mkdir "output"
-
-. capture mkdir "output/logs"
-
-. capture mkdir "output/tables"
-
-. capture mkdir "output/docs"
-
-. capture mkdir "output/figures"
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     Named Constants
-> 
->     These replace magic numbers scattered throughout the codebase.
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Attention check expected values (from survey design)
-. global ATTN_CHECK_PRESCREEN = 1965
-
-. global ATTN_CHECK_MAIN = 4419
-
-. global ATTN_CHECK_FOLLOWUP = 1163
-
-. 
-. * Special code for "Prefer not to say" responses
-. global PREF_NOT_SAY = -99
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     Conditional Logging
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Only log in batch mode
-. if "`c(mode)'" == "batch" & "$scriptname" != "" {
-.     capture log close _all
-.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/output/l
-> ogs/balance_table.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/balance_table.lo
+> g
   log type:  text
- opened on:  21 Jan 2026, 21:24:01
+ opened on:  22 Jan 2026, 13:17:45
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: balance_table ===
 .     di "Log: output/logs/$scriptname.log"
@@ -287,262 +145,217 @@ Total merged observations: 3538
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     3. Define variable list for balance table
+>     3. Generate balance table
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. local balance_vars ///
->     prior_vacc_likely ///
->     pre_no_intent ///
->     pre_had_flu ///
->     pre_had_covid ///
->     severe_flu_reaction ///
->     severe_covid_reaction ///
->     has_condition ///
->     age_18_34 ///
->     age_35_49 ///
->     race_white ///
->     hispanic ///
->     income_lt50k ///
->     trust_govt_high ///
->     follow_doc_high ///
->     college
+. balance_table prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid ///
+>     severe_flu_reaction severe_covid_reaction has_condition ///
+>     age_18_34 age_35_49 race_white hispanic income_lt50k ///
+>     trust_govt_high follow_doc_high college, ///
+>     group(arm_n) saving(output/tables/balance_table.tex) jointtest
 
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     4. Calculate sample sizes by arm
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Get sample sizes for each arm (using a variable with no missings for full s
-> ample)
-. count if arm_n == 0
-  885
+Simultaneous results for _bt_est1, _bt_est2, _bt_est3, _bt_est4, _bt_est5, _bt_
+> est6, _bt_est7, _bt_est8, _bt_est9, _bt_est10, _bt_est11, _bt_est12, _bt_est1
+> 3, _bt_est14, _bt_est15
 
-. local N0 = r(N)
+                                                         Number of obs = 3,538
 
-. count if arm_n == 1
-  885
+------------------------------------------------------------------------------
+             |               Robust
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+_bt_est1_m~n |
+       arm_n |
+1. Industry  |  -.0101695    .023669    -0.43   0.667    -.0565599    .0362209
+2. Academic  |  -.0185326    .023704    -0.78   0.434    -.0649916    .0279263
+3. Personal  |  -.0220671   .0236823    -0.93   0.351    -.0684836    .0243495
+             |
+       _cons |   .5514124   .0167206    32.98   0.000     .5186407    .5841842
+-------------+----------------------------------------------------------------
+_bt_est1_l~r |
+       _cons |   -1.39147   .0026708  -521.00   0.000    -1.396705   -1.386236
+-------------+----------------------------------------------------------------
+_bt_est2_m~n |
+       arm_n |
+1. Industry  |   .0109582   .0225717     0.49   0.627    -.0332814    .0551979
+2. Academic  |   .0185348   .0224939     0.82   0.410    -.0255524    .0626221
+3. Personal  |   .0068181   .0225613     0.30   0.762    -.0374013    .0510375
+             |
+       _cons |   .6553288   .0160051    40.94   0.000     .6239593    .6866983
+-------------+----------------------------------------------------------------
+_bt_est2_l~r |
+       _cons |  -1.499769   .0117236  -127.93   0.000    -1.522747   -1.476791
+-------------+----------------------------------------------------------------
+_bt_est3_m~n |
+       arm_n |
+1. Industry  |   .0243725   .0232271     1.05   0.294    -.0211517    .0698968
+2. Academic  |   -.039546   .0235008    -1.68   0.092    -.0856066    .0065147
+3. Personal  |  -.0076828   .0233499    -0.33   0.742    -.0534478    .0380821
+             |
+       _cons |   .5997732   .0164996    36.35   0.000     .5674346    .6321119
+-------------+----------------------------------------------------------------
+_bt_est3_l~r |
+       _cons |  -1.423336   .0066192  -215.03   0.000    -1.436309   -1.410363
+-------------+----------------------------------------------------------------
+_bt_est4_m~n |
+       arm_n |
+1. Industry  |   .0153849   .0229557     0.67   0.503    -.0296075    .0603773
+2. Academic  |  -.0019841   .0230575    -0.09   0.931    -.0471761    .0432078
+3. Personal  |   .0046543    .022983     0.20   0.840    -.0403916    .0497002
+             |
+       _cons |   .6269841   .0162862    38.50   0.000     .5950638    .6589044
+-------------+----------------------------------------------------------------
+_bt_est4_l~r |
+       _cons |  -1.457018   .0091829  -158.67   0.000    -1.475016    -1.43902
+-------------+----------------------------------------------------------------
+_bt_est5_m~n |
+       arm_n |
+1. Industry  |  -.0146848   .0183264    -0.80   0.423    -.0506039    .0212343
+2. Academic  |   -.018501   .0186203    -0.99   0.320     -.054996    .0179941
+3. Personal  |  -.0027886   .0190033    -0.15   0.883    -.0400344    .0344572
+             |
+       _cons |   .1077505    .013483     7.99   0.000     .0813243    .1341767
+-------------+----------------------------------------------------------------
+_bt_est5_l~r |
+       _cons |   -2.41696   .0586096   -41.24   0.000    -2.531833   -2.302087
+-------------+----------------------------------------------------------------
+_bt_est6_m~n |
+       arm_n |
+1. Industry  |  -.0263649   .0217563    -1.21   0.226    -.0690064    .0162766
+2. Academic  |  -.0354365   .0216097    -1.64   0.101    -.0777907    .0069177
+3. Personal  |  -.0018245   .0224835    -0.08   0.935    -.0458914    .0422424
+             |
+       _cons |   .1699819   .0159751    10.64   0.000     .1386713    .2012926
+-------------+----------------------------------------------------------------
+_bt_est6_l~r |
+       _cons |  -2.037574   .0405136   -50.29   0.000    -2.116979   -1.958169
+-------------+----------------------------------------------------------------
+_bt_est7_m~n |
+       arm_n |
+1. Industry  |   .0486056   .0187922     2.59   0.010     .0117736    .0854376
+2. Academic  |  -.0007524   .0178393    -0.04   0.966    -.0357169     .034212
+3. Personal  |   .0129867   .0180952     0.72   0.473    -.0224792    .0484526
+             |
+       _cons |   .1689342   .0126184    13.39   0.000     .1442027    .1936658
+-------------+----------------------------------------------------------------
+_bt_est7_l~r |
+       _cons |  -1.897217   .0274158   -69.20   0.000    -1.950951   -1.843484
+-------------+----------------------------------------------------------------
+_bt_est8_m~n |
+       arm_n |
+1. Industry  |  -.0087137   .0226587    -0.38   0.701     -.053124    .0356965
+2. Academic  |  -.0188999    .022614    -0.84   0.403    -.0632225    .0254227
+3. Personal  |    -.02944   .0224784    -1.31   0.190    -.0734968    .0146167
+             |
+       _cons |   .3514739   .0160782    21.86   0.000     .3199612    .3829866
+-------------+----------------------------------------------------------------
+_bt_est8_l~r |
+       _cons |  -1.497763    .011602  -129.10   0.000    -1.520502   -1.475023
+-------------+----------------------------------------------------------------
+_bt_est9_m~n |
+       arm_n |
+1. Industry  |  -.0144802   .0232455    -0.62   0.533    -.0600404    .0310801
+2. Academic  |   .0200466   .0234481     0.85   0.393    -.0259109    .0660041
+3. Personal  |  -.0115262   .0232551    -0.50   0.620    -.0571054    .0340531
+             |
+       _cons |   .4002268   .0164996    24.26   0.000     .3678881    .4325654
+-------------+----------------------------------------------------------------
+_bt_est9_l~r |
+       _cons |  -1.427842   .0070161  -203.51   0.000    -1.441593    -1.41409
+-------------+----------------------------------------------------------------
+_bt_est10_~n |
+       arm_n |
+1. Industry  |  -.0062358   .0205239    -0.30   0.761    -.0464619    .0339902
+2. Academic  |  -.0113611   .0206293    -0.55   0.582    -.0517938    .0290716
+3. Personal  |  -.0011568   .0204415    -0.06   0.955    -.0412214    .0389077
+             |
+       _cons |   .7562358   .0144591    52.30   0.000     .7278966    .7845751
+-------------+----------------------------------------------------------------
+_bt_est10_~r |
+       _cons |  -1.677128   .0195785   -85.66   0.000    -1.715501   -1.638755
+-------------+----------------------------------------------------------------
+_bt_est11_~n |
+       arm_n |
+1. Industry  |   .0145238   .0134629     1.08   0.281    -.0118631    .0409106
+2. Academic  |     .01859   .0136253     1.36   0.172    -.0081151    .0452951
+3. Personal  |   .0109233   .0133313     0.82   0.413    -.0152056    .0370521
+             |
+       _cons |   .0804989   .0091622     8.79   0.000     .0625414    .0984564
+-------------+----------------------------------------------------------------
+_bt_est11_~r |
+       _cons |  -2.486803    .047625   -52.22   0.000    -2.580146   -2.393459
+-------------+----------------------------------------------------------------
+_bt_est12_~n |
+       arm_n |
+1. Industry  |    .048713   .0233595     2.09   0.037     .0029293    .0944967
+2. Academic  |   .0313225   .0231943     1.35   0.177    -.0141374    .0767824
+3. Personal  |   .0083602   .0230112     0.36   0.716     -.036741    .0534613
+             |
+       _cons |    .350348   .0162517    21.56   0.000     .3184953    .3822007
+-------------+----------------------------------------------------------------
+_bt_est12_~r |
+       _cons |    -1.4541   .0090783  -160.17   0.000    -1.471894   -1.436307
+-------------+----------------------------------------------------------------
+_bt_est13_~n |
+       arm_n |
+1. Industry  |  -.0194965   .0237619    -0.82   0.412    -.0660689     .027076
+2. Academic  |  -.0171125   .0237538    -0.72   0.471    -.0636691    .0294442
+3. Personal  |  -.0230639   .0237063    -0.97   0.331    -.0695273    .0233995
+             |
+       _cons |   .4705215    .016809    27.99   0.000     .4375766    .5034665
+-------------+----------------------------------------------------------------
+_bt_est13_~r |
+       _cons |  -1.393392   .0030588  -455.54   0.000    -1.399387   -1.387397
+-------------+----------------------------------------------------------------
+_bt_est14_~n |
+       arm_n |
+1. Industry  |  -.0179133   .0236693    -0.76   0.449    -.0643043    .0284777
+2. Academic  |  -.0202999   .0236614    -0.86   0.391    -.0666754    .0260755
+3. Personal  |  -.0019255   .0235777    -0.08   0.935    -.0481369    .0442858
+             |
+       _cons |   .5680272   .0166817    34.05   0.000     .5353317    .6007227
+-------------+----------------------------------------------------------------
+_bt_est14_~r |
+       _cons |  -1.399051   .0039784  -351.66   0.000    -1.406849   -1.391254
+-------------+----------------------------------------------------------------
+_bt_est15_~n |
+       arm_n |
+1. Industry  |  -.0307517   .0238368    -1.29   0.197     -.077471    .0159676
+2. Academic  |  -.0398737   .0238504    -1.67   0.095    -.0866197    .0068723
+3. Personal  |  -.0166634   .0237817    -0.70   0.484    -.0632748    .0299479
+             |
+       _cons |   .5353075   .0168344    31.80   0.000     .5023126    .5683024
+-------------+----------------------------------------------------------------
+_bt_est15_~r |
+       _cons |  -1.386794   .0013628 -1017.61   0.000    -1.389465   -1.384123
+------------------------------------------------------------------------------
 
-. local N1 = r(N)
-
-. count if arm_n == 2
-  882
-
-. local N2 = r(N)
-
-. count if arm_n == 3
-  886
-
-. local N3 = r(N)
-
-. local N_total = `N0' + `N1' + `N2' + `N3'
-
-. 
-. di "Sample sizes: Control=`N0' Industry=`N1' Academic=`N2' Personal=`N3' Tota
-> l=`N_total'"
-Sample sizes: Control=885 Industry=885 Academic=882 Personal=886 Total=3538
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     5. Program to calculate balance stats for a variable
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. capture program drop calc_balance_stats
-
-. program define calc_balance_stats, rclass
-  1.     syntax varname
-  2. 
-.     * Get means by arm
-.     quietly {
-  3.         sum `varlist' if arm_n == 0
-  4.         local mean0 = r(mean)
-  5. 
-.         sum `varlist' if arm_n == 1
-  6.         local mean1 = r(mean)
-  7. 
-.         sum `varlist' if arm_n == 2
-  8.         local mean2 = r(mean)
-  9. 
-.         sum `varlist' if arm_n == 3
- 10.         local mean3 = r(mean)
- 11.     }
- 12. 
-.     * Test joint equality (F-test from regression with robust SEs)
-.     quietly regress `varlist' i.arm_n, vce(robust)
- 13.     quietly testparm i.arm_n
- 14.     local pval = r(p)
- 15. 
-.     * Return results
-.     return scalar mean0 = `mean0'
- 16.     return scalar mean1 = `mean1'
- 17.     return scalar mean2 = `mean2'
- 18.     return scalar mean3 = `mean3'
- 19.     return scalar pval = `pval'
- 20. end
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     6. Calculate means by treatment arm and p-values
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Open output files
-. capture file close csvout
-
-. capture file close texout
-
-. file open csvout using "output/tables/balance_table.csv", write replace
-
-. file open texout using "output/tables/balance_table.tex", write replace
-
-. 
-. * Write CSV header
-. file write csvout "Variable,Control,Industry,Academic,Personal,P-value" _n
-
-. 
-. foreach var of local balance_vars {
-  2.     * Get variable label for display
-.     local varlabel: variable label `var'
-  3.     if "`varlabel'" == "" local varlabel "`var'"
-  4. 
-.     * Calculate stats
-.     calc_balance_stats `var'
-  5. 
-.     * Format means (3 decimal places)
-.     local mean0_fmt: di %6.3f r(mean0)
-  6.     local mean1_fmt: di %6.3f r(mean1)
-  7.     local mean2_fmt: di %6.3f r(mean2)
-  8.     local mean3_fmt: di %6.3f r(mean3)
-  9.     local pval_fmt: di %6.3f r(pval)
- 10. 
-.     * Write to CSV
-.     file write csvout "`varlabel',`mean0_fmt',`mean1_fmt',`mean2_fmt',`mean3_
-> fmt',`pval_fmt'" _n
- 11. 
-.     * Write to LaTeX
-.     file write texout "`varlabel' & `mean0_fmt' & `mean1_fmt' & `mean2_fmt' &
->  `mean3_fmt' & `pval_fmt' \\" _n
- 12. 
-.     di "`varlabel': Control=`mean0_fmt' Industry=`mean1_fmt' Academic=`mean2_
-> fmt' Personal=`mean3_fmt' p=`pval_fmt'"
- 13. }
-Prior: SE likely with vaccine: Control= 0.551 Industry= 0.541 Academic= 0.533 P
-> ersonal= 0.529 p= 0.794
-Do not intend to vaccinate: Control= 0.655 Industry= 0.666 Academic= 0.674 Pers
-> onal= 0.662 p= 0.870
-Previously had flu vaccine: Control= 0.600 Industry= 0.624 Academic= 0.560 Pers
-> onal= 0.592 p= 0.055
-Previously had COVID vaccine: Control= 0.627 Industry= 0.642 Academic= 0.625 Pe
-> rsonal= 0.632 p= 0.876
-Severe flu vaccine reaction: Control= 0.108 Industry= 0.093 Academic= 0.089 Per
-> sonal= 0.105 p= 0.703
-Severe COVID vaccine reaction: Control= 0.170 Industry= 0.144 Academic= 0.135 P
-> ersonal= 0.168 p= 0.256
-Has health condition: Control= 0.169 Industry= 0.218 Academic= 0.168 Personal= 
-> 0.182 p= 0.033
-Age 18--34: Control= 0.351 Industry= 0.343 Academic= 0.333 Personal= 0.322 p= 0
-> .588
-Age 35--49: Control= 0.400 Industry= 0.386 Academic= 0.420 Personal= 0.389 p= 0
-> .444
-White: Control= 0.756 Industry= 0.750 Academic= 0.745 Personal= 0.755 p= 0.944
-Hispanic: Control= 0.080 Industry= 0.095 Academic= 0.099 Personal= 0.091 p= 0.5
-> 47
-Income under 50k: Control= 0.350 Industry= 0.399 Academic= 0.382 Personal= 0.35
-> 9 p= 0.146
-Trust government: Control= 0.471 Industry= 0.451 Academic= 0.453 Personal= 0.44
-> 7 p= 0.773
-Follow doctor advice: Control= 0.568 Industry= 0.550 Academic= 0.548 Personal= 
-> 0.566 p= 0.755
-College degree: Control= 0.535 Industry= 0.505 Academic= 0.495 Personal= 0.519 
-> p= 0.363
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     7. Joint F-test for all variables (SUR approach)
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. di ""
-
-
-. di "=== JOINT BALANCE TEST ==="
-=== JOINT BALANCE TEST ===
-
-. 
-. * Use seemingly unrelated regression for joint test
-. quietly {
-
-. 
-. di "Joint chi-squared(`joint_df') = " %8.3f `joint_chi2'
-Joint chi-squared(45) =   42.508
-
-. di "Joint p-value = " %6.3f `joint_p'
-Joint p-value =  0.578
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     8. Write joint test and sample sizes to output files
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Format joint test results
-. local joint_chi2_fmt: di %8.3f `joint_chi2'
-
-. local joint_p_fmt: di %6.3f `joint_p'
-
-. 
-. * Append to CSV
-. file write csvout _n
-
-. file write csvout "Joint test,chi2(`joint_df')=`joint_chi2_fmt',,,`joint_p_fm
-> t'" _n
-
-. file write csvout _n
-
-. file write csvout "N,`N0',`N1',`N2',`N3'," _n
-
-. 
-. * Append to LaTeX
-. file write texout "\addlinespace" _n
-
-. local joint_chi2_tex: di %5.3f `joint_chi2'
-
-. local joint_p_tex: di %5.3f `joint_p'
-
-. file write texout "Joint test & \multicolumn{4}{c}{\$\chi^2(`joint_df')=`join
-> t_chi2_tex'\$} & `joint_p_tex' \\" _n
-
-. file write texout "\addlinespace" _n
-
-. file write texout "N & `N0' & `N1' & `N2' & `N3' &" _n
-
-. 
-. file close csvout
-
-. file close texout
-
-. 
-. di ""
-
-
-. di "=== BALANCE TABLE COMPLETE ==="
-=== BALANCE TABLE COMPLETE ===
-
-. di "Saved: output/tables/balance_table.csv"
-Saved: output/tables/balance_table.csv
-
-. di "Saved: output/tables/balance_table.tex"
+Balance Table: group(arm_n)
+-------------------------------------------------------------------------------
+Variable        0        1        2        3   P-value
+-------------------------------------------------------------------------------
+Prior: SE likely with ~e    0.551    0.541    0.533    0.529    0.794
+Do not intend to vacci~e    0.655    0.666    0.674    0.662    0.870
+Previously had flu vac~e    0.600    0.624    0.560    0.592    0.055
+Previously had COVID v~e    0.627    0.642    0.625    0.632    0.876
+Severe flu vaccine rea~n    0.108    0.093    0.089    0.105    0.703
+Severe COVID vaccine r~n    0.170    0.144    0.135    0.168    0.256
+Has health condition    0.169    0.218    0.168    0.182    0.033
+Age 18--34    0.351    0.343    0.333    0.322    0.588
+Age 35--49    0.400    0.386    0.420    0.389    0.444
+White    0.756    0.750    0.745    0.755    0.944
+Hispanic    0.080    0.095    0.099    0.091    0.547
+Income under 50k    0.350    0.399    0.382    0.359    0.146
+Trust government    0.471    0.451    0.453    0.447    0.773
+Follow doctor advice    0.568    0.550    0.548    0.566    0.755
+College degree    0.535    0.505    0.495    0.519    0.363
+-------------------------------------------------------------------------------
+Joint test: chi2(45) =   42.508, p = 0.578
+-------------------------------------------------------------------------------
+N      885      885      882      886
+-------------------------------------------------------------------------------
 Saved: output/tables/balance_table.tex
 
 . 
 . capture log close
-
-. 
-end of do-file
