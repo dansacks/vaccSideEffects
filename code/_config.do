@@ -25,12 +25,13 @@ if "`c(os)'" == "Windows" {
 }
 else {
     * macOS (Unix or MacOSX)
-    global projdir "/Users/`usr'/Library/CloudStorage/Box-Box/VaccSideEffects"
+    global projdir "/Users/`usr'/Projects/VaccSideEffects"
 }
 cd "$projdir"
 
 * Add local ado files to path (for plot_to_csv and other custom programs)
 adopath + "$projdir/code/include"
+adopath + "$projdir/code/ado"
 
 * Create output subdirectories if they don't exist
 capture mkdir "output"
