@@ -1,27 +1,27 @@
 
-  ___  ____  ____  ____  ____ ©
- /__    /   ____/   /   ____/      17.0
-___/   /   /___/   /   /___/       MP—Parallel Edition
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
-                                   800-STATA-PC        https://www.stata.com
-                                   979-696-4600        stata@stata.com
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
 
-Stata license: Single-user 4-core  perpetual
-Serial number: 501709220187
-  Licensed to: Dan Sacks
-               Indiana University
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
       2. Unicode is supported; see help unicode_advice.
-      3. More than 2 billion observations are allowed; see help obs_advice.
-      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
 
-. do C:/Users/sacks/Box/VaccSideEffects/code/count_sample_size.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/count_sample_size.do 
 
 . /*===========================================================================
 > ===
@@ -69,13 +69,34 @@ Notes:
 . set rmsg off
 
 . 
-. * Set project directory
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
 . local usr `c(username)'
 
-. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Library/CloudStorage/Box-Box/VaccSideEffects
+> "
+. }
 
 . cd "$projdir"
-C:\Users\sacks\Box\VaccSideEffects
+/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/c
+> ode/include"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -90,16 +111,42 @@ C:\Users\sacks\Box\VaccSideEffects
 . capture mkdir "output/figures"
 
 . 
-. * Conditional logging: only log in batch mode
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for "Prefer not to say" responses
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/count_sample_size.l
-> og
+       log:  /Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/output/l
+> ogs/count_sample_size.log
   log type:  text
- opened on:  18 Jan 2026, 13:27:29
+ opened on:  21 Jan 2026, 21:26:12
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: count_sample_size ===
 .     di "Log: output/logs/$scriptname.log"
@@ -183,8 +230,8 @@ end of do-file
 . tempfile prescreen_final
 
 . save `prescreen_final'
-file C:\Users\sacks\AppData\Local\Temp\ST_13510_000002.tmp saved as .dta
-    format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St99168.000002 saved
+    as .dta format
 
 . restore
 
@@ -324,8 +371,8 @@ Matches to demographics: 4525
 . tempfile main_final
 
 . save `main_final'
-file C:\Users\sacks\AppData\Local\Temp\ST_13510_000004.tmp saved as .dta
-    format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St99168.000004 saved
+    as .dta format
 
 . restore
 
@@ -349,8 +396,8 @@ Duplicates in terms of prolific_pid
 . tempfile main_demog_combined
 
 . save `main_demog_combined'
-file C:\Users\sacks\AppData\Local\Temp\ST_13510_000006.tmp saved as .dta
-    format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St99168.000006 saved
+    as .dta format
 
 . restore
 

@@ -1,27 +1,27 @@
 
-  ___  ____  ____  ____  ____ ©
- /__    /   ____/   /   ____/      17.0
-___/   /   /___/   /   /___/       MP—Parallel Edition
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
-                                   800-STATA-PC        https://www.stata.com
-                                   979-696-4600        stata@stata.com
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
 
-Stata license: Single-user 4-core  perpetual
-Serial number: 501709220187
-  Licensed to: Dan Sacks
-               Indiana University
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
       2. Unicode is supported; see help unicode_advice.
-      3. More than 2 billion observations are allowed; see help obs_advice.
-      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
 
-. do code/balance_table.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/balance_table.do 
 
 . /*===========================================================================
 > ===
@@ -68,13 +68,34 @@ Notes:
 . set rmsg off
 
 . 
-. * Set project directory
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
 . local usr `c(username)'
 
-. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Library/CloudStorage/Box-Box/VaccSideEffects
+> "
+. }
 
 . cd "$projdir"
-C:\Users\sacks\Box\VaccSideEffects
+/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/c
+> ode/include"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -89,15 +110,42 @@ C:\Users\sacks\Box\VaccSideEffects
 . capture mkdir "output/figures"
 
 . 
-. * Conditional logging: only log in batch mode
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for "Prefer not to say" responses
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/balance_table.log
+       log:  /Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/output/l
+> ogs/balance_table.log
   log type:  text
- opened on:  18 Jan 2026, 10:55:27
+ opened on:  21 Jan 2026, 21:24:01
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: balance_table ===
 .     di "Log: output/logs/$scriptname.log"
@@ -182,35 +230,32 @@ Total merged observations: 3538
 . label var has_condition "Has health condition"
 
 . 
-. * Age 18-34 (age == 2)
-. gen age_18_34 = (age == 2) if ~missing(age) & age != -99
-(9 missing values generated)
+. * Age, race, ethnicity variables already created in clean_main.do
+. * Use existing variables from merged dataset (capture gen in case they don't 
+> exist)
+. capture gen age_18_34 = (age == 2) if ~missing(age) & age != $PREF_NOT_SAY
 
-. label var age_18_34 "Age 18--34"
-
-. 
-. * Age 35-49 (age == 3)
-. gen age_35_49 = (age == 3) if ~missing(age) & age != -99
-(9 missing values generated)
-
-. label var age_35_49 "Age 35--49"
+. capture label var age_18_34 "Age 18--34"
 
 . 
-. * Race = white (race == 1)
-. gen race_white = (race == 1) if ~missing(race) & race != 7
-(38 missing values generated)
+. capture gen age_35_49 = (age == 3) if ~missing(age) & age != $PREF_NOT_SAY
 
-. label var race_white "White"
+. capture label var age_35_49 "Age 35--49"
 
 . 
-. * Ethnicity = Hispanic (ethnicity == 1)
-. gen hispanic = (ethnicity == 1) if ~missing(ethnicity) & ethnicity != 3
-(34 missing values generated)
+. capture gen race_white = (race == 1) if ~missing(race) & race != 7
 
-. label var hispanic "Hispanic"
+. capture label var race_white "White"
+
+. 
+. capture gen hispanic = (ethnicity == 1) if ~missing(ethnicity) & ethnicity !=
+>  3
+
+. capture label var hispanic "Hispanic"
 
 . 
 . * Income < 50k (income == 1 or 2)
+. * Exclude 6 = "Prefer not to say"
 . gen income_lt50k = (income <= 2) if ~missing(income) & income != 6
 (95 missing values generated)
 
@@ -232,6 +277,7 @@ Total merged observations: 3538
 
 . 
 . * College degree (education == 4 or 5)
+. * Exclude 6 = "Prefer not to say"
 . gen college = (education == 4 | education == 5) if ~missing(education) & educ
 > ation != 6
 (21 missing values generated)
@@ -301,16 +347,62 @@ Sample sizes: Control=885 Industry=885 Academic=882 Personal=886 Total=3538
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     5. Calculate means by treatment arm and p-values (robust SEs)
+>     5. Program to calculate balance stats for a variable
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. * Open output file
-. capture file close fout
+. capture program drop calc_balance_stats
 
-. file open fout using "output/tables/balance_table.csv", write replace
+. program define calc_balance_stats, rclass
+  1.     syntax varname
+  2. 
+.     * Get means by arm
+.     quietly {
+  3.         sum `varlist' if arm_n == 0
+  4.         local mean0 = r(mean)
+  5. 
+.         sum `varlist' if arm_n == 1
+  6.         local mean1 = r(mean)
+  7. 
+.         sum `varlist' if arm_n == 2
+  8.         local mean2 = r(mean)
+  9. 
+.         sum `varlist' if arm_n == 3
+ 10.         local mean3 = r(mean)
+ 11.     }
+ 12. 
+.     * Test joint equality (F-test from regression with robust SEs)
+.     quietly regress `varlist' i.arm_n, vce(robust)
+ 13.     quietly testparm i.arm_n
+ 14.     local pval = r(p)
+ 15. 
+.     * Return results
+.     return scalar mean0 = `mean0'
+ 16.     return scalar mean1 = `mean1'
+ 17.     return scalar mean2 = `mean2'
+ 18.     return scalar mean3 = `mean3'
+ 19.     return scalar pval = `pval'
+ 20. end
 
-. file write fout "Variable,Control,Industry,Academic,Personal,P-value" _n
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     6. Calculate means by treatment arm and p-values
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Open output files
+. capture file close csvout
+
+. capture file close texout
+
+. file open csvout using "output/tables/balance_table.csv", write replace
+
+. file open texout using "output/tables/balance_table.tex", write replace
+
+. 
+. * Write CSV header
+. file write csvout "Variable,Control,Industry,Academic,Personal,P-value" _n
 
 . 
 . foreach var of local balance_vars {
@@ -318,40 +410,27 @@ Sample sizes: Control=885 Industry=885 Academic=882 Personal=886 Total=3538
 .     local varlabel: variable label `var'
   3.     if "`varlabel'" == "" local varlabel "`var'"
   4. 
-.     * Get means by arm
-.     quietly {
-  5.         sum `var' if arm_n == 0
-  6.         local mean0 = r(mean)
-  7. 
-.         sum `var' if arm_n == 1
-  8.         local mean1 = r(mean)
-  9. 
-.         sum `var' if arm_n == 2
- 10.         local mean2 = r(mean)
- 11. 
-.         sum `var' if arm_n == 3
- 12.         local mean3 = r(mean)
- 13.     }
- 14. 
-.     * Test joint equality (F-test from regression with robust SEs)
-.     quietly regress `var' i.arm_n, vce(robust)
- 15.     quietly testparm i.arm_n
- 16.     local pval = r(p)
- 17. 
+.     * Calculate stats
+.     calc_balance_stats `var'
+  5. 
 .     * Format means (3 decimal places)
-.     local mean0_fmt: di %6.3f `mean0'
- 18.     local mean1_fmt: di %6.3f `mean1'
- 19.     local mean2_fmt: di %6.3f `mean2'
- 20.     local mean3_fmt: di %6.3f `mean3'
- 21.     local pval_fmt: di %6.3f `pval'
- 22. 
-.     * Write to CSV (use label for row name)
-.     file write fout "`varlabel',`mean0_fmt',`mean1_fmt',`mean2_fmt',`mean3_fm
-> t',`pval_fmt'" _n
- 23. 
+.     local mean0_fmt: di %6.3f r(mean0)
+  6.     local mean1_fmt: di %6.3f r(mean1)
+  7.     local mean2_fmt: di %6.3f r(mean2)
+  8.     local mean3_fmt: di %6.3f r(mean3)
+  9.     local pval_fmt: di %6.3f r(pval)
+ 10. 
+.     * Write to CSV
+.     file write csvout "`varlabel',`mean0_fmt',`mean1_fmt',`mean2_fmt',`mean3_
+> fmt',`pval_fmt'" _n
+ 11. 
+.     * Write to LaTeX
+.     file write texout "`varlabel' & `mean0_fmt' & `mean1_fmt' & `mean2_fmt' &
+>  `mean3_fmt' & `pval_fmt' \\" _n
+ 12. 
 .     di "`varlabel': Control=`mean0_fmt' Industry=`mean1_fmt' Academic=`mean2_
 > fmt' Personal=`mean3_fmt' p=`pval_fmt'"
- 24. }
+ 13. }
 Prior: SE likely with vaccine: Control= 0.551 Industry= 0.541 Academic= 0.533 P
 > ersonal= 0.529 p= 0.794
 Do not intend to vaccinate: Control= 0.655 Industry= 0.666 Academic= 0.674 Pers
@@ -364,15 +443,15 @@ Severe flu vaccine reaction: Control= 0.108 Industry= 0.093 Academic= 0.089 Per
 > sonal= 0.105 p= 0.703
 Severe COVID vaccine reaction: Control= 0.170 Industry= 0.144 Academic= 0.135 P
 > ersonal= 0.168 p= 0.256
-Has health condition: Control= 0.164 Industry= 0.216 Academic= 0.163 Personal= 
-> 0.177 p= 0.016
+Has health condition: Control= 0.169 Industry= 0.218 Academic= 0.168 Personal= 
+> 0.182 p= 0.033
 Age 18--34: Control= 0.351 Industry= 0.343 Academic= 0.333 Personal= 0.322 p= 0
 > .588
 Age 35--49: Control= 0.400 Industry= 0.386 Academic= 0.420 Personal= 0.389 p= 0
 > .444
-White: Control= 0.764 Industry= 0.759 Academic= 0.747 Personal= 0.761 p= 0.862
-Hispanic: Control= 0.081 Industry= 0.096 Academic= 0.100 Personal= 0.092 p= 0.5
-> 36
+White: Control= 0.756 Industry= 0.750 Academic= 0.745 Personal= 0.755 p= 0.944
+Hispanic: Control= 0.080 Industry= 0.095 Academic= 0.099 Personal= 0.091 p= 0.5
+> 47
 Income under 50k: Control= 0.350 Industry= 0.399 Academic= 0.382 Personal= 0.35
 > 9 p= 0.146
 Trust government: Control= 0.471 Industry= 0.451 Academic= 0.453 Personal= 0.44
@@ -383,12 +462,9 @@ College degree: Control= 0.535 Industry= 0.505 Academic= 0.495 Personal= 0.519
 > p= 0.363
 
 . 
-. file close fout
-
-. 
 . /*---------------------------------------------------------------------------
 > ---
->     6. Joint F-test for all variables (SUR approach)
+>     7. Joint F-test for all variables (SUR approach)
 > -----------------------------------------------------------------------------
 > -*/
 . 
@@ -404,96 +480,52 @@ College degree: Control= 0.535 Industry= 0.505 Academic= 0.495 Personal= 0.519
 
 . 
 . di "Joint chi-squared(`joint_df') = " %8.3f `joint_chi2'
-Joint chi-squared(45) =   44.190
+Joint chi-squared(45) =   42.508
 
 . di "Joint p-value = " %6.3f `joint_p'
-Joint p-value =  0.506
-
-. 
-. * Append joint test and sample sizes to CSV
-. file open fout using "output/tables/balance_table.csv", write append
-
-. file write fout _n
-
-. local joint_chi2_fmt: di %8.3f `joint_chi2'
-
-. local joint_p_fmt: di %6.3f `joint_p'
-
-. file write fout "Joint test,chi2(`joint_df')=`joint_chi2_fmt',,,`joint_p_fmt'
-> " _n
-
-. file write fout _n
-
-. file write fout "N,`N0',`N1',`N2',`N3'," _n
-
-. file close fout
+Joint p-value =  0.578
 
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     7. Create LaTeX table body (no headers/metadata - just insertable content
-> )
+>     8. Write joint test and sample sizes to output files
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. file open texout using "output/tables/balance_table.tex", write replace
+. * Format joint test results
+. local joint_chi2_fmt: di %8.3f `joint_chi2'
+
+. local joint_p_fmt: di %6.3f `joint_p'
 
 . 
-. * Write each variable row
-. foreach var of local balance_vars {
-  2.     * Get means by arm
-.     quietly {
-  3.         sum `var' if arm_n == 0
-  4.         local mean0 = r(mean)
-  5. 
-.         sum `var' if arm_n == 1
-  6.         local mean1 = r(mean)
-  7. 
-.         sum `var' if arm_n == 2
-  8.         local mean2 = r(mean)
-  9. 
-.         sum `var' if arm_n == 3
- 10.         local mean3 = r(mean)
- 11.     }
- 12. 
-.     * Test joint equality (robust SEs)
-.     quietly regress `var' i.arm_n, vce(robust)
- 13.     quietly testparm i.arm_n
- 14.     local pval = r(p)
- 15. 
-.     * Get variable label
-.     local varlabel: variable label `var'
- 16.     if "`varlabel'" == "" local varlabel "`var'"
- 17. 
-.     * Format for LaTeX (3 decimal places)
-.     local mean0_fmt: di %5.3f `mean0'
- 18.     local mean1_fmt: di %5.3f `mean1'
- 19.     local mean2_fmt: di %5.3f `mean2'
- 20.     local mean3_fmt: di %5.3f `mean3'
- 21.     local pval_fmt: di %5.3f `pval'
- 22. 
-.     file write texout "`varlabel' & `mean0_fmt' & `mean1_fmt' & `mean2_fmt' &
->  `mean3_fmt' & `pval_fmt' \\" _n
- 23. }
+. * Append to CSV
+. file write csvout _n
+
+. file write csvout "Joint test,chi2(`joint_df')=`joint_chi2_fmt',,,`joint_p_fm
+> t'" _n
+
+. file write csvout _n
+
+. file write csvout "N,`N0',`N1',`N2',`N3'," _n
 
 . 
-. * Add separator and joint test row
+. * Append to LaTeX
 . file write texout "\addlinespace" _n
 
-. local joint_chi2_fmt: di %5.3f `joint_chi2'
+. local joint_chi2_tex: di %5.3f `joint_chi2'
 
-. local joint_p_fmt: di %5.3f `joint_p'
+. local joint_p_tex: di %5.3f `joint_p'
 
 . file write texout "Joint test & \multicolumn{4}{c}{\$\chi^2(`joint_df')=`join
-> t_chi2_fmt'\$} & `joint_p_fmt' \\" _n
+> t_chi2_tex'\$} & `joint_p_tex' \\" _n
 
-. 
-. * Add sample size row
 . file write texout "\addlinespace" _n
 
-. file write texout "N & `N0' & `N1' & `N2' & `N3' & \\" _n
+. file write texout "N & `N0' & `N1' & `N2' & `N3' &" _n
 
 . 
+. file close csvout
+
 . file close texout
 
 . 
