@@ -42,6 +42,10 @@ OUT_TABLES := $(OUTPUT)/tables
 OUT_DOCS := $(OUTPUT)/docs
 OUT_FIGURES := $(OUTPUT)/figures
 
+# Ado file dependencies
+ADO_BALANCE := $(CODE)/ado/balance_table.ado
+ADO_REGRESSION := $(CODE)/ado/regression_table.ado
+
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
@@ -156,20 +160,20 @@ $(COUNTS): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(FOLLOWUP_CLEAN) \
 # Balance table (main)
 balance: $(BALANCE_CSV)
 
-$(BALANCE_CSV) $(BALANCE_TEX) &: $(MERGED_PRE) $(CODE)/balance_table.do $(CODE)/_config.do
+$(BALANCE_CSV) $(BALANCE_TEX) &: $(MERGED_PRE) $(CODE)/balance_table.do $(CODE)/_config.do $(ADO_BALANCE)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_table.do && mv balance_table.log $(OUT_LOGS)/
 
 # Full balance tables by domain
 BALANCE_PRIOR := $(OUT_TABLES)/balance_prior_beliefs.tex
-BALANCE_INTENT := $(OUT_TABLES)/balance_vacc_intent.tex
-BALANCE_VACC_EXP := $(OUT_TABLES)/balance_vacc_experience.tex
+BALANCE_VACC := $(OUT_TABLES)/balance_vacc.tex
 BALANCE_DEMO := $(OUT_TABLES)/balance_demographics.tex
-BALANCE_TRUST := $(OUT_TABLES)/balance_trust_health.tex
+BALANCE_TRUST_FULL := $(OUT_TABLES)/balance_trust.tex
+BALANCE_HEALTH := $(OUT_TABLES)/balance_health.tex
 BALANCE_OMNI := $(OUT_TABLES)/balance_omnibus.tex
 
 balance-full: $(BALANCE_OMNI)
 
-$(BALANCE_PRIOR) $(BALANCE_INTENT) $(BALANCE_VACC_EXP) $(BALANCE_DEMO) $(BALANCE_TRUST) $(BALANCE_OMNI) &: $(MERGED_PRE) $(CODE)/balance_tables_full.do $(CODE)/_config.do
+$(BALANCE_PRIOR) $(BALANCE_VACC) $(BALANCE_DEMO) $(BALANCE_TRUST_FULL) $(BALANCE_HEALTH) $(BALANCE_OMNI) &: $(MERGED_PRE) $(CODE)/balance_tables_full.do $(CODE)/_config.do $(ADO_BALANCE)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_tables_full.do && mv balance_tables_full.log $(OUT_LOGS)/
 	@# Escape $ followed by digits for LaTeX (e.g., $25k -> \$25k)
 	sed -i '' 's/\$$\([0-9]\)/\\$$\1/g' $(OUT_TABLES)/balance_demographics.tex
@@ -227,7 +231,7 @@ TREATMENT_EFFECTS := $(OUT_TABLES)/treatment_effects.tex
 
 analysis: $(TREATMENT_EFFECTS)
 
-$(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do
+$(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do $(ADO_REGRESSION)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/treatment_effects.do && mv treatment_effects.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
@@ -239,7 +243,7 @@ PERSIST_ADVERSE := $(OUT_TABLES)/persistence_adverse.tex
 
 persistence: $(PERSIST_ATTRITION)
 
-$(PERSIST_ATTRITION) $(PERSIST_RECALL) $(PERSIST_ADVERSE) &: $(MERGED_ALL) $(CODE)/explore_persistence.do $(CODE)/_config.do $(CODE)/_set_controls.do
+$(PERSIST_ATTRITION) $(PERSIST_RECALL) $(PERSIST_ADVERSE) &: $(MERGED_ALL) $(CODE)/explore_persistence.do $(CODE)/_config.do $(CODE)/_set_controls.do $(ADO_REGRESSION)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/explore_persistence.do && mv explore_persistence.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
