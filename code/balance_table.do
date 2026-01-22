@@ -30,7 +30,7 @@ di "Total merged observations: " r(N)
 
 * Prior belief: somewhat likely or more likely to experience SE with vaccine (>=5)
 gen prior_vacc_likely = (prior_self_vacc >= 5) if ~missing(prior_self_vacc)
-label var prior_vacc_likely "Prior: SE likely with vaccine"
+label var prior_vacc_likely "Prior belief: SE likely with vaccine"
 
 * Do not intend to vaccinate (from prescreen, vacc_intent == 1)
 gen pre_no_intent = (pre_vacc_intent_pre == 1) if ~missing(pre_vacc_intent_pre)
@@ -91,11 +91,14 @@ label var college "College degree"
 /*------------------------------------------------------------------------------
     3. Generate balance table
 ------------------------------------------------------------------------------*/
-
-balance_table prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid ///
-    severe_flu_reaction severe_covid_reaction has_condition ///
-    age_18_34 age_35_49 race_white hispanic income_lt50k ///
-    trust_govt_high follow_doc_high college, ///
-    group(arm_n) saving(output/tables/balance_table.tex) jointtest
-
+# delimit ;
+balance_table 
+	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid 
+	severe_flu_reaction severe_covid_reaction 
+	has_condition 
+	age_18_34 age_35_49 race_white hispanic income_lt50k
+	trust_govt_high follow_doc_high college, 
+	group(arm_n) saving(output/tables/balance_table.tex) jointtest
+;
+# delimit cr
 capture log close
