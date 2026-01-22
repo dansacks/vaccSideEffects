@@ -1,5 +1,8 @@
 # VaccSideEffects Project
 
+## Lab Notebook
+**Review `notes/lab_notebook.md` at the start of each session** for recent changes and context. Update it throughout sessions with significant changes, decisions, or issues encountered.
+
 ## Overview
 Research study examining vaccine side effects. Uses Stata for data processing/analysis and Python for documentation generation.
 
@@ -19,11 +22,25 @@ VaccSideEffects/
 └── Makefile        # Build automation
 ```
 
+## Assumptions and text
+Do not make any assumptions about the meaning of variables. For example you once assumed that the personal arm meant "testimonial" and wrote that in table notes. It doesn't mean that - it is academic resreach with a framing to seem personally relevant. The table notes should provide context from the code for what is in the table (e.g. table shows regression coefficient from a regression of y on treatment arm indicators), but should not provide info beyond what's in the code.
+
+## table formatting
+Do not include vertical space in the tables. 
+
 ## Build System
-The project uses Make for build automation. Run from Git Bash:
+The project uses Make for build automation. Works on both Windows (Git Bash) and macOS:
 
 ```bash
-cd /c/Users/sacks/Box/VaccSideEffects
+# Windows (Git Bash)
+cd /c/Users/sacks/Box/VaccSideEffects && make all
+
+# macOS (Terminal)
+cd ~/Library/CloudStorage/Box-Box/VaccSideEffects && make all
+```
+
+Available targets:
+```bash
 make prescreen    # Clean prescreen data and build codebook
 make main         # Clean main survey data and build codebook
 make followup     # Clean followup data and build codebook
@@ -60,7 +77,7 @@ capture log close
 
 - Set `global scriptname` before including `_config.do`
 - `_config.do` handles:
-  - `$projdir` global for the project root
+  - `$projdir` global for the project root (auto-detects Windows vs macOS)
   - Batch mode settings (`set more off`, etc.)
   - Creates output directories if needed
   - Opens log file in batch mode (to `output/logs/{scriptname}.log`)
@@ -109,3 +126,6 @@ Final samples are defined as first attempt per PID passing all quality checks:
 - `Makefile` - Build automation and dependency tracking
 - `output/docs/prescreen_codebook.md` - Prescreen variable documentation
 - `output/docs/main_codebook.md` - Main survey variable documentation
+
+### plotting
+any time you export a plot (typically as a png or pdf), also export a .csv containing the plotted variables. This csv can go under version control and we can do diffs to compare. There should be a user written program plot_to_csv which is created by one of the utisl. 

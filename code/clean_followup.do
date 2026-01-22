@@ -31,22 +31,10 @@ drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
     3. Rename variables to clean names
 ------------------------------------------------------------------------------*/
 
-* Rename Qualtrics metadata
-rename StartDate start_date
-rename EndDate end_date
-rename Duration__in_seconds_ duration_sec
-rename Finished _finished
-rename ResponseId response_id
-rename IPAddress _ipaddress
-rename LocationLatitude _lat
-rename LocationLongitude _long
-rename Status _status
-rename RecordedDate _recordeddate
-rename DistributionChannel _distchannel
-rename UserLanguage _userlang
-rename Progress progress
+* Standard Qualtrics metadata renames
+do "code/include/_rename_qualtrics_metadata.do"
 
-* Rename survey variables from SPSS names
+* Rename followup-specific variables from SPSS names
 rename Survey_Information consent
 rename prolific_pid prolific_id_entered
 rename Attention attn_check
@@ -104,59 +92,24 @@ capture drop What_chain*
 ------------------------------------------------------------------------------*/
 
 * Status: 0 = IP Address (real), 1 = Survey Preview
-gen is_preview = (_status == 1) 
+gen is_preview = (_status == 1)
 
 /*------------------------------------------------------------------------------
-    5. Define value labels (numbered format)
+    5. Define value labels
 ------------------------------------------------------------------------------*/
 
-* Boolean (Yes/No)
-label define yesno 0 "0. No" 1 "1. Yes"
-
-* Pharmacy factor (SPSS codes)
-label define factor_lbl ///
-    1 "1. Price" ///
-    2 "2. Convenience" ///
-    3 "3. Quality/reputation" ///
-    4 "4. Pharmacist access" ///
-    5 "5. None important"
-
-* Price compare / coupons (SPSS codes)
-label define shopping_lbl ///
-    1 "1. Yes, at least once" ///
-    2 "2. No" ///
-    3 "3. Did not shop for medicines"
-
-* Recall study (SPSS codes)
-label define recall_lbl ///
-    1 "1. Yes" ///
-    2 "2. No" ///
-    3 "3. Don't remember"
-
-* Recall info (SPSS codes)
-label define recallinfo_lbl ///
-    1 "1. Yes" ///
-    2 "2. No" ///
-    3 "3. Don't remember study"
-
-* Trustworthy (SPSS codes)
-label define trust_lbl ///
-    1 "1. Don't remember study" ///
-    2 "2. Trustworthy" ///
-    3 "3. Somewhat trustworthy" ///
-    4 "4. Not trustworthy"
+do "code/include/_define_value_labels.do"
 
 /*------------------------------------------------------------------------------
     6. Convert/clean variables
 ------------------------------------------------------------------------------*/
 
-* --- Consent (SPSS codes: 1=Yes, 2=No, -99=missing) ---
+* --- Consent (SPSS codes: 1=Yes, 2=No, $PREF_NOT_SAY=missing) ---
 tab consent, m nolabel
-* Recode to 0/1
-recode consent (1=1) (2 -99=0) (-99=.)
+recode consent (1=1) (2 $PREF_NOT_SAY=0) ($PREF_NOT_SAY=.)
 label values consent yesno
 
-* --- Attention check (should be 1163) ---
+* --- Attention check ---
 destring attn_check, replace force
 
 * --- Pharmacy factor (already numeric from SPSS) ---
@@ -166,23 +119,19 @@ label values pharmacy_factor factor_lbl
 label values price_compare shopping_lbl
 label values use_coupons shopping_lbl
 
-* --- GLP-1 (SPSS codes: recode to 0/1, prefer not to answer -> missing) ---
+* --- GLP-1 (SPSS codes: 1=Yes, 2=No, 3=Prefer not to say -> missing) ---
 tab got_glp1, m nolabel
 recode got_glp1 (1=1) (2=0) (3=.)
 label values got_glp1 yesno
 
-* --- Flu vaccine (SPSS codes: recode to 0/1, prefer not to answer -> missing) ---
+* --- Flu vaccine (SPSS codes: 1=Yes, 2=No, 3=Prefer not to say -> missing) ---
 tab got_flu_vacc, m nolabel
-recode got_flu_vacc (1=1) (2=0) (3=.), gen(got_flu_vacc_new)
-drop got_flu_vacc
-rename got_flu_vacc_new got_flu_vacc
+recode got_flu_vacc (1=1) (2=0) (3=.)
 label values got_flu_vacc yesno
 
-* --- COVID vaccine (SPSS codes: recode to 0/1, prefer not to answer -> missing) ---
+* --- COVID vaccine (SPSS codes: 1=Yes, 2=No, 3=Prefer not to say -> missing) ---
 tab got_covid_vacc, m nolabel
-recode got_covid_vacc (1=1) (2=0) (3=.), gen(got_covid_vacc_new)
-drop got_covid_vacc
-rename got_covid_vacc_new got_covid_vacc
+recode got_covid_vacc (1=1) (2=0) (3=.)
 label values got_covid_vacc yesno
 
 * --- Recall study (already numeric from SPSS) ---
@@ -197,6 +146,7 @@ label values recall_gavi recallinfo_lbl
 label values found_trustworthy trust_lbl
 
 * --- Numeric guesses ---
+* Clean text responses: SPSS exports text fields with embedded % symbols and typos
 replace guess_placebo= subinstr(guess_placebo, "%", "", .)
 replace guess_placebo = "4" if strpos(guess_placebo, "id say 4")
 replace guess_vaccine= subinstr(guess_vaccine, " ", "", .)
@@ -224,63 +174,32 @@ foreach v of varlist flu_why_already flu_why_side_effects flu_why_bad_flu flu_wh
     7. Create quality/sample flags
 ------------------------------------------------------------------------------*/
 
-* Incomplete flag
-gen incomplete = (progress != 100 | _finished != 1)
-label var incomplete "Incomplete response"
+* Set attention check parameters for this survey
+global attn_check_var "attn_check"
+global attn_check_val = $ATTN_CHECK_FOLLOWUP
 
-* Failed attention check (should be 1163)
-gen failed_attn = (attn_check != 1163) if !mi(attn_check)
-replace failed_attn = 1 if mi(attn_check)
-label var failed_attn "Failed attention check"
+do "code/include/_create_quality_flags.do"
 
-* PID mismatch
-gen pid_mismatch = (prolific_pid != prolific_id_entered)
-label var pid_mismatch "Prolific PID mismatch"
-
-* Flag first attempt per PID (sort by start_date, keep first)
-bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
-label var first_attempt "First survey attempt for this PID"
-
-* Duplicate PID (for reference/reporting only)
-duplicates tag prolific_pid, gen(duplicate_pid)
-replace duplicate_pid = (duplicate_pid > 0)
-label var duplicate_pid "Duplicate Prolific PID"
-
-* Final sample flag (exclude previews)
+* Final sample flag (followup-specific criteria)
 gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & is_preview == 0 & first_attempt == 1)
-gen quality_sample = final_sample
 
 label var final_sample "Final analysis sample"
 label var is_preview "Preview/test response"
 
 * Report quality flags
-di "=== QUALITY FLAG SUMMARY ==="
-count
-di "Total observations: " r(N)
-count if final_sample == 1
-di "Final sample: " r(N)
-count if incomplete == 1
-di "Incomplete: " r(N)
-count if failed_attn == 1
-di "Failed attention check: " r(N)
-count if pid_mismatch == 1
-di "PID mismatch: " r(N)
-count if duplicate_pid == 1
-di "Duplicate PIDs: " r(N)
-count if is_preview == 1
-di "Preview responses: " r(N)
+do "code/include/_report_sample_quality.do"
 
 /*------------------------------------------------------------------------------
     8. Create derived variables
 ------------------------------------------------------------------------------*/
 
-* Correct placebo guess (3%) - exclude -99 values
-gen placebo_correct = (guess_placebo >= 2 & guess_placebo <= 4) 
+* Correct placebo guess (3%)
+gen placebo_correct = (guess_placebo >= 2 & guess_placebo <= 4)
 label var placebo_correct "Placebo guess within 1% of 3%"
 label values placebo_correct yesno
 
-* Correct vaccine guess (1.3%) - exclude -99 values
-gen vaccine_correct = (guess_vaccine >= 0.3 & guess_vaccine <= 2.3) 
+* Correct vaccine guess (1.3%)
+gen vaccine_correct = (guess_vaccine >= 0.3 & guess_vaccine <= 2.3)
 label var vaccine_correct "Vaccine guess within 1% of 1.3%"
 label values vaccine_correct yesno
 
@@ -296,7 +215,7 @@ label var response_id "Qualtrics response ID"
 label var consent "Consent given"
 label var prolific_id_entered "Prolific ID (entered)"
 label var prolific_pid "Prolific ID (from URL)"
-label var attn_check "Attention check value (should be 1163)"
+label var attn_check "Attention check value (should be $ATTN_CHECK_FOLLOWUP)"
 label var pharmacy_factor "Most important factor for pharmacy choice"
 label var price_compare "Compared prices at pharmacies"
 label var use_coupons "Used coupons/deals like GoodRx"
@@ -375,8 +294,8 @@ assert inlist(recall_manufacturer, 1, 2, 3, .)
 assert inlist(recall_university, 1, 2, 3, .)
 assert inlist(recall_gavi, 1, 2, 3, .)
 assert inlist(found_trustworthy, 1, 2, 3, 4, .)
-assert (guess_placebo >= 0 & guess_placebo <= 100) | guess_placebo == -99 if !mi(guess_placebo)
-assert (guess_vaccine >= 0 & guess_vaccine <= 100) | guess_vaccine == -99 if !mi(guess_vaccine)
+assert (guess_placebo >= 0 & guess_placebo <= 100) | guess_placebo == $PREF_NOT_SAY if !mi(guess_placebo)
+assert (guess_vaccine >= 0 & guess_vaccine <= 100) | guess_vaccine == $PREF_NOT_SAY if !mi(guess_vaccine)
 
 * Check variable count
 desc

@@ -31,28 +31,15 @@ drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
     3. Rename variables to clean names
 ------------------------------------------------------------------------------*/
 
-* Rename Qualtrics metadata
-rename StartDate start_date
-rename EndDate end_date
-rename Duration__in_seconds_ duration_sec
-rename Finished _finished
-rename ResponseId response_id
-rename IPAddress _ipaddress
-rename LocationLatitude _lat
-rename LocationLongitude _long
-rename Status _status
-rename RecordedDate _recordeddate
-rename DistributionChannel _distchannel
-rename UserLanguage _userlang
+* Standard Qualtrics metadata renames
+do "code/include/_rename_qualtrics_metadata.do"
 
-* Rename survey variables
+* Rename main survey-specific variables
 rename Q52 prolific_id_entered
 rename Q2 attn_check
 * consent, prior_self_placebo, prior_self_vacc already named correctly
 * post_c_trial, post_i_trial, post_a_trial, post_p_trial already named correctly
-* posterior_novacc, posterior_vacc already named correctly (but need underscore fix)
-rename posterior_novacc posterior_novacc
-rename posterior_vacc posterior_vacc
+* posterior_novacc, posterior_vacc already named correctly
 * trust_trial, relevant_trial, trust_academic, relevant_academic already named
 * vacc_intentions, age, gender, education, income, race, ethnicity, polviews already named
 * debrief_about, comments already named
@@ -63,107 +50,15 @@ rename PROLIFIC_PID prolific_pid
     4. Create preview flag from Status
 ------------------------------------------------------------------------------*/
 
-* Status: 0 = IP Address (real), 1 = Survey Preview, etc.
+* Status: 0 = IP Address (real), 1 = Survey Preview
 gen is_preview = (_status == 1) if !mi(_status)
 replace is_preview = 0 if mi(is_preview)
 
 /*------------------------------------------------------------------------------
-    5. Define value labels (numbered format)
+    5. Define value labels
 ------------------------------------------------------------------------------*/
 
-* Boolean (Yes/No)
-label define yesno 0 "0. No" 1 "1. Yes"
-
-* Treatment arm
-label define arm_lbl ///
-    0 "0. Control" ///
-    1 "1. Industry" ///
-    2 "2. Academic" ///
-    3 "3. Personal"
-
-* Prior beliefs (7-point) - SPSS already has numeric codes
-label define prior7_lbl ///
-    1 "1. Would definitely not" ///
-    2 "2. Very unlikely" ///
-    3 "3. Somewhat unlikely" ///
-    4 "4. Neither likely nor unlikely" ///
-    5 "5. Somewhat likely" ///
-    6 "6. Very likely" ///
-    7 "7. Would definitely"
-
-* Trust/relevance (0-10) - SPSS already has numeric codes
-label define scale10_lbl ///
-    0 "0" 1 "1" 2 "2" 3 "3" 4 "4" 5 "5" 6 "6" 7 "7" 8 "8" 9 "9" 10 "10"
-
-* Vaccination intentions - SPSS already has numeric codes
-label define vacc_intent_lbl ///
-    1 "1. No, do not intend" ///
-    2 "2. May or may not" ///
-    3 "3. Intend to get" ///
-    4 "4. Already got" ///
-    -99 "-99. Prefer not to say"
-
-* Age - SPSS already has numeric codes
-label define age_lbl ///
-    1 "1. Under 18" ///
-    2 "2. 18-34" ///
-    3 "3. 35-49" ///
-    4 "4. 50-64" ///
-    5 "5. 65-74" ///
-    6 "6. 75+" ///
-    -99 "-99. Prefer not to say"
-
-* Gender
-label define gender_lbl ///
-    1 "1. Male" ///
-    2 "2. Female" ///
-    3 "3. Other" ///
-    4 "4. Prefer not to say"
-
-* Education (SPSS codes 1-6)
-label define educ_lbl ///
-    1 "1. Less than HS" ///
-    2 "2. HS" ///
-    3 "3. Some college" ///
-    4 "4. 4-year degree" ///
-    5 "5. More than 4-year" ///
-    6 "6. Prefer not to say"
-
-* Income (SPSS codes 1-6)
-label define income_lbl ///
-    1 "1. <$25k" ///
-    2 "2. $25-50k" ///
-    3 "3. $50-75k" ///
-    4 "4. $75-100k" ///
-    5 "5. >$100k" ///
-    6 "6. Prefer not to say"
-
-* Race (SPSS codes 1-7)
-label define race_lbl ///
-    1 "1. White" ///
-    2 "2. Black" ///
-    3 "3. Asian" ///
-    4 "4. Am Indian/Alaska Native" ///
-    5 "5. Pacific Islander" ///
-    6 "6. Other" ///
-    7 "7. Prefer not to say"
-
-* Ethnicity (SPSS codes 1-3)
-label define ethnicity_lbl ///
-    1 "1. Yes" ///
-    2 "2. No" ///
-    3 "3. Prefer not to say"
-
-* Political views (SPSS codes 1-8)
-label define polviews_lbl ///
-    1 "1. Very liberal" ///
-    2 "2. Liberal" ///
-    3 "3. Slightly liberal" ///
-    4 "4. Moderate" ///
-    5 "5. Slightly conservative" ///
-    6 "6. Conservative" ///
-    7 "7. Very conservative" ///
-    8 "8. Prefer not to say"
+do "code/include/_define_value_labels.do"
 
 /*------------------------------------------------------------------------------
     6. Convert/clean variables
@@ -183,9 +78,9 @@ destring attn_check, replace force
 label values prior_self_placebo prior7_lbl
 label values prior_self_vacc prior7_lbl
 
-* --- Trust/relevance (SPSS has 1-11, recode to 0-10) ---
+* --- Trust/relevance (SPSS has 1-11, convert to 0-10 scale) ---
 foreach v of varlist trust_trial relevant_trial trust_academic relevant_academic {
-	sum `v' 
+	sum `v'
 	assert r(max) == 11 & r(min)==1
 	replace `v' = `v' - 1 if !mi(`v')
 }
@@ -251,6 +146,7 @@ foreach a of local arms {
 ------------------------------------------------------------------------------*/
 
 * --- Consolidate post-trial estimate ---
+* Clean text responses: remove % symbols and spaces from SPSS text fields
 foreach a in c i a p {
     replace post_`a'_trial = subinstr(post_`a'_trial, "%", "", .)
     replace post_`a'_trial = subinstr(post_`a'_trial, " ", "", .)
@@ -307,55 +203,25 @@ label values link_click yesno
     10. Create quality/sample flags
 ------------------------------------------------------------------------------*/
 
-* Incomplete flag
-gen incomplete = (Progress != 100 | _finished != 1)
-label var incomplete "Incomplete response"
+* Set attention check parameters for this survey
+global attn_check_var "attn_check"
+global attn_check_val = $ATTN_CHECK_MAIN
 
-* Failed attention check (should be 4419)
-gen failed_attn = (attn_check != 4419) 
-label var failed_attn "Failed attention check"
+do "code/include/_create_quality_flags.do"
 
-* PID mismatch
-gen pid_mismatch = (prolific_pid != prolific_id_entered)
-label var pid_mismatch "Prolific PID mismatch"
-
-* Flag first attempt per PID (sort by start_date, keep first)
-bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
-label var first_attempt "First survey attempt for this PID"
-
-* Duplicate PID (for reference/reporting only)
-duplicates tag prolific_pid, gen(duplicate_pid)
-replace duplicate_pid = (duplicate_pid > 0)
-label var duplicate_pid "Duplicate Prolific PID"
-
-* count missing outcomes
+* Count missing outcomes
 egen n_missing = rowmiss(posterior_vacc posterior_novacc post_trial)
 
-* Update final sample flag
+* Final sample flag (main survey requires non-missing outcomes)
 gen final_sample = (consent == 1 & failed_attn == 0 ///
     & _distchannel == "anonymous" & is_preview == 0 ///
 		& n_missing == 0 & first_attempt == 1)
 
 label var final_sample "Final analysis sample (consent, passed attn, non-missing outcomes, first attempt)"
 assert ~missing(arm_n) if final_sample
-gen quality_sample = final_sample
 
-
-* Report quality flags (preliminary)
-di "=== PRELIMINARY QUALITY FLAG SUMMARY ==="
-count
-di "Total observations: " r(N)
-count if incomplete == 1
-di "Incomplete: " r(N)
-count if failed_attn == 1
-di "Failed attention check: " r(N)
-count if pid_mismatch == 1
-di "PID mismatch: " r(N)
-count if duplicate_pid == 1
-di "Duplicate PIDs: " r(N)
-count if is_preview == 1
-di "Preview responses: " r(N)
-
+* Report quality flags
+do "code/include/_report_sample_quality.do"
 
 /*------------------------------------------------------------------------------
     11. Apply variable labels
@@ -364,12 +230,12 @@ di "Preview responses: " r(N)
 label var start_date "Survey start date/time"
 label var end_date "Survey end date/time"
 label var duration_sec "Survey duration (seconds)"
-label var Progress "Survey progress (%)"
+label var progress "Survey progress (%)"
 label var response_id "Qualtrics response ID"
 label var consent "Consent given"
 label var prolific_id_entered "Prolific ID (entered)"
 label var prolific_pid "Prolific ID (from URL)"
-label var attn_check "Attention check value (should be 4419)"
+label var attn_check "Attention check value (should be $ATTN_CHECK_MAIN)"
 label var prior_self_placebo "Prior belief: SE likelihood without vaccine (1-7)"
 label var prior_self_vacc "Prior belief: SE likelihood with vaccine (1-7)"
 label var post_c_trial "Post-trial estimate: Control arm"
@@ -402,15 +268,126 @@ foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicat
 }
 
 /*------------------------------------------------------------------------------
-    12. Drop unnecessary variables and reorder
+    12. Create balance table indicator variables
+------------------------------------------------------------------------------*/
+
+* --- Prior Beliefs (7-point scales) ---
+* prior_self_placebo: SE likelihood without vaccine
+forvalues i = 1/7 {
+    gen prior_placebo_`i' = (prior_self_placebo == `i') if ~missing(prior_self_placebo)
+}
+label var prior_placebo_1 "Prior placebo: Would definitely not"
+label var prior_placebo_2 "Prior placebo: Very unlikely"
+label var prior_placebo_3 "Prior placebo: Somewhat unlikely"
+label var prior_placebo_4 "Prior placebo: Neither"
+label var prior_placebo_5 "Prior placebo: Somewhat likely"
+label var prior_placebo_6 "Prior placebo: Very likely"
+label var prior_placebo_7 "Prior placebo: Would definitely"
+
+* prior_self_vacc: SE likelihood with vaccine
+forvalues i = 1/7 {
+    gen prior_vacc_`i' = (prior_self_vacc == `i') if ~missing(prior_self_vacc)
+}
+label var prior_vacc_1 "Prior vacc: Would definitely not"
+label var prior_vacc_2 "Prior vacc: Very unlikely"
+label var prior_vacc_3 "Prior vacc: Somewhat unlikely"
+label var prior_vacc_4 "Prior vacc: Neither"
+label var prior_vacc_5 "Prior vacc: Somewhat likely"
+label var prior_vacc_6 "Prior vacc: Very likely"
+label var prior_vacc_7 "Prior vacc: Would definitely"
+
+* --- Demographics ---
+* Convert $PREF_NOT_SAY (prefer not to say) to missing for demographic analysis
+foreach var in age gender education income race ethnicity {
+    replace `var' = . if `var' == $PREF_NOT_SAY
+}
+
+* Age (2=18-34, 3=35-49, 4=50-64, 5=65+)
+gen age_18_34 = (age == 2) if ~missing(age)
+gen age_35_49 = (age == 3) if ~missing(age)
+gen age_50_64 = (age == 4) if ~missing(age)
+gen age_65plus = (age == 5) if ~missing(age)
+
+label var age_18_34 "Age 18--34"
+label var age_35_49 "Age 35--49"
+label var age_50_64 "Age 50--64"
+label var age_65plus "Age 65+"
+
+* Gender (1=Male, 2=Female, 3=Other)
+gen female = (gender == 2) if ~missing(gender)
+gen gender_other = (gender == 3) if ~missing(gender)
+
+label var female "Female"
+label var gender_other "Gender: Other"
+
+* Education (1=<HS, 2=HS, 3=Some college, 4=4-year, 5=>4-year)
+gen educ_hs_or_less = (education <= 2) if ~missing(education)
+gen educ_some_college = (education == 3) if ~missing(education)
+gen educ_college = (education == 4) if ~missing(education)
+gen educ_grad = (education == 5) if ~missing(education)
+
+label var educ_hs_or_less "Education: HS or less"
+label var educ_some_college "Education: Some college"
+label var educ_college "Education: 4-year degree"
+label var educ_grad "Education: Graduate degree"
+
+* Income (1=<25k, 2=25-50k, 3=50-75k, 4=75-100k, 5=>100k)
+gen income_lt25k = (income == 1) if ~missing(income)
+gen income_25_50k = (income == 2) if ~missing(income)
+gen income_50_75k = (income == 3) if ~missing(income)
+gen income_75_100k = (income == 4) if ~missing(income)
+gen income_100kplus = (income == 5) if ~missing(income)
+
+label var income_lt25k "Income: Under \$25k"
+label var income_25_50k "Income: \$25--50k"
+label var income_50_75k "Income: \$50--75k"
+label var income_75_100k "Income: \$75--100k"
+label var income_100kplus "Income: Over \$100k"
+
+* Race (1=White, 2=Black, 3=Asian, 4=Am Indian, 5=Other)
+gen race_white = (race == 1) if ~missing(race)
+gen race_black = (race == 2) if ~missing(race)
+gen race_asian = (race == 3) if ~missing(race)
+gen race_native = (race == 4) if ~missing(race)
+gen race_other = (race == 5) if ~missing(race)
+
+label var race_white "White"
+label var race_black "Black"
+label var race_asian "Asian"
+label var race_native "American Indian/Alaska Native"
+label var race_other "Race: Other"
+
+* Ethnicity (1=Hispanic)
+gen hispanic = (ethnicity == 1) if ~missing(ethnicity)
+
+label var hispanic "Hispanic"
+
+* Political views (1-7)
+gen polviews_very_liberal = (polviews == 1) if ~missing(polviews)
+gen polviews_liberal = (polviews == 2) if ~missing(polviews)
+gen polviews_slight_liberal = (polviews == 3) if ~missing(polviews)
+gen polviews_moderate = (polviews == 4) if ~missing(polviews)
+gen polviews_slight_conserv = (polviews == 5) if ~missing(polviews)
+gen polviews_conservative = (polviews == 6) if ~missing(polviews)
+gen polviews_very_conserv = (polviews == 7) if ~missing(polviews)
+
+label var polviews_very_liberal "Very liberal"
+label var polviews_liberal "Liberal"
+label var polviews_slight_liberal "Slightly liberal"
+label var polviews_moderate "Moderate"
+label var polviews_slight_conserv "Slightly conservative"
+label var polviews_conservative "Conservative"
+label var polviews_very_conserv "Very conservative"
+
+/*------------------------------------------------------------------------------
+    13. Drop unnecessary variables and reorder
 ------------------------------------------------------------------------------*/
 
 * Drop temporary variables
 drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _userlang
 drop FL_17_DO_CONTROLARM FL_17_DO_INDUSTRYARM FL_17_DO_ACADEMICARM FL_17_DO_PERSONALARM
 
-* Rename Progress to lowercase
-rename Progress progress
+* Note: Progress already renamed to progress by _rename_qualtrics_metadata.do
 
 * Order variables logically
 order response_id prolific_pid prolific_id_entered ///
@@ -442,8 +419,8 @@ assert posterior_novacc >= 0 & posterior_novacc <= 100 if !mi(posterior_novacc)
 assert posterior_vacc >= 0 & posterior_vacc <= 100 if !mi(posterior_vacc)
 assert inlist(trust_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
 assert inlist(relevant_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
-assert inlist(vacc_intent, 1, 2, 3, 4, -99, .)
-assert inlist(age, 1, 2, 3, 4, 5, 6, -99, .)
+assert inlist(vacc_intent, 1, 2, 3, 4, $PREF_NOT_SAY, .)
+assert inlist(age, 1, 2, 3, 4, 5, 6, $PREF_NOT_SAY, .)
 assert inlist(gender, 1, 2, 3, 4, .)
 assert inlist(education, 1, 2, 3, 4, 5, 6, .)
 assert inlist(income, 1, 2, 3, 4, 5, 6, .)

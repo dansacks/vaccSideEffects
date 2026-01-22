@@ -476,11 +476,11 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 | Code | Label | N (%) |
 |------|-------|-------|
 | 1 | Under 18 | - |
-| 2 | 18-34 | 1,190 (33.71%) |
-| 3 | 35-49 | 1,407 (39.86%) |
-| 4 | 50-64 | 778 (22.04%) |
-| 5 | 65+ | 147 (4.16%) |
-| -99 | Prefer not to say | 1 (0.03%) |
+| 2 | 18-34 | 1,190 (33.72%) |
+| 3 | 35-49 | 1,407 (39.87%) |
+| 4 | 50-64 | 778 (22.05%) |
+| 5 | 65+ | 147 (4.17%) |
+| -99 | Prefer not to say | - |
 
 ### `gender`
 - **Type:** Categorical

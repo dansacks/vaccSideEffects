@@ -18,7 +18,7 @@ do "code/_config.do"
     1. Load and prepare prescreen data
 ------------------------------------------------------------------------------*/
 
-use "derived/prescreen_clean.dta" if quality_sample , clear
+use "derived/prescreen_clean.dta" if final_sample , clear
 
 
 * Rename conflicting variables with pre_ prefix
@@ -50,7 +50,7 @@ di "Prescreen observations: " _N
     2. Load and prepare main data
 ------------------------------------------------------------------------------*/
 
-use "derived/main_clean.dta" if quality_sample, clear
+use "derived/main_clean.dta" if final_sample, clear
 
 
 * Rename conflicting variables with main_ prefix

@@ -13,15 +13,16 @@ clear all
 global scriptname "merge_followup"
 do "code/_config.do"
 
-use "derived/followup_clean.dta" if quality_sample , clear
+use "derived/followup_clean.dta" if final_sample , clear
 rename attn_check attn_check_followup
-drop quality_sample is_preview
+drop final_sample is_preview
 
 tempfile followup
 save `followup'
 
 use "derived/merged_main_pre", clear
-assert quality_sample 
+* Note: final_sample was renamed to main_final_sample in merge_prescreen_main.do
+assert main_final_sample 
 
 
 merge 1:1 prolific_pid using `followup', update assert(1 2 3) keep(1 3)
