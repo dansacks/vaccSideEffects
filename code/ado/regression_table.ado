@@ -3,13 +3,13 @@
 
 program define regression_table
     version 14.0
-    syntax varlist [if] [in], keyvars(varlist) [controls(varlist) saving(string)]
+    syntax varlist [if] [in], keyvars(varlist) [controls(string) saving(string)]
 
     /*--------------------------------------------------------------------------
         1. Mark sample and validate inputs
     --------------------------------------------------------------------------*/
 
-    marksample touse
+    marksample touse, novarlist
 
     * Check we have observations
     quietly count if `touse'
