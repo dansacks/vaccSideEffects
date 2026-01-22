@@ -1,0 +1,27 @@
+
+tasks 2026-01-18
+
+
+1. The final sample flag should limit the sample to the first response for a given pid, instead of dropping pids with multiple responses, for all data sets (prescreen, main, followup). update all do files to make this change.
+2. count sample sizes should be updated to count the # obs that pass the following, in order: 
+    - prescreen:
+        - started prescreen (# non preview survey attempt)
+        - consented
+        - passed prescreen attention check
+        - first attempt only
+        - hesitant (vacc intent is "dont' intend" or "may or may not")
+    -  main survey:
+        - started (# non preview surveyattempt)
+        - linked to the final set from prescreen (hesitant + pass all other checks)
+        - consented
+        - passed attention check in main
+        - non-missing value of delta (and no -99 in posterior_vacc, posterior_novacc) 
+        - first attempt only
+    - follow up survey
+        - staretd (# non preview attempt)
+        - linked to the final set from main survey 
+        - passed attention check in follow up 
+        - has non-missing outcome (got_flu_vacc)
+        - first attempt only
+3. 
+

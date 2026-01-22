@@ -1,0 +1,5 @@
+## Descriptive work on beliefs
+
+0. Write a function which saves an in-memory plot to a csv file (i.e. the underlying x,y poitns get written to a csv file). Make this an ado file that is on the local path (called by _config). Develop some unit tests to verify. Produce a document explaining the function and tests.
+
+1. I wrote explore_beliefs.do and plot_beliefs_by_arm. Review them for errors. Then update rthem to export the csv of plots. Then add them to the make pipeline (in analaysis). Update the latex file so that it includes the plots from each. (The plots are the poole cdf of beliefs, the two sets of mean beliefs by vacc experience / by trust, and the combined plot of belief cdf by trial arm relative to control). 

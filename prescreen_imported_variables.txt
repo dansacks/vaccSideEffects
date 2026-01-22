@@ -1,0 +1,75 @@
+
+Contains data
+ Observations:         8,173                  
+    Variables:            52                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+startdate       strL    %9s                   StartDate
+enddate         strL    %9s                   EndDate
+status          str443  %443s                 Status
+ipaddress       strL    %9s                   IPAddress
+progress        str192  %192s                 Progress
+durationinseconds
+                strL    %9s                   Duration (in seconds)
+finished        strL    %9s                   Finished
+recordeddate    str55   %55s                  RecordedDate
+responseid      str24   %24s                  ResponseId
+recipientlastname
+                str32   %32s                  RecipientLastName
+recipientfirstname
+                str33   %33s                  RecipientFirstName
+recipientemail  strL    %9s                   RecipientEmail
+externalreference
+                str36   %36s                  ExternalReference
+locationlatitude
+                str31   %31s                  LocationLatitude
+locationlongitude
+                strL    %9s                   LocationLongitude
+distributionchannel
+                strL    %9s                   DistributionChannel
+userlanguage    strL    %9s                   UserLanguage
+consent         strL    %9s                   
+q42             str91   %91s                  Q42
+favoritenumber  strL    %9s                   Favorite Number
+vaccinehistory  str34   %34s                  Vaccine History
+othervaccines   str73   %73s                  Other Vaccines
+vaccinestatus   str43   %43s                  Vaccine Status
+reaction        str29   %29s                  Reaction
+fluvaxexperience
+                str62   %62s                  Flu Vax Experience
+covidvaxexperience
+                str62   %62s                  COVID Vax Experience
+v27             str62   %62s                  Reaction
+conditions      str66   %66s                  Conditions
+insurance       str20   %20s                  Insurance
+government      str27   %27s                  Government
+doctors         str27   %27s                  Doctors
+government_prior
+                str27   %27s                  
+importance      str80   %80s                  Importance
+source          strL    %9s                   Source
+v35             str262  %262s                 Source
+v36             strL    %9s                   Source
+doctor          str22   %22s                  Doctor
+socialmedia     str20   %20s                  Social Media
+podcasts        str20   %20s                  Podcasts
+cdc             str20   %20s                  CDC
+news            str20   %20s                  News
+reliabilitydoctor
+                str20   %20s                  Reliability: Doctor
+reliabilitysm   str20   %20s                  Reliability: SM
+reliabilitypods str20   %20s                  Reliability: Pods
+reliabilitycdc  str20   %20s                  Reliability: CDC
+reliabilitynews str20   %20s                  Reliability: News
+consumption     str20   %20s                  Consumption
+reliability     str20   %20s                  Reliability
+finalcomments   strL    %9s                   Final Comments
+prolific_pid    str27   %27s                  PROLIFIC_PID
+session_id      str25   %25s                  SESSION_ID
+study_id        str24   %24s                  STUDY_ID
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
