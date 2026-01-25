@@ -1,0 +1,59 @@
+%-------------------------------------------------------------------------------
+\section{2026-01-20: Stata Code Refactoring}
+%-------------------------------------------------------------------------------
+
+\textbf{Goal:} Reduce duplication and improve maintainability of Stata do-files.
+
+\subsection{New Include Files}
+
+Created shared components in \texttt{code/include/}:
+\begin{itemize}
+    \item \texttt{\_rename\_qualtrics\_metadata.do} -- shared Qualtrics field renames
+    \item \texttt{\_define\_value\_labels.do} -- all common label definitions
+    \item \texttt{\_create\_quality\_flags.do} -- parameterized quality flag generation
+    \item \texttt{\_report\_sample\_quality.do} -- standardized quality reporting
+\end{itemize}
+
+\subsection{Constants Added to \_config.do}
+
+\begin{itemize}
+    \item \texttt{\$ATTN\_CHECK\_PRESCREEN}, \texttt{\$ATTN\_CHECK\_MAIN}, \texttt{\$ATTN\_CHECK\_FOLLOWUP}
+    \item \texttt{\$PREF\_NOT\_SAY} (-99)
+\end{itemize}
+
+\subsection{Dead Code Removed}
+
+\begin{itemize}
+    \item \texttt{quality\_sample} variable (was duplicate of \texttt{final\_sample})
+    \item No-op renames in \texttt{clean\_main.do}
+\end{itemize}
+
+\subsection{Balance Table Refactoring}
+
+\begin{itemize}
+    \item Created \texttt{calc\_balance\_stats} program to eliminate duplicate loops
+    \item Single pass for CSV + \LaTeX\ output
+\end{itemize}
+
+\subsection{Comprehensive Balance Tables}
+
+Created domain-specific tables via \texttt{balance\_tables\_full.do}:
+\begin{itemize}
+    \item Prior beliefs
+    \item Vaccination intent/experience
+    \item Demographics
+    \item Trust
+    \item Health conditions
+\end{itemize}
+
+Omnibus test results:
+\begin{itemize}
+    \item All domains: slight imbalance detected
+    \item Excluding demographics: no imbalance
+\end{itemize}
+
+\textbf{Note:} Demographics are collected \emph{after} randomization, so excluding them from balance checks may be appropriate.
+
+\subsection{Verification}
+
+\texttt{make clean-data \&\& make all} completes successfully. Balance table output verified correct.

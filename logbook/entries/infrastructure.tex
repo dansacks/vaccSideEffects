@@ -1,0 +1,59 @@
+%-------------------------------------------------------------------------------
+\section{Project Overview}
+%-------------------------------------------------------------------------------
+
+This study examines vaccine side effects using a 4-arm randomized controlled trial (Control, Industry, Academic, Personal).
+
+\textbf{Directory structure:}
+\begin{itemize}
+    \item \texttt{code/} -- Stata do-files and Python scripts
+    \item \texttt{raw\_data/} -- Minimal raw data for replication
+    \item \texttt{derived/} -- Cleaned data files (.dta)
+    \item \texttt{output/} -- Logs, tables, figures, codebooks
+    \item \texttt{logbook/} -- This research logbook
+\end{itemize}
+
+%-------------------------------------------------------------------------------
+\section{Build System}
+%-------------------------------------------------------------------------------
+
+The project uses Make for build automation:
+
+\begin{lstlisting}[language=bash]
+make all        # Run full pipeline
+make prescreen  # Clean prescreen data
+make main       # Clean main survey data
+make followup   # Clean followup data
+make balance    # Generate balance tables
+make analysis   # Run all analyses
+\end{lstlisting}
+
+For interactive Stata sessions, use the master do-files:
+
+\begin{lstlisting}[language=bash]
+do "code/build.do"    # Run all data cleaning/merging
+do "code/analyze.do"  # Run all analyses
+\end{lstlisting}
+
+%-------------------------------------------------------------------------------
+\section{Data Pipelines}
+%-------------------------------------------------------------------------------
+
+\subsection{Sample Selection}
+
+Final samples are defined as first attempt per PID passing all quality checks:
+\begin{itemize}
+    \item \textbf{Prescreen:} consent + attention check + first attempt + hesitant (vacc\_intent $\leq$ 2)
+    \item \textbf{Main:} linked to prescreen final + consent + attention + non-missing delta + first attempt
+    \item \textbf{Followup:} linked to main final + attention + non-missing outcome + first attempt
+\end{itemize}
+
+\subsection{Key Variables}
+
+\begin{itemize}
+    \item \texttt{arm\_n} (0--3): Treatment arm assignment
+    \item \texttt{post\_trial}: Post-treatment side effect estimate (0--100)
+    \item \texttt{posterior\_novacc}, \texttt{posterior\_vacc}: Posterior beliefs
+    \item \texttt{delta}: posterior\_vacc $-$ posterior\_novacc
+    \item \texttt{maybe}: Binary vaccination intention
+\end{itemize}

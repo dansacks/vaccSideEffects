@@ -1,0 +1,98 @@
+%===============================================================================
+% Research Logbook - VaccSideEffects Study
+%
+% Compile: make (or pdflatex logbook.tex twice)
+%===============================================================================
+
+\documentclass[11pt]{report}
+
+% Page setup
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+
+% Formatting
+\usepackage{setspace}
+\onehalfspacing
+
+% Section formatting
+\usepackage{titlesec}
+\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-30pt}{20pt}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% Figures
+\usepackage{graphicx}
+\graphicspath{{../output/figures/}}
+
+% Code listings
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+% Table of contents for chapters
+\usepackage{etoc}
+
+% Title
+\title{Research Logbook\\[0.5em]\large VaccSideEffects Study}
+\author{Dan Sacks}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%===============================================================================
+\chapter{Research Infrastructure}
+%===============================================================================
+
+\localtableofcontents
+
+\input{entries/infrastructure.tex}
+
+%===============================================================================
+\chapter{Chronological Entries}
+%===============================================================================
+
+\localtableofcontents
+
+\input{entries/2026-01-20_refactoring.tex}
+
+\end{document}
