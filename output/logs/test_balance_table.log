@@ -1,0 +1,696 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/test_balance_tab
+> le.log
+  log type:  text
+ opened on:  22 Jan 2026, 12:56:36
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: test_balance_table ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/test_balance_table.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Test Case 1: Deterministic 2-group balance table
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. di ""
+
+
+. di "=============================================="
+==============================================
+
+. di "=== TEST CASE 1: Deterministic 2-group"
+=== TEST CASE 1: Deterministic 2-group
+
+. di "=============================================="
+==============================================
+
+. 
+. clear
+
+. input group x1 x2
+
+         group         x1         x2
+  1. 0 1.0 2.0
+  2. 0 1.2 2.1
+  3. 0 0.8 1.9
+  4. 1 1.5 2.0
+  5. 1 1.7 2.2
+  6. 1 1.3 1.8
+  7. end
+
+. label var x1 "Variable One"
+
+. label var x2 "Variable Two"
+
+. 
+. balance_table x1 x2, group(group) saving(output/tables/test_balance_2group.te
+> x)
+
+Balance Table: group(group)
+------------------------------------------------------------------------------
+Variable        0        1   P-value
+------------------------------------------------------------------------------
+Variable One    1.000    1.500    0.038
+Variable Two    2.000    2.000    1.000
+------------------------------------------------------------------------------
+N        3        3
+------------------------------------------------------------------------------
+Saved: output/tables/test_balance_2group.tex
+
+. 
+. * Verify output
+. di ""
+
+
+. di "=== Verifying output ==="
+=== Verifying output ===
+
+. type output/tables/test_balance_2group.tex
+Variable One & 1.000 & 1.500 & 0.038 \\
+Variable Two & 2.000 & 2.000 & 1.000 \\
+N & 3 & 3
+
+. 
+. di ""
+
+
+. di "Expected output:"
+Expected output:
+
+. di "Variable One & 1.000 & 1.500 & [p-value] \\"
+Variable One & 1.000 & 1.500 & [p-value] \\
+
+. di "Variable Two & 2.000 & 2.000 & [p-value] \\"
+Variable Two & 2.000 & 2.000 & [p-value] \\
+
+. di "N & 3 & 3 &"
+N & 3 & 3 &
+
+. di ""
+
+
+. di "x1: group 0 mean = 1.0, group 1 mean = 1.5"
+x1: group 0 mean = 1.0, group 1 mean = 1.5
+
+. di "x2: group 0 mean = 2.0, group 1 mean = 2.0 (identical, p=1)"
+x2: group 0 mean = 2.0, group 1 mean = 2.0 (identical, p=1)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Test Case 2: Deterministic 4-group with joint test
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. di ""
+
+
+. di "=============================================="
+==============================================
+
+. di "=== TEST CASE 2: Deterministic 4-group with joint test"
+=== TEST CASE 2: Deterministic 4-group with joint test
+
+. di "=============================================="
+==============================================
+
+. 
+. clear
+
+. input arm x1 x2 x3
+
+           arm         x1         x2         x3
+  1. 0 1.0 1.0 1.0
+  2. 0 1.1 1.1 1.1
+  3. 1 1.0 2.0 1.0
+  4. 1 1.1 2.1 1.1
+  5. 2 1.0 1.0 1.0
+  6. 2 1.1 1.1 1.1
+  7. 3 1.0 1.0 1.0
+  8. 3 1.1 1.1 1.1
+  9. end
+
+. label var x1 "Balanced"
+
+. label var x2 "Imbalanced"
+
+. label var x3 "Also Balanced"
+
+. 
+. balance_table x1 x2 x3, group(arm) saving(output/tables/test_balance_4group.t
+> ex) jointtest
+
+Simultaneous results for _bt_est1, _bt_est2, _bt_est3
+
+                                                             Number of obs = 8
+
+------------------------------------------------------------------------------
+             |               Robust
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+_bt_est1_m~n |
+         arm |
+          1  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+          2  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+          3  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+             |
+       _cons |       1.05   .0377965    27.78   0.000     .9759203     1.12408
+-------------+----------------------------------------------------------------
+_bt_est1_l~r |
+       _cons |  -5.298317   .1889822   -28.04   0.000    -5.668715   -4.927919
+-------------+----------------------------------------------------------------
+_bt_est2_m~n |
+         arm |
+          1  |   .9999999   .0534522    18.71   0.000     .8952355    1.104764
+          2  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+          3  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+             |
+       _cons |       1.05   .0377965    27.78   0.000     .9759203     1.12408
+-------------+----------------------------------------------------------------
+_bt_est2_l~r |
+       _cons |  -5.298317   .1889822   -28.04   0.000    -5.668716   -4.927919
+-------------+----------------------------------------------------------------
+_bt_est3_m~n |
+         arm |
+          1  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+          2  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+          3  |          0   .0534523     0.00   1.000    -.1047645    .1047645
+             |
+       _cons |       1.05   .0377965    27.78   0.000     .9759203     1.12408
+-------------+----------------------------------------------------------------
+_bt_est3_l~r |
+       _cons |  -5.298317   .1889822   -28.04   0.000    -5.668715   -4.927919
+------------------------------------------------------------------------------
+
+Balance Table: group(arm)
+------------------------------------------------------------------------------
+Variable        0        1        2        3   P-value
+------------------------------------------------------------------------------
+Balanced    1.050    1.050    1.050    1.050    1.000
+Imbalanced    1.050    2.050    1.050    1.050    0.000
+Also Balanced    1.050    1.050    1.050    1.050    1.000
+------------------------------------------------------------------------------
+Joint test: chi2(3) =    0.000, p = 1.000
+------------------------------------------------------------------------------
+N        2        2        2        2
+------------------------------------------------------------------------------
+Saved: output/tables/test_balance_4group.tex
+
+. 
+. * Verify output
+. di ""
+
+
+. di "=== Verifying output ==="
+=== Verifying output ===
+
+. type output/tables/test_balance_4group.tex
+Balanced & 1.050 & 1.050 & 1.050 & 1.050 & 1.000 \\
+Imbalanced & 1.050 & 2.050 & 1.050 & 1.050 & 0.000 \\
+Also Balanced & 1.050 & 1.050 & 1.050 & 1.050 & 1.000 \\
+Joint test & \multicolumn{4}{c}{$\chi^2(3)=0.000$} & 1.000 \\
+N & 2 & 2 & 2 & 2
+
+. 
+. di ""
+
+
+. di "Expected:"
+Expected:
+
+. di "- x1: all means = 1.050, p = 1.000 (identical across arms)"
+- x1: all means = 1.050, p = 1.000 (identical across arms)
+
+. di "- x2: arm 0,2,3 mean = 1.050, arm 1 mean = 2.050, p << 0.05"
+- x2: arm 0,2,3 mean = 1.050, arm 1 mean = 2.050, p << 0.05
+
+. di "- x3: all means = 1.050, p = 1.000 (identical across arms)"
+- x3: all means = 1.050, p = 1.000 (identical across arms)
+
+. di "- Joint test should detect imbalance in x2"
+- Joint test should detect imbalance in x2
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Test Case 3: With if condition
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. di ""
+
+
+. di "=============================================="
+==============================================
+
+. di "=== TEST CASE 3: With if condition"
+=== TEST CASE 3: With if condition
+
+. di "=============================================="
+==============================================
+
+. 
+. clear
+
+. input group x1 insample
+
+         group         x1   insample
+  1. 0 1.0 1
+  2. 0 2.0 1
+  3. 0 3.0 0
+  4. 1 4.0 1
+  5. 1 5.0 1
+  6. 1 6.0 0
+  7. end
+
+. label var x1 "Test Variable"
+
+. 
+. di "Full sample means: group 0 = 2.0, group 1 = 5.0"
+Full sample means: group 0 = 2.0, group 1 = 5.0
+
+. di "Restricted sample (insample==1) means: group 0 = 1.5, group 1 = 4.5"
+Restricted sample (insample==1) means: group 0 = 1.5, group 1 = 4.5
+
+. 
+. balance_table x1 if insample==1, group(group) saving(output/tables/test_balan
+> ce_if.tex)
+
+Balance Table: group(group)
+------------------------------------------------------------------------------
+Variable        0        1   P-value
+------------------------------------------------------------------------------
+Test Variable    1.500    4.500    0.051
+------------------------------------------------------------------------------
+N        2        2
+------------------------------------------------------------------------------
+Saved: output/tables/test_balance_if.tex
+
+. 
+. di ""
+
+
+. di "=== Verifying output ==="
+=== Verifying output ===
+
+. type output/tables/test_balance_if.tex
+Test Variable & 1.500 & 4.500 & 0.051 \\
+N & 2 & 2
+
+. 
+. di ""
+
+
+. di "Expected: means = 1.500 and 4.500, N = 2 and 2"
+Expected: means = 1.500 and 4.500, N = 2 and 2
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Test Case 4: Replicate existing balance_table.do output
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. di ""
+
+
+. di "=============================================="
+==============================================
+
+. di "=== TEST CASE 4: Replicate balance_table.do"
+=== TEST CASE 4: Replicate balance_table.do
+
+. di "=============================================="
+==============================================
+
+. 
+. use "derived/merged_main_pre.dta", clear
+
+. 
+. * Create same indicator variables as balance_table.do
+. gen prior_vacc_likely = (prior_self_vacc >= 5) if ~missing(prior_self_vacc)
+
+. label var prior_vacc_likely "Prior: SE likely with vaccine"
+
+. 
+. gen pre_no_intent = (pre_vacc_intent_pre == 1) if ~missing(pre_vacc_intent_pr
+> e)
+(13 missing values generated)
+
+. label var pre_no_intent "Do not intend to vaccinate"
+
+. 
+. gen pre_had_flu = had_prior_flu_vacc
+(13 missing values generated)
+
+. label var pre_had_flu "Previously had flu vaccine"
+
+. 
+. gen pre_had_covid = had_prior_covid_vacc
+(13 missing values generated)
+
+. label var pre_had_covid "Previously had COVID vaccine"
+
+. 
+. gen severe_flu_reaction = (flu_vacc_reaction == 3) if had_prior_flu_vacc == 1
+(1,444 missing values generated)
+
+. label var severe_flu_reaction "Severe flu vaccine reaction"
+
+. 
+. gen severe_covid_reaction = (covid_vacc_reaction == 3) if had_prior_covid_vac
+> c == 1
+(1,312 missing values generated)
+
+. label var severe_covid_reaction "Severe COVID vaccine reaction"
+
+. 
+. gen has_condition = (cond_none == 0) if ~missing(cond_none)
+(13 missing values generated)
+
+. label var has_condition "Has health condition"
+
+. 
+. capture gen age_18_34 = (age == 2) if ~missing(age) & age != $PREF_NOT_SAY
+
+. capture label var age_18_34 "Age 18--34"
+
+. 
+. capture gen age_35_49 = (age == 3) if ~missing(age) & age != $PREF_NOT_SAY
+
+. capture label var age_35_49 "Age 35--49"
+
+. 
+. capture gen race_white = (race == 1) if ~missing(race) & race != 7
+
+. capture label var race_white "White"
+
+. 
+. capture gen hispanic = (ethnicity == 1) if ~missing(ethnicity) & ethnicity !=
+>  3
+
+. capture label var hispanic "Hispanic"
+
+. 
+. gen income_lt50k = (income <= 2) if ~missing(income) & income != 6
+(95 missing values generated)
+
+. label var income_lt50k "Income under 50k"
+
+. 
+. gen trust_govt_high = (trust_govt >= 4) if ~missing(trust_govt)
+(13 missing values generated)
+
+. label var trust_govt_high "Trust government"
+
+. 
+. gen follow_doc_high = (follow_doctor >= 4) if ~missing(follow_doctor)
+(13 missing values generated)
+
+. label var follow_doc_high "Follow doctor advice"
+
+. 
+. gen college = (education == 4 | education == 5) if ~missing(education) & educ
+> ation != 6
+(21 missing values generated)
+
+. label var college "College degree"
+
+. 
+. * Run balance table with new command
+. balance_table prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid ///
+>     severe_flu_reaction severe_covid_reaction has_condition ///
+>     age_18_34 age_35_49 race_white hispanic income_lt50k ///
+>     trust_govt_high follow_doc_high college, ///
+>     group(arm_n) saving(output/tables/test_replicate_balance.tex) jointtest
+
+Simultaneous results for _bt_est1, _bt_est2, _bt_est3, _bt_est4, _bt_est5, _bt_
+> est6, _bt_est7, _bt_est8, _bt_est9, _bt_est10, _bt_est11, _bt_est12, _bt_est1
+> 3, _bt_est14, _bt_est15
+
+                                                         Number of obs = 3,538
+
+------------------------------------------------------------------------------
+             |               Robust
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+_bt_est1_m~n |
+       arm_n |
+1. Industry  |  -.0101695    .023669    -0.43   0.667    -.0565599    .0362209
+2. Academic  |  -.0185326    .023704    -0.78   0.434    -.0649916    .0279263
+3. Personal  |  -.0220671   .0236823    -0.93   0.351    -.0684836    .0243495
+             |
+       _cons |   .5514124   .0167206    32.98   0.000     .5186407    .5841842
+-------------+----------------------------------------------------------------
+_bt_est1_l~r |
+       _cons |   -1.39147   .0026708  -521.00   0.000    -1.396705   -1.386236
+-------------+----------------------------------------------------------------
+_bt_est2_m~n |
+       arm_n |
+1. Industry  |   .0109582   .0225717     0.49   0.627    -.0332814    .0551979
+2. Academic  |   .0185348   .0224939     0.82   0.410    -.0255524    .0626221
+3. Personal  |   .0068181   .0225613     0.30   0.762    -.0374013    .0510375
+             |
+       _cons |   .6553288   .0160051    40.94   0.000     .6239593    .6866983
+-------------+----------------------------------------------------------------
+_bt_est2_l~r |
+       _cons |  -1.499769   .0117236  -127.93   0.000    -1.522747   -1.476791
+-------------+----------------------------------------------------------------
+_bt_est3_m~n |
+       arm_n |
+1. Industry  |   .0243725   .0232271     1.05   0.294    -.0211517    .0698968
+2. Academic  |   -.039546   .0235008    -1.68   0.092    -.0856066    .0065147
+3. Personal  |  -.0076828   .0233499    -0.33   0.742    -.0534478    .0380821
+             |
+       _cons |   .5997732   .0164996    36.35   0.000     .5674346    .6321119
+-------------+----------------------------------------------------------------
+_bt_est3_l~r |
+       _cons |  -1.423336   .0066192  -215.03   0.000    -1.436309   -1.410363
+-------------+----------------------------------------------------------------
+_bt_est4_m~n |
+       arm_n |
+1. Industry  |   .0153849   .0229557     0.67   0.503    -.0296075    .0603773
+2. Academic  |  -.0019841   .0230575    -0.09   0.931    -.0471761    .0432078
+3. Personal  |   .0046543    .022983     0.20   0.840    -.0403916    .0497002
+             |
+       _cons |   .6269841   .0162862    38.50   0.000     .5950638    .6589044
+-------------+----------------------------------------------------------------
+_bt_est4_l~r |
+       _cons |  -1.457018   .0091829  -158.67   0.000    -1.475016    -1.43902
+-------------+----------------------------------------------------------------
+_bt_est5_m~n |
+       arm_n |
+1. Industry  |  -.0146848   .0183264    -0.80   0.423    -.0506039    .0212343
+2. Academic  |   -.018501   .0186203    -0.99   0.320     -.054996    .0179941
+3. Personal  |  -.0027886   .0190033    -0.15   0.883    -.0400344    .0344572
+             |
+       _cons |   .1077505    .013483     7.99   0.000     .0813243    .1341767
+-------------+----------------------------------------------------------------
+_bt_est5_l~r |
+       _cons |   -2.41696   .0586096   -41.24   0.000    -2.531833   -2.302087
+-------------+----------------------------------------------------------------
+_bt_est6_m~n |
+       arm_n |
+1. Industry  |  -.0263649   .0217563    -1.21   0.226    -.0690064    .0162766
+2. Academic  |  -.0354365   .0216097    -1.64   0.101    -.0777907    .0069177
+3. Personal  |  -.0018245   .0224835    -0.08   0.935    -.0458914    .0422424
+             |
+       _cons |   .1699819   .0159751    10.64   0.000     .1386713    .2012926
+-------------+----------------------------------------------------------------
+_bt_est6_l~r |
+       _cons |  -2.037574   .0405136   -50.29   0.000    -2.116979   -1.958169
+-------------+----------------------------------------------------------------
+_bt_est7_m~n |
+       arm_n |
+1. Industry  |   .0486056   .0187922     2.59   0.010     .0117736    .0854376
+2. Academic  |  -.0007524   .0178393    -0.04   0.966    -.0357169     .034212
+3. Personal  |   .0129867   .0180952     0.72   0.473    -.0224792    .0484526
+             |
+       _cons |   .1689342   .0126184    13.39   0.000     .1442027    .1936658
+-------------+----------------------------------------------------------------
+_bt_est7_l~r |
+       _cons |  -1.897217   .0274158   -69.20   0.000    -1.950951   -1.843484
+-------------+----------------------------------------------------------------
+_bt_est8_m~n |
+       arm_n |
+1. Industry  |  -.0087137   .0226587    -0.38   0.701     -.053124    .0356965
+2. Academic  |  -.0188999    .022614    -0.84   0.403    -.0632225    .0254227
+3. Personal  |    -.02944   .0224784    -1.31   0.190    -.0734968    .0146167
+             |
+       _cons |   .3514739   .0160782    21.86   0.000     .3199612    .3829866
+-------------+----------------------------------------------------------------
+_bt_est8_l~r |
+       _cons |  -1.497763    .011602  -129.10   0.000    -1.520502   -1.475023
+-------------+----------------------------------------------------------------
+_bt_est9_m~n |
+       arm_n |
+1. Industry  |  -.0144802   .0232455    -0.62   0.533    -.0600404    .0310801
+2. Academic  |   .0200466   .0234481     0.85   0.393    -.0259109    .0660041
+3. Personal  |  -.0115262   .0232551    -0.50   0.620    -.0571054    .0340531
+             |
+       _cons |   .4002268   .0164996    24.26   0.000     .3678881    .4325654
+-------------+----------------------------------------------------------------
+_bt_est9_l~r |
+       _cons |  -1.427842   .0070161  -203.51   0.000    -1.441593    -1.41409
+-------------+----------------------------------------------------------------
+_bt_est10_~n |
+       arm_n |
+1. Industry  |  -.0062358   .0205239    -0.30   0.761    -.0464619    .0339902
+2. Academic  |  -.0113611   .0206293    -0.55   0.582    -.0517938    .0290716
+3. Personal  |  -.0011568   .0204415    -0.06   0.955    -.0412214    .0389077
+             |
+       _cons |   .7562358   .0144591    52.30   0.000     .7278966    .7845751
+-------------+----------------------------------------------------------------
+_bt_est10_~r |
+       _cons |  -1.677128   .0195785   -85.66   0.000    -1.715501   -1.638755
+-------------+----------------------------------------------------------------
+_bt_est11_~n |
+       arm_n |
+1. Industry  |   .0145238   .0134629     1.08   0.281    -.0118631    .0409106
+2. Academic  |     .01859   .0136253     1.36   0.172    -.0081151    .0452951
+3. Personal  |   .0109233   .0133313     0.82   0.413    -.0152056    .0370521
+             |
+       _cons |   .0804989   .0091622     8.79   0.000     .0625414    .0984564
+-------------+----------------------------------------------------------------
+_bt_est11_~r |
+       _cons |  -2.486803    .047625   -52.22   0.000    -2.580146   -2.393459
+-------------+----------------------------------------------------------------
+_bt_est12_~n |
+       arm_n |
+1. Industry  |    .048713   .0233595     2.09   0.037     .0029293    .0944967
+2. Academic  |   .0313225   .0231943     1.35   0.177    -.0141374    .0767824
+3. Personal  |   .0083602   .0230112     0.36   0.716     -.036741    .0534613
+             |
+       _cons |    .350348   .0162517    21.56   0.000     .3184953    .3822007
+-------------+----------------------------------------------------------------
+_bt_est12_~r |
+       _cons |    -1.4541   .0090783  -160.17   0.000    -1.471894   -1.436307
+-------------+----------------------------------------------------------------
+_bt_est13_~n |
+       arm_n |
+1. Industry  |  -.0194965   .0237619    -0.82   0.412    -.0660689     .027076
+2. Academic  |  -.0171125   .0237538    -0.72   0.471    -.0636691    .0294442
+3. Personal  |  -.0230639   .0237063    -0.97   0.331    -.0695273    .0233995
+             |
+       _cons |   .4705215    .016809    27.99   0.000     .4375766    .5034665
+-------------+----------------------------------------------------------------
+_bt_est13_~r |
+       _cons |  -1.393392   .0030588  -455.54   0.000    -1.399387   -1.387397
+-------------+----------------------------------------------------------------
+_bt_est14_~n |
+       arm_n |
+1. Industry  |  -.0179133   .0236693    -0.76   0.449    -.0643043    .0284777
+2. Academic  |  -.0202999   .0236614    -0.86   0.391    -.0666754    .0260755
+3. Personal  |  -.0019255   .0235777    -0.08   0.935    -.0481369    .0442858
+             |
+       _cons |   .5680272   .0166817    34.05   0.000     .5353317    .6007227
+-------------+----------------------------------------------------------------
+_bt_est14_~r |
+       _cons |  -1.399051   .0039784  -351.66   0.000    -1.406849   -1.391254
+-------------+----------------------------------------------------------------
+_bt_est15_~n |
+       arm_n |
+1. Industry  |  -.0307517   .0238368    -1.29   0.197     -.077471    .0159676
+2. Academic  |  -.0398737   .0238504    -1.67   0.095    -.0866197    .0068723
+3. Personal  |  -.0166634   .0237817    -0.70   0.484    -.0632748    .0299479
+             |
+       _cons |   .5353075   .0168344    31.80   0.000     .5023126    .5683024
+-------------+----------------------------------------------------------------
+_bt_est15_~r |
+       _cons |  -1.386794   .0013628 -1017.61   0.000    -1.389465   -1.384123
+------------------------------------------------------------------------------
+
+Balance Table: group(arm_n)
+------------------------------------------------------------------------------
+Variable        0        1        2        3   P-value
+------------------------------------------------------------------------------
+Prior: SE likely with ~e    0.551    0.541    0.533    0.529    0.794
+Do not intend to vacci~e    0.655    0.666    0.674    0.662    0.870
+Previously had flu vac~e    0.600    0.624    0.560    0.592    0.055
+Previously had COVID v~e    0.627    0.642    0.625    0.632    0.876
+Severe flu vaccine rea~n    0.108    0.093    0.089    0.105    0.703
+Severe COVID vaccine r~n    0.170    0.144    0.135    0.168    0.256
+Has health condition    0.169    0.218    0.168    0.182    0.033
+Age 18--34    0.351    0.343    0.333    0.322    0.588
+Age 35--49    0.400    0.386    0.420    0.389    0.444
+White    0.756    0.750    0.745    0.755    0.944
+Hispanic    0.080    0.095    0.099    0.091    0.547
+Income under 50k    0.350    0.399    0.382    0.359    0.146
+Trust government    0.471    0.451    0.453    0.447    0.773
+Follow doctor advice    0.568    0.550    0.548    0.566    0.755
+College degree    0.535    0.505    0.495    0.519    0.363
+------------------------------------------------------------------------------
+Joint test: chi2(45) =   42.508, p = 0.578
+------------------------------------------------------------------------------
+N      885      885      882      886
+------------------------------------------------------------------------------
+Saved: output/tables/test_replicate_balance.tex
+
+. 
+. di ""
+
+
+. di "Compare output/tables/test_replicate_balance.tex with output/tables/balan
+> ce_table.tex"
+Compare output/tables/test_replicate_balance.tex with output/tables/balance_tab
+> le.tex
+
+. di "Values should match within floating point precision"
+Values should match within floating point precision
+
+. di ""
+
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Summary
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. di ""
+
+
+. di "=============================================="
+==============================================
+
+. di "=== TEST SUMMARY ==="
+=== TEST SUMMARY ===
+
+. di "=============================================="
+==============================================
+
+. di "Test files created:"
+Test files created:
+
+. di "  - output/tables/test_balance_2group.tex"
+  - output/tables/test_balance_2group.tex
+
+. di "  - output/tables/test_balance_4group.tex"
+  - output/tables/test_balance_4group.tex
+
+. di "  - output/tables/test_balance_if.tex"
+  - output/tables/test_balance_if.tex
+
+. di "  - output/tables/test_replicate_balance.tex"
+  - output/tables/test_replicate_balance.tex
+
+. di ""
+
+
+. di "Review output and compare test_replicate_balance.tex with balance_table.t
+> ex"
+Review output and compare test_replicate_balance.tex with balance_table.tex
+
+. 
+. capture log close

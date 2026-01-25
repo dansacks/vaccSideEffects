@@ -1,0 +1,225 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/explore_persiste
+> nce.log
+  log type:  text
+ opened on:  22 Jan 2026, 13:18:07
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: explore_persistence ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/explore_persistence.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     1. Define controls
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. do "code/_set_controls.do"
+
+. /*===========================================================================
+> ===
+>     Control Variables Definition
+> 
+>     Include this file in do-files that run regressions with control variables
+> .
+>     Sets globals: prior_beliefs, vacc_experience, demographics, controls
+> =============================================================================
+> =*/
+. 
+. * Prior beliefs from main survey
+. global prior_beliefs "i.prior_self_placebo i.prior_self_vacc"
+
+. 
+. * Vaccine experiences from prescreen
+. global vacc_experience "had_prior_covid_vacc had_prior_flu_vacc i.covid_vacc_
+> reaction i.flu_vacc_reaction"
+
+. 
+. * Demographics from main survey
+. global demographics "i.age i.gender i.education i.income i.race i.ethnicity i
+> .polviews"
+
+. 
+. * All controls combined
+. global controls "$prior_beliefs i.pre_vacc_intent $vacc_experience $demograph
+> ics i.trust_govt cond_*"
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     2. Load data and prepare variables
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. use "derived/merged_all.dta", clear
+
+. 
+. * Sample indicators
+. gen se_sample = guess_vaccine ~= -99 & guess_placebo ~= -99 & ///
+>         in_followup & ~missing(guess_vaccine) & ~missing(guess_placebo)
+
+. 
+. egen recall_miss = rowmiss(recall_gavi recall_manufacturer recall_university)
+
+. gen invalid_miss = in_followup & inlist(recall_study, 1, 3) & recall_miss
+
+. gen recall_sample = in_followup & ~invalid_miss
+
+. 
+. * Recall outcome variables
+. gen yes_recall_study = 1.recall_study
+(525 missing values generated)
+
+. gen yes_recall_manu = 1.recall_manufacturer
+(1,014 missing values generated)
+
+. gen yes_recall_uni = 1.recall_university
+(1,014 missing values generated)
+
+. gen yes_recall_gavi = 1.recall_gavi
+(1,014 missing values generated)
+
+. 
+. * Adverse event rate guess
+. gen guess_delta = guess_vaccine - guess_placebo
+(538 missing values generated)
+
+. 
+. * Label treatment indicators
+. label var arm_industry "Industry"
+
+. label var arm_academic "Academic"
+
+. label var arm_personal "Personal"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3. Attrition table
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. regression_table in_followup recall_sample se_sample, ///
+>     keyvars(arm_industry arm_academic arm_personal) ///
+>     controls($controls) saving(output/tables/persistence_attrition.tex)
+
+=== Regression: in_followup ===
+
+=== Regression: recall_sample ===
+
+=== Regression: se_sample ===
+
+Regression Table
+-------------------------------------------------------------------------------
+                      in_follo~p  recall_s~e   se_sample
+-------------------------------------------------------------------------------
+Industry                   0.018       0.020       0.028
+                        ( 0.016)    ( 0.016)    ( 0.017)
+Academic                   0.007       0.008       0.008
+                        ( 0.017)    ( 0.017)    ( 0.018)
+Personal                   0.002       0.003       0.007
+                        ( 0.017)    ( 0.017)    ( 0.017)
+-------------------------------------------------------------------------------
+Control mean               0.858       0.854       0.835
+N                          3,516       3,516       3,516
+-------------------------------------------------------------------------------
+Saved: output/tables/persistence_attrition.tex
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     4. Recall table
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. regression_table yes_recall_study yes_recall_manu yes_recall_uni yes_recall_g
+> avi ///
+>     if recall_sample, ///
+>     keyvars(arm_industry arm_academic arm_personal) ///
+>     controls($controls) saving(output/tables/persistence_recall.tex)
+
+=== Regression: yes_recall_study ===
+
+=== Regression: yes_recall_manu ===
+
+=== Regression: yes_recall_uni ===
+
+=== Regression: yes_recall_gavi ===
+
+Regression Table
+-------------------------------------------------------------------------------
+                      yes_reca~y  yes_reca~u  yes_rec~ni  yes_rec~vi
+-------------------------------------------------------------------------------
+Industry                  -0.008       0.043       0.023      -0.013
+                        ( 0.022)    ( 0.027)    ( 0.028)    ( 0.018)
+Academic                   0.018       0.072       0.072       0.003
+                        ( 0.023)    ( 0.028)    ( 0.028)    ( 0.018)
+Personal                   0.017       0.048       0.050      -0.002
+                        ( 0.022)    ( 0.027)    ( 0.028)    ( 0.018)
+-------------------------------------------------------------------------------
+Control mean               0.247       0.349       0.480       0.109
+N                          2,995       2,515       2,515       2,515
+-------------------------------------------------------------------------------
+Saved: output/tables/persistence_recall.tex
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     5. Adverse event rates table
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. regression_table guess_placebo placebo_correct guess_vaccine vaccine_correct 
+> guess_delta ///
+>     if se_sample, ///
+>     keyvars(arm_industry arm_academic arm_personal) ///
+>     controls($controls) saving(output/tables/persistence_adverse.tex)
+
+=== Regression: guess_placebo ===
+
+=== Regression: placebo_correct ===
+
+=== Regression: guess_vaccine ===
+
+=== Regression: vaccine_correct ===
+
+=== Regression: guess_delta ===
+
+Regression Table
+-------------------------------------------------------------------------------
+                      guess_pl~o  placebo_~t  guess_va~e  vaccine_~t  guess_de~
+> a
+-------------------------------------------------------------------------------
+Industry                  -0.052       0.001      -2.698       0.002      -2.64
+> 6
+                        ( 0.848)    ( 0.022)    ( 0.812)    ( 0.017)    ( 0.956
+> )
+Academic                   0.795       0.005      -0.716       0.002      -1.51
+> 1
+                        ( 0.873)    ( 0.022)    ( 0.880)    ( 0.017)    ( 0.987
+> )
+Personal                   1.019      -0.020      -1.308       0.035      -2.32
+> 7
+                        ( 0.864)    ( 0.021)    ( 0.860)    ( 0.018)    ( 1.006
+> )
+-------------------------------------------------------------------------------
+Control mean              15.545       0.226      15.221       0.115      -0.32
+> 3
+N                          2,988       2,988       2,988       2,988       2,98
+> 8
+-------------------------------------------------------------------------------
+Saved: output/tables/persistence_adverse.tex
+
+. 
+. capture log close
