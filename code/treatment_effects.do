@@ -31,6 +31,7 @@ do "code/_set_controls.do"
 ------------------------------------------------------------------------------*/
 
 use "derived/merged_all.dta", clear
+keep if main_sample==1
 
 * Create link_click if not already present (max of link1-4)
 capture confirm variable link_click

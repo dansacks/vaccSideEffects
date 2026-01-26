@@ -15,7 +15,8 @@ do "code/_config.do"
 
 use "derived/followup_clean.dta" if final_sample , clear
 rename attn_check attn_check_followup
-drop final_sample is_preview
+rename final_sample followup_final_sample
+drop is_preview
 
 tempfile followup
 save `followup'
@@ -32,5 +33,11 @@ gen in_followup = _merge == 3
 drop _merge
 label var in_followup "Observation in main and followup"
 
+* Create followup_sample flag: in all three final samples and merged
+gen followup_sample = (main_sample==1 & in_followup==1 & followup_final_sample==1)
+label var followup_sample "In final sample for followup analysis (pre + main + followup)"
+
+count if followup_sample==1
+di "Followup analysis sample: " r(N)
 
 save "derived/merged_all", replace 

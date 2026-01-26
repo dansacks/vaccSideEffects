@@ -21,7 +21,7 @@ do "code/_config.do"
 ------------------------------------------------------------------------------*/
 
 use "derived/merged_main_pre.dta", clear
-keep if main_final_sample==1 & pre_final_sample==1
+keep if main_sample==1
 count
 di "Total merged observations: " r(N)
 

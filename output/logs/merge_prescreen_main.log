@@ -1,27 +1,27 @@
 
-  ___  ____  ____  ____  ____ ©
- /__    /   ____/   /   ____/      17.0
-___/   /   /___/   /   /___/       MP—Parallel Edition
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
-                                   800-STATA-PC        https://www.stata.com
-                                   979-696-4600        stata@stata.com
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
 
-Stata license: Single-user 4-core  perpetual
-Serial number: 501709220187
-  Licensed to: Dan Sacks
-               Indiana University
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
       2. Unicode is supported; see help unicode_advice.
-      3. More than 2 billion observations are allowed; see help obs_advice.
-      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
 
-. do code/merge_prescreen_main.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/merge_prescreen_main.do 
 
 . /*===========================================================================
 > ===
@@ -66,13 +66,42 @@ Notes:
 . set rmsg off
 
 . 
-. * Set project directory
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
 . local usr `c(username)'
 
-. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
 
 . cd "$projdir"
-C:\Users\sacks\Box\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -87,16 +116,42 @@ C:\Users\sacks\Box\VaccSideEffects
 . capture mkdir "output/figures"
 
 . 
-. * Conditional logging: only log in batch mode
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for unselected responses
+. global UNSELECTED_VALUE  = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/merge_prescreen_mai
-> n.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/merge_prescreen_
+> main.log
   log type:  text
- opened on:  18 Jan 2026, 10:55:24
+ opened on:  26 Jan 2026, 16:47:12
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: merge_prescreen_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -115,7 +170,7 @@ end of do-file
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. use "derived/prescreen_clean.dta" if quality_sample , clear
+. use "derived/prescreen_clean.dta" if final_sample , clear
 
 . 
 . 
@@ -156,8 +211,8 @@ end of do-file
 . tempfile prescreen
 
 . save `prescreen'
-file C:\Users\sacks\AppData\Local\Temp\ST_10fa0_000001.tmp saved as .dta
-    format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St67594.000001 saved
+    as .dta format
 
 . 
 . di "Prescreen observations: " _N
@@ -170,7 +225,7 @@ Prescreen observations: 8003
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. use "derived/main_clean.dta" if quality_sample, clear
+. use "derived/main_clean.dta" if final_sample, clear
 
 . 
 . 
@@ -243,7 +298,6 @@ Main observations: 3538
 . assert _merge <= 3 
 
 . 
-. 
 . * Create merge indicator
 . gen in_pre= (_merge == 3)
 
@@ -310,29 +364,43 @@ file output/logs/main_only_observations.csv saved
 
 Contains data from derived/main_clean.dta
  Observations:         3,538                  
-    Variables:           111                  18 Jan 2026 10:55
+    Variables:           164                  25 Jan 2026 11:38
 Sorted by: prolific_pid
      Note: Dataset has changed since last saved.
 
 . di "Total variables: " r(k)
-Total variables: 111
+Total variables: 164
 
 . 
 . * Drop merge indicator
 . drop _merge
 
 . 
+. * Create main_sample flag: in both prescreen and main final samples
+. gen main_sample = (pre_final_sample==1 & main_final_sample==1)
+
+. label var main_sample "In final sample for main analysis (pre + main)"
+
+. 
+. count if main_sample==1
+  3,534
+
+. di "Main analysis sample: " r(N)
+Main analysis sample: 3534
+
+. 
 . * Compress and save
 . compress
   variable attn_check was long now int
   variable pre_duration_sec was long now int
+  variable in_pre was float now byte
+  variable main_sample was float now byte
   variable favorite_number was double now int
-  variable in_pre was double now byte
   variable pre_prolific_id_entered was str67 now str24
   variable source_news_text was str243 now str169
   debrief_about is strL now coalesced
   main_comments is strL now coalesced
-  (641,372 bytes saved)
+  (615,530 bytes saved)
 
 . save "derived/merged_main_pre.dta", replace
 file derived/merged_main_pre.dta saved
