@@ -108,8 +108,34 @@ Outcomes
 
 ## Treatment Effects
 
+::: {.table-stack}
+
+::: {.show-1-col}
 |  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
 {{< include ../output/tables/treatment_effects.md >}}
+:::
+
+::: {.show-2-cols .fragment .fade-in}
+|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+{{< include ../output/tables/treatment_effects.md >}}
+:::
+
+::: {.show-3-cols .fragment .fade-in}
+|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+{{< include ../output/tables/treatment_effects.md >}}
+:::
+
+::: {.show-4-cols .fragment .fade-in}
+|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+{{< include ../output/tables/treatment_effects.md >}}
+:::
+
+::: {.show-5-cols .fragment .fade-in}
+|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+{{< include ../output/tables/treatment_effects.md >}}
+:::
+
+:::
 
 ## Heterogeneous Effects by Prior Belief
 

@@ -13,3 +13,76 @@
 .reveal .columns p {
   font-size: 1.2em;
 }
+
+/* Highlight class for emphasis */
+.highlight {
+  background-color: #fff3cd;
+  padding: 0.1em 0.3em;
+}
+
+/* Stack tables on top of each other for fragment transitions */
+.table-stack {
+  position: relative;
+}
+
+.table-stack > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+}
+
+/* Stack text blocks for synchronized reveals */
+.text-stack {
+  position: relative;
+  min-height: 300px;
+}
+
+/* Show N columns classes - hide columns beyond N */
+/* show-1-col: show col 1 (nth-child 2), hide cols 2-5 (nth-child 3-6) */
+.show-1-col td:nth-child(n+3),
+.show-1-col th:nth-child(n+3) {
+  display: none;
+}
+
+.show-2-cols td:nth-child(n+4),
+.show-2-cols th:nth-child(n+4) {
+  display: none;
+}
+
+.show-3-cols td:nth-child(n+5),
+.show-3-cols th:nth-child(n+5) {
+  display: none;
+}
+
+.show-4-cols td:nth-child(n+6),
+.show-4-cols th:nth-child(n+6) {
+  display: none;
+}
+
+/* Highlight the last visible column (the newest one) */
+.show-1-col td:nth-child(2),
+.show-1-col th:nth-child(2) {
+  background-color: #fff3cd;
+}
+
+.show-2-cols td:nth-child(3),
+.show-2-cols th:nth-child(3) {
+  background-color: #fff3cd;
+}
+
+.show-3-cols td:nth-child(4),
+.show-3-cols th:nth-child(4) {
+  background-color: #fff3cd;
+}
+
+.show-4-cols td:nth-child(5),
+.show-4-cols th:nth-child(5) {
+  background-color: #fff3cd;
+}
+
+.show-5-cols td:nth-child(6),
+.show-5-cols th:nth-child(6) {
+  background-color: #fff3cd;
+}
