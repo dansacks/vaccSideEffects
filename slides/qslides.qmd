@@ -1,0 +1,157 @@
+---
+title: "Can scientific information address vaccine hesitancy?"
+subtitle: "Experimental evidence from the flu vaccine"
+author:
+  - name: Daniel W. Sacks
+    affiliation: |
+      Department of Risk and Insurance
+      Wisconsin School of Business
+      University of Wisconsin--Madison
+  - name: Brigham Walker
+    affiliation: |
+      Department of Health Policy and Management
+      Tulane School of Public Health
+      and Tropical Medicine
+      Tulane University
+format:
+  revealjs:
+    slide-number: true
+    width: 1600
+    height: 900
+    embed-resources: true
+    css: style.css
+---
+
+## Can we persuade people to vaccinate?
+
+- historically, coercive approaches: school and work mandates
+  - "coercive" meaning individuals weakly worse off under rational choice
+  - Current administration does not support
+- Persuasive approaches: subsidies, **information provision**
+  - Subsidies are expensive
+  - Information is promising
+
+# Background
+
+## Background
+
+# Design
+
+## Experiment overview
+- goal
+- waves 
+- interventions
+
+## screening wave
+- measure vaccine intentent
+- ask about trust in gov, docs, info sources
+- prior vaccination experience (ever taken, side effect)
+
+## Main wave 
+- consent
+- priors
+- info provision
+- posteriors
+  - trial
+  - self 
+- vaccine intentions (re-ask), plus link-to-click
+- views about info provisions 
+
+## Info provision intervention
+
+- slick slide unfolding with different treatments + rationales
+
+## Key measures
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Outcomes
+
+- Primary: side effect delta
+- Side effect experienced in treatment arm of clinical trial
+- Intend to vaccinate
+- Clicked on a link
+- Indicated vaccination in follow-up survey
+:::
+
+::: {.column width="50%" .fragment}
+**Covariates** (pre-specified, power-improving)
+
+- Covariate 1
+- Covariate 2
+:::
+
+::::
+
+# Results: Beliefs and Their Correlates
+
+## CDF of Posterior Believed Side Effect Rate
+
+![](../output/figures/beliefs_pooled.png){fig-align="center" width="95%"}
+
+## Beliefs are correlated with components of vaccine hesitancy
+
+![](../output/figures/delta_by_trust.png){fig-align="center" width="95%"}
+
+## Prior vaccine reactions predict beliefs 
+
+![](../output/figures/delta_by_vacc_reaction.png){fig-align="center" width="95%"}
+
+# Results: Treatment Effects
+
+## The Provided Information Was Salient
+
+## Belief CDFs by Treatment Arm
+
+![](../output/figures/belief_cdf_by_arm.png){fig-align="center" width="95%"}
+
+## Treatment Effects
+
+```{python}
+#| echo: false
+#| output: asis
+
+# Read and parse the treatment effects markdown table
+with open("../output/tables/treatment_effects.md") as f:
+    lines = [line.strip() for line in f if line.strip()]
+
+# Parse header and data rows
+data_rows = [[cell.strip() for cell in line.split("|")[1:-1]] for line in lines[2:]]
+
+# Column labels for display
+col_labels = ["Post-Trial SE", "Posterior Diff", "Vacc Intent", "Link Click", "Follow-up Vacc"]
+
+n_cols = len(col_labels)
+
+print(':::: {.columns}\n')
+
+# First column includes row labels
+print('::: {.column width="20%"}')
+print(f'|  | {col_labels[0]} |')
+print('|--|--:|')
+for row in data_rows:
+    print(f'| {row[0]} | {row[1]} |')
+print(':::\n')
+
+# Remaining columns are fragments
+for col_idx in range(1, n_cols):
+    print(f'::: {{.column width="20%" .fragment}}')
+    print(f'| {col_labels[col_idx]} |')
+    print('|--:|')
+    for row in data_rows:
+        print(f'| {row[col_idx + 1]} |')
+    print(':::\n')
+
+print('::::')
+```
+
+## Heterogeneous Effects by Prior Belief
+
+## Heterogeneous Effects by Prior Experience
+
+## Persistence of Learning
+
+# Discussion
+
+## Discussion
