@@ -260,15 +260,7 @@ program define regression_table
     capture file close _rt_md
     file open _rt_md using "`md_saving'", write replace
 
-    * Header row with outcome names
-    local md_header = "|  |"
-    foreach outcome of varlist `varlist' {
-        local outcome_short = abbrev("`outcome'", 15)
-        local md_header = "`md_header' `outcome_short' |"
-    }
-    file write _rt_md "`md_header'" _n
-
-    * Separator row
+    * Separator row (no header - user provides headers in document)
     local md_sep = "|--|"
     forvalues col = 1/`n_outcomes' {
         local md_sep = "`md_sep'--:|"
