@@ -281,8 +281,8 @@ program define regression_table
                 local md_line = "`md_line' . |"
             }
             else {
-                local b_fmt : di %9.3f `b'
-                local md_line = "`md_line'`b_fmt' |"
+                local b_fmt = trim("`: di %9.3f `b''")
+                local md_line = "`md_line' `b_fmt' |"
             }
         }
         file write _rt_md "`md_line'" _n
@@ -295,7 +295,7 @@ program define regression_table
                 local md_line = "`md_line' . |"
             }
             else {
-                local se_fmt : di %7.3f `se'
+                local se_fmt = trim("`: di %7.3f `se''")
                 local md_line = "`md_line' (`se_fmt') |"
             }
         }
@@ -308,8 +308,8 @@ program define regression_table
     local md_line = "| Control mean |"
     forvalues col = 1/`n_outcomes' {
         local m = ctrl_means[1, `col']
-        local m_fmt : di %9.3f `m'
-        local md_line = "`md_line'`m_fmt' |"
+        local m_fmt = trim("`: di %9.3f `m''")
+        local md_line = "`md_line' `m_fmt' |"
     }
     file write _rt_md "`md_line'" _n
 
