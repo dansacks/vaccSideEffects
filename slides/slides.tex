@@ -1,0 +1,227 @@
+% ********************************************************************************************
+% preamble
+% ********************************************************************************************
+
+\documentclass[13pt,svgnames,x11names,dvipsnames,aspectratio=169]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage[default]{lato}
+
+% *****************************************************************
+% some style settings
+% *****************************************************************
+
+% general
+\setbeamercovered{invisible}
+
+% margins
+\setbeamersize{text margin left = \leftmargini, text margin right=\leftmargini}
+\setlength{\leftmargini}{10pt}
+
+% fonts for titles
+\setbeamerfont{title}{series=\bfseries}
+\setbeamerfont{frametitle}{series=\bfseries}
+
+%define some colors
+\definecolor{dknavy}{RGB}{30, 45, 83}
+\definecolor{edkblue}{RGB}{62, 100, 125}
+\definecolor{ebblue}{RGB}{0, 139, 188}
+\definecolor{orangered}{RGB}{255, 69, 0}
+\definecolor{gs12}{RGB}{192, 192, 192}
+\definecolor{gs15}{RGB}{240, 240, 240}
+
+% title colors
+\setbeamercolor{title}{fg = dknavy, bg = white}
+\setbeamercolor{frametitle}{fg = dknavy, bg = white}
+\setbeamercolor{title in head/foot}{fg = dknavy, bg = gs15}
+
+% itemize bullet colors
+\setbeamercolor{itemize item}{fg = orangered}
+\setbeamercolor{itemize subitem}{fg = edkblue}
+\setbeamercolor{itemize subsubitem}{fg = edkblue}
+
+% itemize bullet shapes
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize subitem}[circle]
+\setbeamertemplate{itemize subsubitem}{--}
+
+% header/footer
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}[frame number]{}
+\setbeamertemplate{navigation symbols}{}
+
+% section page format
+\setbeamertemplate{section page}
+{
+	\setbeamercolor{background canvas}{bg=edkblue}
+    \begin{frame}[plain,noframenumbering]
+    \vfill
+    \begin{center}
+    \usebeamerfont{section title}\textcolor{white}{\textbf{\insertsection}}
+    \end{center}
+    \vfill
+    \end{frame}
+}
+
+% Figures
+\graphicspath{{../output/}}
+
+% ********************************************************************************************
+% main presentation body
+% ********************************************************************************************
+
+\begin{document}
+
+% *****************************************************************
+% title slide
+% *****************************************************************
+
+\title[]{Can scientific information address vaccine hesitancy?}
+\subtitle{Experimental evidence from the flu vaccine}
+
+\author[Sacks \& Walker]{
+	\textbf{Daniel W. Sacks} \quad
+	\textbf{Brigham Walker}
+}
+
+\institute{
+	\begin{tabular}[h]{cc}
+		\begin{tabular}[t]{c}
+			\small Department of Risk and Insurance \\
+			\small Wisconsin School of Business \\
+			\small University of Wisconsin--Madison
+		\end{tabular} &
+		\begin{tabular}[t]{c}
+			\small Department of Health Policy and Management \\
+			\small Tulane School of Public Health \\
+			\small and Tropical Medicine \\
+			\small Tulane University
+		\end{tabular}
+	\end{tabular}
+}
+
+\date{}
+
+\begin{frame}[plain, noframenumbering]
+	\vfill
+	\titlepage
+\end{frame}
+
+% *****************************************************************
+% Introduction
+% *****************************************************************
+
+\begin{frame}
+\frametitle{Can we persuade people to vaccinate  to vacicnate}
+\begin{itemize}
+  \item historically, coercive approaches: school and work mandates 
+  \begin{itemize}
+    \item ``coercieve'' meaning indnviduals weakly worse off under rational choice
+    \item Current administration does not support 
+  \end{itemize}
+  \item Persuasive approaches: subsidies, \textbf{information provision}
+  \begin{itemize}
+    \item Subsidies are expensive 
+    \item Information is proming 
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+% *****************************************************************
+% Background
+% *****************************************************************
+
+\section{Background}
+\sectionpage
+
+\begin{frame}
+\frametitle{Background}
+\end{frame}
+
+% *****************************************************************
+% Design
+% *****************************************************************
+
+\section{Design}
+\sectionpage
+
+\begin{frame}
+\frametitle{Design}
+\end{frame}
+
+% *****************************************************************
+% Results: Beliefs and Their Correlates
+% *****************************************************************
+
+\section{Results: Beliefs and Their Correlates}
+\sectionpage
+
+\begin{frame}
+\frametitle{CDF of Posterior Believed Side Effect Rate}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/beliefs_pooled.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Beliefs by Trust in Government and Doctor Adherence}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/delta_by_trust.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Beliefs by Prior Vaccine Experience}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/delta_by_vacc_reaction.png}
+\end{frame}
+
+% *****************************************************************
+% Results: Treatment Effects
+% *****************************************************************
+
+\section{Results: Treatment Effects}
+\sectionpage
+
+\begin{frame}
+\frametitle{The Provided Information Was Salient}
+\end{frame}
+
+\begin{frame}
+\frametitle{Belief CDFs by Treatment Arm}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/belief_cdf_by_arm.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Treatment Effects}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heterogeneous Effects by Prior Belief}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heterogeneous Effects by Prior Experience}
+\end{frame}
+
+\begin{frame}
+\frametitle{Persistence of Learning}
+\end{frame}
+
+% *****************************************************************
+% Discussion
+% *****************************************************************
+
+\section{Discussion}
+\sectionpage
+
+\begin{frame}
+\frametitle{Discussion}
+\end{frame}
+
+\end{document}
