@@ -162,8 +162,9 @@ destring favorite_number, replace force
 
 * --- Health condition dummies (SPSS: 1=selected, $PREF_NOT_SAY=not selected) ---
 * Recode $PREF_NOT_SAY to 0 for all health conditions (means "did not select this category")
+
 foreach v of varlist cond_* {
-	replace `v' = 0 if `v' == $PREF_NOT_SAY
+	replace `v' = 0 if `v' == $UNSELECTED_VALUE
 }
 
 /*------------------------------------------------------------------------------
@@ -180,8 +181,6 @@ do "code/include/_create_quality_flags.do"
 gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & ~is_preview & first_attempt == 1)
 label var final_sample "Final analysis sample (consent, passed attention, first attempt)"
 
-* Report quality flags
-do "code/include/_report_sample_quality.do"
 
 /*------------------------------------------------------------------------------
     8. Consolidate vaccine experience variables
@@ -371,15 +370,9 @@ desc
 local nvars = r(k)
 di "Total variables: `nvars'"
 
-* Final quality summary
-di ""
-di "=== FINAL DATA QUALITY SUMMARY ==="
-count
-di "Total observations: " r(N)
-count if final_sample == 1
-di "Final sample: " r(N)
-tab prior_vaccines if final_sample == 1, m
-tab vacc_intent if final_sample == 1, m
+
+* Report quality flags
+do "code/include/_report_sample_quality.do"
 
 * Compress and save
 compress

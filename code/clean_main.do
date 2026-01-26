@@ -37,13 +37,6 @@ do "code/include/_rename_qualtrics_metadata.do"
 * Rename main survey-specific variables
 rename Q52 prolific_id_entered
 rename Q2 attn_check
-* consent, prior_self_placebo, prior_self_vacc already named correctly
-* post_c_trial, post_i_trial, post_a_trial, post_p_trial already named correctly
-* posterior_novacc, posterior_vacc already named correctly
-* trust_trial, relevant_trial, trust_academic, relevant_academic already named
-* vacc_intentions, age, gender, education, income, race, ethnicity, polviews already named
-* debrief_about, comments already named
-* link1_clicked - link4_clicked already named
 rename PROLIFIC_PID prolific_pid
 
 /*------------------------------------------------------------------------------
@@ -101,9 +94,10 @@ label values race race_lbl
 label values ethnicity ethnicity_lbl
 label values polviews polviews_lbl
 
+
 * --- Link clicks ---
 foreach i of numlist 1/4 {
-	destring link`i'_clicked, replace force
+	destring link`i'_clicked, replace
 }
 
 /*------------------------------------------------------------------------------
@@ -120,7 +114,9 @@ label values arm_n arm_lbl
 label var arm_n "Treatment arm (numeric)"
 
 * Check arm assignment
-count if mi(arm_n) & consent == 1 & _distchannel == "anonymous"
+count if mi(arm_n) & consent == 1 & _distchannel == "anonymous" & ///
+	attn_check == $ATTN_CHECK_MAIN
+	
 di "Consented anonymous without arm assignment: " r(N)
 
 * Create string arm indicator
@@ -147,16 +143,15 @@ foreach a of local arms {
 
 * --- Consolidate post-trial estimate ---
 * Clean text responses: remove % symbols and spaces from SPSS text fields
+
 foreach a in c i a p {
+		* remove white space and  %
+		replace post_`a'_trial = ustrregexra(post_`a'_trial, "\s", "")
     replace post_`a'_trial = subinstr(post_`a'_trial, "%", "", .)
-    replace post_`a'_trial = subinstr(post_`a'_trial, " ", "", .)
-    count if missing(real(post_`a'_trial)) & ~missing(post_`a'_trial)
-    if r(N)>0 {
-        assert r(N)<=2
-        list post_`a'_trial if missing(real(post_`a'_trial)) & ~missing(post_`a'_trial)
-    }
+		assert post_`a'_trial == ",7" if missing(real(post_`a'_trial)) & ~missing(post_`a'_trial)
     destring post_`a'_trial, replace force
 }
+
 gen post_trial = .
 foreach a in c i a p {
     replace post_trial = post_`a'_trial if !mi(post_`a'_trial)
@@ -183,10 +178,6 @@ label var posterior_vacc "Posterior: SE probability with vaccine (0-100)"
 * Delta: difference between posterior with vaccine and without vaccine
 gen delta = posterior_vacc - posterior_novacc
 label var delta "Posterior difference (vacc - novacc)"
-
-* Prior diff: difference between prior belief with vaccine and without
-gen prior_diff = prior_self_vacc - prior_self_placebo
-label var prior_diff "Prior difference (vacc - placebo)"
 
 * Maybe: binary indicator for vaccine intention (intend to or already got)
 gen maybe = inlist(vacc_intentions, 3, 4) if !mi(vacc_intentions)
@@ -219,9 +210,6 @@ gen final_sample = (consent == 1 & failed_attn == 0 ///
 
 label var final_sample "Final analysis sample (consent, passed attn, non-missing outcomes, first attempt)"
 assert ~missing(arm_n) if final_sample
-
-* Report quality flags
-do "code/include/_report_sample_quality.do"
 
 /*------------------------------------------------------------------------------
     11. Apply variable labels
@@ -395,7 +383,7 @@ order response_id prolific_pid prolific_id_entered ///
       consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
       attn_check ///
       arm_n arm arm_control arm_industry arm_academic arm_personal ///
-      prior_self_placebo prior_self_vacc prior_diff ///
+      prior_self_placebo prior_self_vacc  ///
       post_trial post_c_trial post_i_trial post_a_trial post_p_trial ///
       posterior_novacc posterior_vacc delta ///
       trust_trial relevant_trial trust_academic relevant_academic ///
@@ -434,14 +422,7 @@ local nvars = r(k)
 di "Total variables: `nvars'"
 
 * Final quality summary
-di ""
-di "=== FINAL DATA QUALITY SUMMARY ==="
-count
-di "Total observations: " r(N)
-count if final_sample == 1
-di "Final sample: " r(N)
-tab arm_n if final_sample == 1, m
-tab vacc_intent if final_sample == 1, m
+do "code/include/_report_sample_quality.do"
 
 * Compress and save
 compress

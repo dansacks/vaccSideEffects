@@ -106,7 +106,7 @@ do "code/include/_define_value_labels.do"
 
 * --- Consent (SPSS codes: 1=Yes, 2=No, $PREF_NOT_SAY=missing) ---
 tab consent, m nolabel
-recode consent (1=1) (2 $PREF_NOT_SAY=0) ($PREF_NOT_SAY=.)
+recode consent (1=1) (2 $UNSELECTED_VALUE=0)
 label values consent yesno
 
 * --- Attention check ---
@@ -161,13 +161,13 @@ destring guess_vaccine, replace force
 * --- Medicine dummies (SPSS: 1=selected, missing=not selected) ---
 foreach v of varlist med_pharmacy_chain med_grocery med_independent med_mail_order ///
     med_online med_provider med_other med_none {
-    replace `v' = 0 if mi(`v')
+    replace `v' = 0 if `v' == $UNSELECTED_VALUE
 }
 
 * --- Flu why not dummies (SPSS: 1=selected, missing=not selected) ---
 foreach v of varlist flu_why_already flu_why_side_effects flu_why_bad_flu flu_why_needles ///
     flu_why_time flu_why_location flu_why_cost flu_why_none {
-    replace `v' = 0 if mi(`v')
+    replace `v' = 0 if `v' == $UNSELECTED_VALUE
 }
 
 /*------------------------------------------------------------------------------
@@ -186,8 +186,6 @@ gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous
 label var final_sample "Final analysis sample"
 label var is_preview "Preview/test response"
 
-* Report quality flags
-do "code/include/_report_sample_quality.do"
 
 /*------------------------------------------------------------------------------
     8. Create derived variables
@@ -303,14 +301,8 @@ local nvars = r(k)
 di "Total variables: `nvars'"
 
 * Final quality summary
-di ""
-di "=== FINAL DATA QUALITY SUMMARY ==="
-count
-di "Total observations: " r(N)
-count if final_sample == 1
-di "Final sample: " r(N)
-tab got_flu_vacc if final_sample == 1, m
-tab recall_study if final_sample == 1, m
+* Report quality flags
+do "code/include/_report_sample_quality.do"
 
 * Compress and save
 compress

@@ -86,7 +86,6 @@ di "Main observations: " _N
 merge 1:1 prolific_pid using `prescreen', update keep(1 3 4 5)
 assert _merge <= 3 
 
-
 * Create merge indicator
 gen in_pre= (_merge == 3)
 label var in_pre "Observation in pre-screen and main data"
