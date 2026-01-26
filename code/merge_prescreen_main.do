@@ -126,6 +126,13 @@ di "Total variables: " r(k)
 * Drop merge indicator
 drop _merge
 
+* Create main_sample flag: in both prescreen and main final samples
+gen main_sample = (pre_final_sample==1 & main_final_sample==1)
+label var main_sample "In final sample for main analysis (pre + main)"
+
+count if main_sample==1
+di "Main analysis sample: " r(N)
+
 * Compress and save
 compress
 save "derived/merged_main_pre.dta", replace
