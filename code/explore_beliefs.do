@@ -59,25 +59,32 @@ twoway
     text(.65 -50
         "Clinical trial estimate: -1.7 to 1.0"
         " "
-        "Subjective beliefs:"
+        "Subjective belief quantiles:"
         "  Pr({&Delta}<0) = `plt0'"
         "  Pr({&Delta}=0) = `p0'"
         "  Pr(0<{&Delta}<2) = `p02'"
         "  Pr(2<{&Delta}<10) = `p210'"
-        "  Pr(10<{&Delta}) = `pgt10'"
-        " "
-        "  Mean: `mean'"
-        "  p25: `p25'"
-        "  p50: `p50'"
-        "  p75: `p75'" ,
-        place(e) justification(left))
-    ytitle("")
-    xtitle("Posterior believed side effect rate")
-    title("Cumulative distribution of posterior believed side effect rate")
+        "  Pr(10<{&Delta}) = `pgt10'",
+				place(e) justification(left) size(large))
+				
+    text(.4 100
+        "Subjective beliefs:"
+        "  Mean: `mean'  "
+        "  p25: `p25'  "
+        "  p50: `p50'  "
+        "  p75: `p75'  " ,
+				place(w) justification(right) size(large))
+    ytitle("", size(large))
+    xtitle("Posterior believed side effect rate", size(large))
+    xlabel(, labsize(large))
+    ylabel(, labsize(large))
+    title("CDF of posterior believed side effect rate", size(large) span pos(11))
+		xsize(7) ysize(4)
 ;
 # delimit cr
 
-graph export "output/figures/beliefs_pooled.png", replace width(1600) height(900)
+
+graph export "output/figures/beliefs_pooled.png", replace width(1750) height(1000)
 
 * Clean up CDF variable before next analysis
 drop prob
@@ -85,15 +92,27 @@ drop prob
 *------------------------------------------------------------------------------
 * Mean beliefs by vaccine experience and trust
 *------------------------------------------------------------------------------
+label define ad_alt 1 "Strongly disagree" 2 " " 3 " " 4 " " 5 "Strongly agree"
+*label values trust_govt follow_doctor ad_alt
+*label values flu_vacc_reaction covid_vacc_reaction ad_alt
+label define rxn_alt 0 "No prior vaccine" 1 "No reaction" 2 "Mild" 3 "Severe " 
+label values flu_vacc_reaction covid_vacc_reaction rxn_alt 
 
-foreach cat in flu_vacc_reaction covid_vacc_reaction trust_govt follow_doctor {
+foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
     preserve
-
     if "`cat'" == "flu_vacc_reaction" local title "Flu vaccine reaction"
     if "`cat'" == "covid_vacc_reaction" local title "Covid vaccine reaction"
     if "`cat'" == "trust_govt" local title "Trust gov on vaccines"
     if "`cat'" == "follow_doctor" local title "Follow doc on vaccines"
 
+    * Vaccine reaction panels need more bottom margin for angled labels
+    if inlist("`cat'", "flu_vacc_reaction", "covid_vacc_reaction") {
+				local ylab 0(10)40
+    }
+    else {
+				local ylabel 0(10)30
+    }
+		local panel_margin graphregion(margin(b+5))
     collapse (mean) delta (semean) se=delta, by(`cat')
     gen upper = delta + 1.96*se
     gen lower = delta - 1.96*se
@@ -102,29 +121,29 @@ foreach cat in flu_vacc_reaction covid_vacc_reaction trust_govt follow_doctor {
     # delimit ;
     twoway
         (bar delta `cat', color(stc1%60))
-        (rcap upper lower `cat', color(black))
-        ,
-        legend(off)
-        xlabel(,valuelabel labsize(small) angle(45))
-        name(`cat', replace)
-        title("`title'", pos(11) size(medium))
+        (rcap upper lower `cat', color(black)),
+				legend(off) name(`cat', replace)
+        xlabel(,valuelabel labsize(medlarge) angle(45))
+				
+        ylabel(, labsize(medlarge))
+        title("`title'", pos(11) size(large) span)
         xtitle("")
-        xsize(3) ysize(4)
-        graphregion(margin(b+5))
+        xsize(7) ysize(8) 
     ;
     # delimit cr
 
     restore
 }
 
+
 * Combine vaccine reaction plots
 graph combine flu_vacc_reaction covid_vacc_reaction, cols(2) ///
-    graphregion(margin(b+10)) xsize(6) ysize(4)
-graph export "output/figures/delta_by_vacc_reaction.png", replace width(600) height(400)
+    graphregion(margin(b+5)) xsize(7) ysize(4)
+graph export "output/figures/delta_by_vacc_reaction.png", replace width(1750) height(1000)
 
 * Combine trust plots
-graph combine trust_govt follow_doctor, cols(2) xsize(6) ysize(4) ///
-    graphregion(margin(b+10))
-graph export "output/figures/delta_by_trust.png", replace width(600) height(400)
+graph combine trust_govt follow_doctor, cols(2) xsize(7) ysize(4) ///
+    graphregion(margin(b+5))
+graph export "output/figures/delta_by_trust.png", replace width(1750) height(1000)
 
 capture log close
