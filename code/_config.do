@@ -21,7 +21,7 @@ set rmsg off
 * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
 local usr `c(username)'
 if "`c(os)'" == "Windows" {
-    global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+    global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
 }
 else {
     * macOS (Unix or MacOSX)
@@ -51,8 +51,8 @@ global ATTN_CHECK_PRESCREEN = 1965
 global ATTN_CHECK_MAIN = 4419
 global ATTN_CHECK_FOLLOWUP = 1163
 
-* Special code for "Prefer not to say" responses
-global PREF_NOT_SAY = -99
+* Special code for unselected responses
+global UNSELECTED_VALUE  = -99
 
 /*------------------------------------------------------------------------------
     Conditional Logging
