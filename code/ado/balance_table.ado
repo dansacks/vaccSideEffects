@@ -166,7 +166,7 @@ program define balance_table
     di as text "{hline `maxwidth'}"
 
     * Build and display header
-    local header = "Variable"
+    local header : di %-24s "Variable"
     foreach g of local group_levels {
         local g_fmt : di %9.0f `g'
         local header = "`header'`g_fmt'"
@@ -182,7 +182,7 @@ program define balance_table
         if "`varlabel'" == "" local varlabel "`var'"
         local varlabel = abbrev("`varlabel'", 24)
 
-        local line = "`varlabel'"
+        local line : di %-24s "`varlabel'"
         forvalues col = 1/`n_groups' {
             local val = means[`row', `col']
             local val_fmt : di %9.3f `val'
@@ -207,7 +207,7 @@ program define balance_table
 
     * Sample size row
     di as text "{hline `maxwidth'}"
-    local nline = "N"
+    local nline : di %-24s "N"
     foreach g of local group_levels {
         local n_fmt : di %9.0fc `n_`g''
         local nline = "`nline'`n_fmt'"
