@@ -108,6 +108,7 @@ Outcomes
 
 ## Treatment Effects
 
+|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
 {{< include ../output/tables/treatment_effects.md >}}
 
 ## Heterogeneous Effects by Prior Belief
