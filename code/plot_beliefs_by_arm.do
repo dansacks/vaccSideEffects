@@ -64,18 +64,20 @@ twoway
     (line p0 b if b >= -50, color(gs10))
     ,
     legend(off)
-    text(.82 20 "Industry arm", color(stc1) place(w))
-    text(.75 31 "Control arm", color(gs10) place(e))
+    text(.82 20 "Industry arm", color(stc1) place(w) size(large))
+    text(.75 31 "Control arm", color(gs10) place(e) size(large))
     text(.2 100
         "Control mean: `m0'"
-        "Industry arm mean: `m1'"
-        "Unadjusted difference: `d1'" "(SE: `se1')" ,
-        place(w) justification(right)
+        "Industry arm: `m1'"
+        "Raw difference: `d1'" "(SE: `se1')" ,
+        place(w) justification(right) size(medlarge)
     )
-    ytitle("")
-    xtitle("Posterior believed side effect rate")
-    title("Industry arm", span pos(11) ring(0))
-    xsize(3) ysize(3)
+    ytitle("", size(large))
+    xtitle("Belief", size(large))
+    xlabel(, labsize(large))
+    ylabel(, labsize(large))
+    title("", span pos(11) ring(0) size(vlarge))
+    xsize(7) ysize(12s)
     name(industry, replace)
 ;
 # delimit cr
@@ -87,18 +89,20 @@ twoway
     (line p0 b if b >= -50, color(gs10))
     ,
     legend(off)
-    text(.82 20 "Academic arm", color(stc1) place(w))
-    text(.75 31 "Control arm", color(gs10) place(e))
+    text(.82 20 "Academic arm", color(stc1) place(w) size(large))
+    text(.75 31 "Control arm", color(gs10) place(e) size(large))
     text(.2 100
         "Control mean: `m0'"
-        "Academic arm mean: `m2'"
-        "Unadjusted difference: `d2'" "(SE: `se2')" ,
-        place(w) justification(right)
+        "Academic arm: `m2'"
+        "Raw difference: `d2'" "(SE: `se2')" ,
+        place(w) justification(right) size(medlarge)
     )
-    ytitle("")
-    xtitle("Posterior believed side effect rate")
-    title("Academic arm", span pos(11) ring(0))
-    xsize(3) ysize(3)
+    ytitle("", size(large))
+    xtitle("Belief", size(large))
+    xlabel(, labsize(large))
+    ylabel(, labsize(large))
+    title("", span pos(11) ring(0) size(vlarge))
+    xsize(7) ysize(12)
     name(academic, replace)
 ;
 # delimit cr
@@ -110,18 +114,20 @@ twoway
     (line p0 b if b >= -50, color(gs10))
     ,
     legend(off)
-    text(.82 20 "Personal arm", color(stc1) place(w))
-    text(.75 31 "Control arm", color(gs10) place(e))
+    text(.82 20 "Personal arm", color(stc1) place(w) size(large))
+    text(.75 31 "Control arm", color(gs10) place(e) size(large))
     text(.2 100
         "Control mean: `m0'"
-        "Personal arm mean: `m3'"
-        "Unadjusted difference: `d3'" "(SE: `se3')" ,
-        place(w) justification(right)
+        "Personal arm: `m3'"
+        "Raw diff: `d3'" "(SE: `se3')" ,
+        place(w) justification(right) size(medlarge)
     )
-    ytitle("")
-    xtitle("Posterior believed side effect rate")
-    title("Personal arm", span pos(11) ring(0))
-    xsize(3) ysize(3)
+    ytitle("", size(large))
+    xtitle("Belief", size(large))
+    xlabel(, labsize(large))
+    ylabel(, labsize(large))
+    title("", span pos(11) ring(0) size(vlarge))
+    xsize(7) ysize(12)
     name(personal, replace)
 ;
 # delimit cr
@@ -130,7 +136,7 @@ twoway
 * Combine and export
 *------------------------------------------------------------------------------
 
-graph combine industry academic personal, cols(3) xsize(9) ysize(3)
-graph export "output/figures/belief_cdf_by_arm.png", replace width(1800) height(600)
+graph combine industry academic personal, cols(3) xsize(6) ysize(3)
+graph export "output/figures/belief_cdf_by_arm.png", replace width(1750) height(1000)
 
 capture log close
