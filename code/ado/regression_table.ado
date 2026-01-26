@@ -250,6 +250,89 @@ program define regression_table
 
     di as text "Saved: `saving'"
 
+    /*--------------------------------------------------------------------------
+        6. Write to .md file (markdown table)
+    --------------------------------------------------------------------------*/
+
+    * Derive markdown filename from tex filename
+    local md_saving = subinstr("`saving'", ".tex", ".md", .)
+
+    capture file close _rt_md
+    file open _rt_md using "`md_saving'", write replace
+
+    * Header row with outcome names
+    local md_header = "|  |"
+    foreach outcome of varlist `varlist' {
+        local outcome_short = abbrev("`outcome'", 15)
+        local md_header = "`md_header' `outcome_short' |"
+    }
+    file write _rt_md "`md_header'" _n
+
+    * Separator row
+    local md_sep = "|--|"
+    forvalues col = 1/`n_outcomes' {
+        local md_sep = "`md_sep'--:|"
+    }
+    file write _rt_md "`md_sep'" _n
+
+    * Coefficient and SE rows for each keyvar
+    local row = 1
+    foreach keyvar of varlist `keyvars' {
+        local varlabel : variable label `keyvar'
+        if "`varlabel'" == "" local varlabel "`keyvar'"
+
+        * Coefficient row
+        local md_line = "| `varlabel' |"
+        forvalues col = 1/`n_outcomes' {
+            local b = coefs[`row', `col']
+            if `b' == . {
+                local md_line = "`md_line' . |"
+            }
+            else {
+                local b_fmt : di %9.3f `b'
+                local md_line = "`md_line'`b_fmt' |"
+            }
+        }
+        file write _rt_md "`md_line'" _n
+
+        * SE row
+        local md_line = "|  |"
+        forvalues col = 1/`n_outcomes' {
+            local se = ses[`row', `col']
+            if `se' == . {
+                local md_line = "`md_line' . |"
+            }
+            else {
+                local se_fmt : di %7.3f `se'
+                local md_line = "`md_line' (`se_fmt') |"
+            }
+        }
+        file write _rt_md "`md_line'" _n
+
+        local ++row
+    }
+
+    * Control mean row
+    local md_line = "| Control mean |"
+    forvalues col = 1/`n_outcomes' {
+        local m = ctrl_means[1, `col']
+        local m_fmt : di %9.3f `m'
+        local md_line = "`md_line'`m_fmt' |"
+    }
+    file write _rt_md "`md_line'" _n
+
+    * N row
+    local md_line = "| N |"
+    forvalues col = 1/`n_outcomes' {
+        local n = n_obs[1, `col']
+        local md_line = "`md_line' " + string(`n', "%9.0fc") + " |"
+    }
+    file write _rt_md "`md_line'" _n
+
+    file close _rt_md
+
+    di as text "Saved: `md_saving'"
+
     * Clean up matrices
     matrix drop coefs ses ctrl_means n_obs
 
