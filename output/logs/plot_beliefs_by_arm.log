@@ -1,0 +1,5577 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do /Users/sacks/Projects/VaccSideEffects/code/plot_beliefs_by_arm.do 
+
+. /*===========================================================================
+> ===
+>     Belief CDFs by Treatment Arm
+> 
+>     Creates CDF plots comparing each treatment arm to control.
+>     Shows distribution of posterior believed side effect rates (delta).
+> 
+>     Outputs:
+>         output/figures/belief_cdf_by_arm.png
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "plot_beliefs_by_arm"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
+. local usr `c(username)'
+
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. cd "$projdir"
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for "Prefer not to say" responses
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/plot_beliefs_by_
+> arm.log
+  log type:  text
+ opened on:  25 Jan 2026, 13:25:15
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: plot_beliefs_by_arm ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/plot_beliefs_by_arm.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. * Load merged data
+. use "derived/merged_main_pre.dta", clear
+
+. 
+. *----------------------------------------------------------------------------
+> --
+. * Compute CDFs on common grid for each treatment arm
+. *----------------------------------------------------------------------------
+> --
+. 
+. * Create grid for CDF evaluation
+. gen b = .
+(3,538 missing values generated)
+
+. forvalues a = 0/3 {
+  2.     gen p`a' = .
+  3. }
+(3,538 missing values generated)
+(3,538 missing values generated)
+(3,538 missing values generated)
+(3,538 missing values generated)
+
+. 
+. * Evaluate CDF at each grid point
+. local row = 1
+
+. forvalues bval = -100(0.5)100 {
+  2.     replace b = `bval' in `row'
+  3.     forvalues arm = 0/3 {
+  4.         count if arm_n == `arm'
+  5.         local N = r(N)
+  6.         count if arm_n == `arm' & delta <= `bval'
+  7.         replace p`arm' = r(N)/`N' in `row'
+  8.     }
+  9.     local ++row
+ 10. }
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  0
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  0
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  1
+(1 real change made)
+  882
+  1
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  0
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  3
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  2
+(1 real change made)
+  886
+  3
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  3
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  3
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  2
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  3
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  4
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  3
+(1 real change made)
+  882
+  4
+(1 real change made)
+  886
+  5
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  5
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  5
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  5
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  5
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  7
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  0
+(1 real change made)
+  885
+  7
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  1
+(1 real change made)
+  885
+  7
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  1
+(1 real change made)
+  885
+  7
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  1
+(1 real change made)
+  885
+  7
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  1
+(1 real change made)
+  885
+  7
+(1 real change made)
+  882
+  6
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  1
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  1
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  2
+(1 real change made)
+  885
+  8
+(1 real change made)
+  882
+  7
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  10
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  10
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  12
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  12
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  13
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  13
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  7
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  14
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  9
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  14
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  9
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  14
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  9
+(1 real change made)
+(1 real change made)
+  885
+  5
+(1 real change made)
+  885
+  14
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  9
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  14
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  10
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  14
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  10
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  10
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  10
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  11
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  11
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  11
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  8
+(1 real change made)
+  886
+  11
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  9
+(1 real change made)
+  886
+  11
+(1 real change made)
+(1 real change made)
+  885
+  7
+(1 real change made)
+  885
+  15
+(1 real change made)
+  882
+  9
+(1 real change made)
+  886
+  11
+(1 real change made)
+(1 real change made)
+  885
+  8
+(1 real change made)
+  885
+  18
+(1 real change made)
+  882
+  11
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  8
+(1 real change made)
+  885
+  18
+(1 real change made)
+  882
+  11
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  8
+(1 real change made)
+  885
+  18
+(1 real change made)
+  882
+  11
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  8
+(1 real change made)
+  885
+  18
+(1 real change made)
+  882
+  11
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  9
+(1 real change made)
+  885
+  20
+(1 real change made)
+  882
+  12
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  9
+(1 real change made)
+  885
+  20
+(1 real change made)
+  882
+  12
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  9
+(1 real change made)
+  885
+  20
+(1 real change made)
+  882
+  12
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  9
+(1 real change made)
+  885
+  20
+(1 real change made)
+  882
+  12
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  9
+(1 real change made)
+  885
+  20
+(1 real change made)
+  882
+  13
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  9
+(1 real change made)
+  885
+  20
+(1 real change made)
+  882
+  13
+(1 real change made)
+  886
+  12
+(1 real change made)
+(1 real change made)
+  885
+  10
+(1 real change made)
+  885
+  24
+(1 real change made)
+  882
+  13
+(1 real change made)
+  886
+  14
+(1 real change made)
+(1 real change made)
+  885
+  10
+(1 real change made)
+  885
+  24
+(1 real change made)
+  882
+  13
+(1 real change made)
+  886
+  14
+(1 real change made)
+(1 real change made)
+  885
+  10
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  14
+(1 real change made)
+  886
+  14
+(1 real change made)
+(1 real change made)
+  885
+  10
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  14
+(1 real change made)
+  886
+  14
+(1 real change made)
+(1 real change made)
+  885
+  11
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  14
+(1 real change made)
+  886
+  15
+(1 real change made)
+(1 real change made)
+  885
+  11
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  14
+(1 real change made)
+  886
+  15
+(1 real change made)
+(1 real change made)
+  885
+  11
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  14
+(1 real change made)
+  886
+  15
+(1 real change made)
+(1 real change made)
+  885
+  11
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  14
+(1 real change made)
+  886
+  15
+(1 real change made)
+(1 real change made)
+  885
+  11
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  16
+(1 real change made)
+  886
+  15
+(1 real change made)
+(1 real change made)
+  885
+  11
+(1 real change made)
+  885
+  25
+(1 real change made)
+  882
+  16
+(1 real change made)
+  886
+  15
+(1 real change made)
+(1 real change made)
+  885
+  12
+(1 real change made)
+  885
+  26
+(1 real change made)
+  882
+  20
+(1 real change made)
+  886
+  19
+(1 real change made)
+(1 real change made)
+  885
+  12
+(1 real change made)
+  885
+  26
+(1 real change made)
+  882
+  20
+(1 real change made)
+  886
+  19
+(1 real change made)
+(1 real change made)
+  885
+  12
+(1 real change made)
+  885
+  26
+(1 real change made)
+  882
+  20
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  12
+(1 real change made)
+  885
+  26
+(1 real change made)
+  882
+  20
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  12
+(1 real change made)
+  885
+  27
+(1 real change made)
+  882
+  21
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  12
+(1 real change made)
+  885
+  27
+(1 real change made)
+  882
+  21
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  13
+(1 real change made)
+  885
+  27
+(1 real change made)
+  882
+  21
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  13
+(1 real change made)
+  885
+  27
+(1 real change made)
+  882
+  21
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  13
+(1 real change made)
+  885
+  28
+(1 real change made)
+  882
+  21
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  13
+(1 real change made)
+  885
+  28
+(1 real change made)
+  882
+  21
+(1 real change made)
+  886
+  20
+(1 real change made)
+(1 real change made)
+  885
+  17
+(1 real change made)
+  885
+  31
+(1 real change made)
+  882
+  23
+(1 real change made)
+  886
+  22
+(1 real change made)
+(1 real change made)
+  885
+  17
+(1 real change made)
+  885
+  31
+(1 real change made)
+  882
+  23
+(1 real change made)
+  886
+  22
+(1 real change made)
+(1 real change made)
+  885
+  17
+(1 real change made)
+  885
+  33
+(1 real change made)
+  882
+  23
+(1 real change made)
+  886
+  23
+(1 real change made)
+(1 real change made)
+  885
+  17
+(1 real change made)
+  885
+  33
+(1 real change made)
+  882
+  23
+(1 real change made)
+  886
+  23
+(1 real change made)
+(1 real change made)
+  885
+  17
+(1 real change made)
+  885
+  33
+(1 real change made)
+  882
+  23
+(1 real change made)
+  886
+  24
+(1 real change made)
+(1 real change made)
+  885
+  17
+(1 real change made)
+  885
+  33
+(1 real change made)
+  882
+  23
+(1 real change made)
+  886
+  24
+(1 real change made)
+(1 real change made)
+  885
+  18
+(1 real change made)
+  885
+  34
+(1 real change made)
+  882
+  25
+(1 real change made)
+  886
+  24
+(1 real change made)
+(1 real change made)
+  885
+  18
+(1 real change made)
+  885
+  34
+(1 real change made)
+  882
+  25
+(1 real change made)
+  886
+  24
+(1 real change made)
+(1 real change made)
+  885
+  20
+(1 real change made)
+  885
+  34
+(1 real change made)
+  882
+  25
+(1 real change made)
+  886
+  24
+(1 real change made)
+(1 real change made)
+  885
+  20
+(1 real change made)
+  885
+  34
+(1 real change made)
+  882
+  25
+(1 real change made)
+  886
+  24
+(1 real change made)
+(1 real change made)
+  885
+  25
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  33
+(1 real change made)
+  886
+  29
+(1 real change made)
+(1 real change made)
+  885
+  25
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  33
+(1 real change made)
+  886
+  29
+(1 real change made)
+(1 real change made)
+  885
+  25
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  33
+(1 real change made)
+  886
+  29
+(1 real change made)
+(1 real change made)
+  885
+  25
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  33
+(1 real change made)
+  886
+  29
+(1 real change made)
+(1 real change made)
+  885
+  25
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  33
+(1 real change made)
+  886
+  30
+(1 real change made)
+(1 real change made)
+  885
+  25
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  33
+(1 real change made)
+  886
+  30
+(1 real change made)
+(1 real change made)
+  885
+  26
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  35
+(1 real change made)
+  886
+  32
+(1 real change made)
+(1 real change made)
+  885
+  26
+(1 real change made)
+  885
+  37
+(1 real change made)
+  882
+  35
+(1 real change made)
+  886
+  32
+(1 real change made)
+(1 real change made)
+  885
+  26
+(1 real change made)
+  885
+  38
+(1 real change made)
+  882
+  35
+(1 real change made)
+  886
+  32
+(1 real change made)
+(1 real change made)
+  885
+  26
+(1 real change made)
+  885
+  38
+(1 real change made)
+  882
+  35
+(1 real change made)
+  886
+  32
+(1 real change made)
+(1 real change made)
+  885
+  28
+(1 real change made)
+  885
+  45
+(1 real change made)
+  882
+  40
+(1 real change made)
+  886
+  39
+(1 real change made)
+(1 real change made)
+  885
+  28
+(1 real change made)
+  885
+  45
+(1 real change made)
+  882
+  40
+(1 real change made)
+  886
+  39
+(1 real change made)
+(1 real change made)
+  885
+  29
+(1 real change made)
+  885
+  45
+(1 real change made)
+  882
+  42
+(1 real change made)
+  886
+  39
+(1 real change made)
+(1 real change made)
+  885
+  29
+(1 real change made)
+  885
+  45
+(1 real change made)
+  882
+  42
+(1 real change made)
+  886
+  39
+(1 real change made)
+(1 real change made)
+  885
+  31
+(1 real change made)
+  885
+  46
+(1 real change made)
+  882
+  44
+(1 real change made)
+  886
+  39
+(1 real change made)
+(1 real change made)
+  885
+  31
+(1 real change made)
+  885
+  46
+(1 real change made)
+  882
+  44
+(1 real change made)
+  886
+  39
+(1 real change made)
+(1 real change made)
+  885
+  32
+(1 real change made)
+  885
+  46
+(1 real change made)
+  882
+  45
+(1 real change made)
+  886
+  44
+(1 real change made)
+(1 real change made)
+  885
+  32
+(1 real change made)
+  885
+  46
+(1 real change made)
+  882
+  45
+(1 real change made)
+  886
+  44
+(1 real change made)
+(1 real change made)
+  885
+  32
+(1 real change made)
+  885
+  47
+(1 real change made)
+  882
+  46
+(1 real change made)
+  886
+  45
+(1 real change made)
+(1 real change made)
+  885
+  32
+(1 real change made)
+  885
+  47
+(1 real change made)
+  882
+  46
+(1 real change made)
+  886
+  45
+(1 real change made)
+(1 real change made)
+  885
+  51
+(1 real change made)
+  885
+  62
+(1 real change made)
+  882
+  65
+(1 real change made)
+  886
+  53
+(1 real change made)
+(1 real change made)
+  885
+  51
+(1 real change made)
+  885
+  62
+(1 real change made)
+  882
+  65
+(1 real change made)
+  886
+  53
+(1 real change made)
+(1 real change made)
+  885
+  52
+(1 real change made)
+  885
+  63
+(1 real change made)
+  882
+  66
+(1 real change made)
+  886
+  55
+(1 real change made)
+(1 real change made)
+  885
+  52
+(1 real change made)
+  885
+  63
+(1 real change made)
+  882
+  66
+(1 real change made)
+  886
+  55
+(1 real change made)
+(1 real change made)
+  885
+  58
+(1 real change made)
+  885
+  64
+(1 real change made)
+  882
+  67
+(1 real change made)
+  886
+  55
+(1 real change made)
+(1 real change made)
+  885
+  59
+(1 real change made)
+  885
+  64
+(1 real change made)
+  882
+  67
+(1 real change made)
+  886
+  55
+(1 real change made)
+(1 real change made)
+  885
+  61
+(1 real change made)
+  885
+  69
+(1 real change made)
+  882
+  71
+(1 real change made)
+  886
+  59
+(1 real change made)
+(1 real change made)
+  885
+  61
+(1 real change made)
+  885
+  69
+(1 real change made)
+  882
+  71
+(1 real change made)
+  886
+  59
+(1 real change made)
+(1 real change made)
+  885
+  61
+(1 real change made)
+  885
+  71
+(1 real change made)
+  882
+  71
+(1 real change made)
+  886
+  60
+(1 real change made)
+(1 real change made)
+  885
+  61
+(1 real change made)
+  885
+  71
+(1 real change made)
+  882
+  71
+(1 real change made)
+  886
+  60
+(1 real change made)
+(1 real change made)
+  885
+  78
+(1 real change made)
+  885
+  86
+(1 real change made)
+  882
+  84
+(1 real change made)
+  886
+  75
+(1 real change made)
+(1 real change made)
+  885
+  78
+(1 real change made)
+  885
+  86
+(1 real change made)
+  882
+  84
+(1 real change made)
+  886
+  75
+(1 real change made)
+(1 real change made)
+  885
+  84
+(1 real change made)
+  885
+  90
+(1 real change made)
+  882
+  89
+(1 real change made)
+  886
+  79
+(1 real change made)
+(1 real change made)
+  885
+  84
+(1 real change made)
+  885
+  90
+(1 real change made)
+  882
+  90
+(1 real change made)
+  886
+  79
+(1 real change made)
+(1 real change made)
+  885
+  88
+(1 real change made)
+  885
+  103
+(1 real change made)
+  882
+  98
+(1 real change made)
+  886
+  87
+(1 real change made)
+(1 real change made)
+  885
+  88
+(1 real change made)
+  885
+  103
+(1 real change made)
+  882
+  98
+(1 real change made)
+  886
+  87
+(1 real change made)
+(1 real change made)
+  885
+  104
+(1 real change made)
+  885
+  113
+(1 real change made)
+  882
+  117
+(1 real change made)
+  886
+  109
+(1 real change made)
+(1 real change made)
+  885
+  104
+(1 real change made)
+  885
+  113
+(1 real change made)
+  882
+  117
+(1 real change made)
+  886
+  109
+(1 real change made)
+(1 real change made)
+  885
+  119
+(1 real change made)
+  885
+  129
+(1 real change made)
+  882
+  142
+(1 real change made)
+  886
+  121
+(1 real change made)
+(1 real change made)
+  885
+  119
+(1 real change made)
+  885
+  131
+(1 real change made)
+  882
+  142
+(1 real change made)
+  886
+  121
+(1 real change made)
+(1 real change made)
+  885
+  260
+(1 real change made)
+  885
+  328
+(1 real change made)
+  882
+  335
+(1 real change made)
+  886
+  294
+(1 real change made)
+(1 real change made)
+  885
+  263
+(1 real change made)
+  885
+  328
+(1 real change made)
+  882
+  335
+(1 real change made)
+  886
+  296
+(1 real change made)
+(1 real change made)
+  885
+  313
+(1 real change made)
+  885
+  397
+(1 real change made)
+  882
+  381
+(1 real change made)
+  886
+  350
+(1 real change made)
+(1 real change made)
+  885
+  313
+(1 real change made)
+  885
+  398
+(1 real change made)
+  882
+  381
+(1 real change made)
+  886
+  351
+(1 real change made)
+(1 real change made)
+  885
+  362
+(1 real change made)
+  885
+  449
+(1 real change made)
+  882
+  424
+(1 real change made)
+  886
+  413
+(1 real change made)
+(1 real change made)
+  885
+  362
+(1 real change made)
+  885
+  449
+(1 real change made)
+  882
+  424
+(1 real change made)
+  886
+  413
+(1 real change made)
+(1 real change made)
+  885
+  390
+(1 real change made)
+  885
+  504
+(1 real change made)
+  882
+  451
+(1 real change made)
+  886
+  456
+(1 real change made)
+(1 real change made)
+  885
+  390
+(1 real change made)
+  885
+  504
+(1 real change made)
+  882
+  451
+(1 real change made)
+  886
+  457
+(1 real change made)
+(1 real change made)
+  885
+  425
+(1 real change made)
+  885
+  540
+(1 real change made)
+  882
+  474
+(1 real change made)
+  886
+  472
+(1 real change made)
+(1 real change made)
+  885
+  426
+(1 real change made)
+  885
+  540
+(1 real change made)
+  882
+  474
+(1 real change made)
+  886
+  472
+(1 real change made)
+(1 real change made)
+  885
+  475
+(1 real change made)
+  885
+  592
+(1 real change made)
+  882
+  535
+(1 real change made)
+  886
+  524
+(1 real change made)
+(1 real change made)
+  885
+  475
+(1 real change made)
+  885
+  592
+(1 real change made)
+  882
+  535
+(1 real change made)
+  886
+  524
+(1 real change made)
+(1 real change made)
+  885
+  477
+(1 real change made)
+  885
+  596
+(1 real change made)
+  882
+  545
+(1 real change made)
+  886
+  531
+(1 real change made)
+(1 real change made)
+  885
+  477
+(1 real change made)
+  885
+  596
+(1 real change made)
+  882
+  545
+(1 real change made)
+  886
+  531
+(1 real change made)
+(1 real change made)
+  885
+  492
+(1 real change made)
+  885
+  608
+(1 real change made)
+  882
+  554
+(1 real change made)
+  886
+  538
+(1 real change made)
+(1 real change made)
+  885
+  492
+(1 real change made)
+  885
+  608
+(1 real change made)
+  882
+  554
+(1 real change made)
+  886
+  538
+(1 real change made)
+(1 real change made)
+  885
+  509
+(1 real change made)
+  885
+  614
+(1 real change made)
+  882
+  571
+(1 real change made)
+  886
+  545
+(1 real change made)
+(1 real change made)
+  885
+  509
+(1 real change made)
+  885
+  614
+(1 real change made)
+  882
+  571
+(1 real change made)
+  886
+  545
+(1 real change made)
+(1 real change made)
+  885
+  521
+(1 real change made)
+  885
+  616
+(1 real change made)
+  882
+  580
+(1 real change made)
+  886
+  552
+(1 real change made)
+(1 real change made)
+  885
+  521
+(1 real change made)
+  885
+  616
+(1 real change made)
+  882
+  580
+(1 real change made)
+  886
+  552
+(1 real change made)
+(1 real change made)
+  885
+  560
+(1 real change made)
+  885
+  654
+(1 real change made)
+  882
+  612
+(1 real change made)
+  886
+  593
+(1 real change made)
+(1 real change made)
+  885
+  560
+(1 real change made)
+  885
+  654
+(1 real change made)
+  882
+  612
+(1 real change made)
+  886
+  593
+(1 real change made)
+(1 real change made)
+  885
+  569
+(1 real change made)
+  885
+  656
+(1 real change made)
+  882
+  614
+(1 real change made)
+  886
+  594
+(1 real change made)
+(1 real change made)
+  885
+  569
+(1 real change made)
+  885
+  656
+(1 real change made)
+  882
+  614
+(1 real change made)
+  886
+  594
+(1 real change made)
+(1 real change made)
+  885
+  576
+(1 real change made)
+  885
+  659
+(1 real change made)
+  882
+  618
+(1 real change made)
+  886
+  597
+(1 real change made)
+(1 real change made)
+  885
+  576
+(1 real change made)
+  885
+  659
+(1 real change made)
+  882
+  618
+(1 real change made)
+  886
+  597
+(1 real change made)
+(1 real change made)
+  885
+  582
+(1 real change made)
+  885
+  660
+(1 real change made)
+  882
+  622
+(1 real change made)
+  886
+  597
+(1 real change made)
+(1 real change made)
+  885
+  582
+(1 real change made)
+  885
+  660
+(1 real change made)
+  882
+  622
+(1 real change made)
+  886
+  597
+(1 real change made)
+(1 real change made)
+  885
+  588
+(1 real change made)
+  885
+  662
+(1 real change made)
+  882
+  630
+(1 real change made)
+  886
+  601
+(1 real change made)
+(1 real change made)
+  885
+  588
+(1 real change made)
+  885
+  662
+(1 real change made)
+  882
+  630
+(1 real change made)
+  886
+  601
+(1 real change made)
+(1 real change made)
+  885
+  612
+(1 real change made)
+  885
+  682
+(1 real change made)
+  882
+  654
+(1 real change made)
+  886
+  619
+(1 real change made)
+(1 real change made)
+  885
+  612
+(1 real change made)
+  885
+  682
+(1 real change made)
+  882
+  654
+(1 real change made)
+  886
+  619
+(1 real change made)
+(1 real change made)
+  885
+  614
+(1 real change made)
+  885
+  686
+(1 real change made)
+  882
+  654
+(1 real change made)
+  886
+  622
+(1 real change made)
+(1 real change made)
+  885
+  614
+(1 real change made)
+  885
+  686
+(1 real change made)
+  882
+  654
+(1 real change made)
+  886
+  622
+(1 real change made)
+(1 real change made)
+  885
+  621
+(1 real change made)
+  885
+  688
+(1 real change made)
+  882
+  658
+(1 real change made)
+  886
+  626
+(1 real change made)
+(1 real change made)
+  885
+  621
+(1 real change made)
+  885
+  688
+(1 real change made)
+  882
+  658
+(1 real change made)
+  886
+  626
+(1 real change made)
+(1 real change made)
+  885
+  627
+(1 real change made)
+  885
+  689
+(1 real change made)
+  882
+  659
+(1 real change made)
+  886
+  630
+(1 real change made)
+(1 real change made)
+  885
+  627
+(1 real change made)
+  885
+  689
+(1 real change made)
+  882
+  659
+(1 real change made)
+  886
+  630
+(1 real change made)
+(1 real change made)
+  885
+  630
+(1 real change made)
+  885
+  693
+(1 real change made)
+  882
+  664
+(1 real change made)
+  886
+  636
+(1 real change made)
+(1 real change made)
+  885
+  630
+(1 real change made)
+  885
+  693
+(1 real change made)
+  882
+  664
+(1 real change made)
+  886
+  636
+(1 real change made)
+(1 real change made)
+  885
+  653
+(1 real change made)
+  885
+  711
+(1 real change made)
+  882
+  683
+(1 real change made)
+  886
+  653
+(1 real change made)
+(1 real change made)
+  885
+  653
+(1 real change made)
+  885
+  711
+(1 real change made)
+  882
+  683
+(1 real change made)
+  886
+  653
+(1 real change made)
+(1 real change made)
+  885
+  653
+(1 real change made)
+  885
+  711
+(1 real change made)
+  882
+  685
+(1 real change made)
+  886
+  654
+(1 real change made)
+(1 real change made)
+  885
+  653
+(1 real change made)
+  885
+  711
+(1 real change made)
+  882
+  685
+(1 real change made)
+  886
+  654
+(1 real change made)
+(1 real change made)
+  885
+  658
+(1 real change made)
+  885
+  712
+(1 real change made)
+  882
+  688
+(1 real change made)
+  886
+  657
+(1 real change made)
+(1 real change made)
+  885
+  658
+(1 real change made)
+  885
+  712
+(1 real change made)
+  882
+  688
+(1 real change made)
+  886
+  657
+(1 real change made)
+(1 real change made)
+  885
+  659
+(1 real change made)
+  885
+  715
+(1 real change made)
+  882
+  693
+(1 real change made)
+  886
+  664
+(1 real change made)
+(1 real change made)
+  885
+  659
+(1 real change made)
+  885
+  715
+(1 real change made)
+  882
+  693
+(1 real change made)
+  886
+  664
+(1 real change made)
+(1 real change made)
+  885
+  662
+(1 real change made)
+  885
+  719
+(1 real change made)
+  882
+  698
+(1 real change made)
+  886
+  670
+(1 real change made)
+(1 real change made)
+  885
+  662
+(1 real change made)
+  885
+  719
+(1 real change made)
+  882
+  698
+(1 real change made)
+  886
+  670
+(1 real change made)
+(1 real change made)
+  885
+  681
+(1 real change made)
+  885
+  726
+(1 real change made)
+  882
+  712
+(1 real change made)
+  886
+  686
+(1 real change made)
+(1 real change made)
+  885
+  681
+(1 real change made)
+  885
+  726
+(1 real change made)
+  882
+  712
+(1 real change made)
+  886
+  686
+(1 real change made)
+(1 real change made)
+  885
+  683
+(1 real change made)
+  885
+  726
+(1 real change made)
+  882
+  713
+(1 real change made)
+  886
+  689
+(1 real change made)
+(1 real change made)
+  885
+  683
+(1 real change made)
+  885
+  726
+(1 real change made)
+  882
+  713
+(1 real change made)
+  886
+  689
+(1 real change made)
+(1 real change made)
+  885
+  688
+(1 real change made)
+  885
+  726
+(1 real change made)
+  882
+  714
+(1 real change made)
+  886
+  692
+(1 real change made)
+(1 real change made)
+  885
+  688
+(1 real change made)
+  885
+  726
+(1 real change made)
+  882
+  714
+(1 real change made)
+  886
+  692
+(1 real change made)
+(1 real change made)
+  885
+  691
+(1 real change made)
+  885
+  729
+(1 real change made)
+  882
+  717
+(1 real change made)
+  886
+  693
+(1 real change made)
+(1 real change made)
+  885
+  691
+(1 real change made)
+  885
+  729
+(1 real change made)
+  882
+  717
+(1 real change made)
+  886
+  693
+(1 real change made)
+(1 real change made)
+  885
+  693
+(1 real change made)
+  885
+  730
+(1 real change made)
+  882
+  718
+(1 real change made)
+  886
+  698
+(1 real change made)
+(1 real change made)
+  885
+  693
+(1 real change made)
+  885
+  730
+(1 real change made)
+  882
+  718
+(1 real change made)
+  886
+  698
+(1 real change made)
+(1 real change made)
+  885
+  706
+(1 real change made)
+  885
+  745
+(1 real change made)
+  882
+  734
+(1 real change made)
+  886
+  707
+(1 real change made)
+(1 real change made)
+  885
+  706
+(1 real change made)
+  885
+  745
+(1 real change made)
+  882
+  734
+(1 real change made)
+  886
+  707
+(1 real change made)
+(1 real change made)
+  885
+  707
+(1 real change made)
+  885
+  745
+(1 real change made)
+  882
+  736
+(1 real change made)
+  886
+  710
+(1 real change made)
+(1 real change made)
+  885
+  707
+(1 real change made)
+  885
+  745
+(1 real change made)
+  882
+  736
+(1 real change made)
+  886
+  710
+(1 real change made)
+(1 real change made)
+  885
+  710
+(1 real change made)
+  885
+  747
+(1 real change made)
+  882
+  737
+(1 real change made)
+  886
+  711
+(1 real change made)
+(1 real change made)
+  885
+  710
+(1 real change made)
+  885
+  748
+(1 real change made)
+  882
+  737
+(1 real change made)
+  886
+  711
+(1 real change made)
+(1 real change made)
+  885
+  715
+(1 real change made)
+  885
+  753
+(1 real change made)
+  882
+  739
+(1 real change made)
+  886
+  713
+(1 real change made)
+(1 real change made)
+  885
+  715
+(1 real change made)
+  885
+  753
+(1 real change made)
+  882
+  739
+(1 real change made)
+  886
+  713
+(1 real change made)
+(1 real change made)
+  885
+  717
+(1 real change made)
+  885
+  756
+(1 real change made)
+  882
+  743
+(1 real change made)
+  886
+  715
+(1 real change made)
+(1 real change made)
+  885
+  717
+(1 real change made)
+  885
+  756
+(1 real change made)
+  882
+  743
+(1 real change made)
+  886
+  715
+(1 real change made)
+(1 real change made)
+  885
+  725
+(1 real change made)
+  885
+  763
+(1 real change made)
+  882
+  752
+(1 real change made)
+  886
+  722
+(1 real change made)
+(1 real change made)
+  885
+  725
+(1 real change made)
+  885
+  763
+(1 real change made)
+  882
+  752
+(1 real change made)
+  886
+  722
+(1 real change made)
+(1 real change made)
+  885
+  725
+(1 real change made)
+  885
+  764
+(1 real change made)
+  882
+  752
+(1 real change made)
+  886
+  724
+(1 real change made)
+(1 real change made)
+  885
+  725
+(1 real change made)
+  885
+  764
+(1 real change made)
+  882
+  752
+(1 real change made)
+  886
+  724
+(1 real change made)
+(1 real change made)
+  885
+  727
+(1 real change made)
+  885
+  764
+(1 real change made)
+  882
+  754
+(1 real change made)
+  886
+  727
+(1 real change made)
+(1 real change made)
+  885
+  727
+(1 real change made)
+  885
+  764
+(1 real change made)
+  882
+  754
+(1 real change made)
+  886
+  727
+(1 real change made)
+(1 real change made)
+  885
+  731
+(1 real change made)
+  885
+  767
+(1 real change made)
+  882
+  755
+(1 real change made)
+  886
+  730
+(1 real change made)
+(1 real change made)
+  885
+  731
+(1 real change made)
+  885
+  767
+(1 real change made)
+  882
+  755
+(1 real change made)
+  886
+  730
+(1 real change made)
+(1 real change made)
+  885
+  732
+(1 real change made)
+  885
+  768
+(1 real change made)
+  882
+  756
+(1 real change made)
+  886
+  733
+(1 real change made)
+(1 real change made)
+  885
+  732
+(1 real change made)
+  885
+  768
+(1 real change made)
+  882
+  756
+(1 real change made)
+  886
+  733
+(1 real change made)
+(1 real change made)
+  885
+  745
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  767
+(1 real change made)
+  886
+  743
+(1 real change made)
+(1 real change made)
+  885
+  745
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  767
+(1 real change made)
+  886
+  743
+(1 real change made)
+(1 real change made)
+  885
+  745
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  767
+(1 real change made)
+  886
+  745
+(1 real change made)
+(1 real change made)
+  885
+  745
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  767
+(1 real change made)
+  886
+  745
+(1 real change made)
+(1 real change made)
+  885
+  748
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  767
+(1 real change made)
+  886
+  746
+(1 real change made)
+(1 real change made)
+  885
+  748
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  767
+(1 real change made)
+  886
+  746
+(1 real change made)
+(1 real change made)
+  885
+  748
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  769
+(1 real change made)
+  886
+  747
+(1 real change made)
+(1 real change made)
+  885
+  748
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  769
+(1 real change made)
+  886
+  747
+(1 real change made)
+(1 real change made)
+  885
+  749
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  769
+(1 real change made)
+  886
+  748
+(1 real change made)
+(1 real change made)
+  885
+  749
+(1 real change made)
+  885
+  771
+(1 real change made)
+  882
+  769
+(1 real change made)
+  886
+  748
+(1 real change made)
+(1 real change made)
+  885
+  754
+(1 real change made)
+  885
+  776
+(1 real change made)
+  882
+  774
+(1 real change made)
+  886
+  755
+(1 real change made)
+(1 real change made)
+  885
+  754
+(1 real change made)
+  885
+  776
+(1 real change made)
+  882
+  774
+(1 real change made)
+  886
+  755
+(1 real change made)
+(1 real change made)
+  885
+  754
+(1 real change made)
+  885
+  777
+(1 real change made)
+  882
+  776
+(1 real change made)
+  886
+  756
+(1 real change made)
+(1 real change made)
+  885
+  754
+(1 real change made)
+  885
+  777
+(1 real change made)
+  882
+  776
+(1 real change made)
+  886
+  756
+(1 real change made)
+(1 real change made)
+  885
+  757
+(1 real change made)
+  885
+  784
+(1 real change made)
+  882
+  779
+(1 real change made)
+  886
+  757
+(1 real change made)
+(1 real change made)
+  885
+  757
+(1 real change made)
+  885
+  784
+(1 real change made)
+  882
+  779
+(1 real change made)
+  886
+  757
+(1 real change made)
+(1 real change made)
+  885
+  760
+(1 real change made)
+  885
+  787
+(1 real change made)
+  882
+  782
+(1 real change made)
+  886
+  761
+(1 real change made)
+(1 real change made)
+  885
+  760
+(1 real change made)
+  885
+  787
+(1 real change made)
+  882
+  782
+(1 real change made)
+  886
+  761
+(1 real change made)
+(1 real change made)
+  885
+  763
+(1 real change made)
+  885
+  787
+(1 real change made)
+  882
+  784
+(1 real change made)
+  886
+  764
+(1 real change made)
+(1 real change made)
+  885
+  763
+(1 real change made)
+  885
+  787
+(1 real change made)
+  882
+  784
+(1 real change made)
+  886
+  764
+(1 real change made)
+(1 real change made)
+  885
+  782
+(1 real change made)
+  885
+  809
+(1 real change made)
+  882
+  805
+(1 real change made)
+  886
+  785
+(1 real change made)
+(1 real change made)
+  885
+  782
+(1 real change made)
+  885
+  809
+(1 real change made)
+  882
+  805
+(1 real change made)
+  886
+  785
+(1 real change made)
+(1 real change made)
+  885
+  782
+(1 real change made)
+  885
+  809
+(1 real change made)
+  882
+  806
+(1 real change made)
+  886
+  785
+(1 real change made)
+(1 real change made)
+  885
+  782
+(1 real change made)
+  885
+  809
+(1 real change made)
+  882
+  806
+(1 real change made)
+  886
+  785
+(1 real change made)
+(1 real change made)
+  885
+  783
+(1 real change made)
+  885
+  810
+(1 real change made)
+  882
+  806
+(1 real change made)
+  886
+  786
+(1 real change made)
+(1 real change made)
+  885
+  783
+(1 real change made)
+  885
+  810
+(1 real change made)
+  882
+  806
+(1 real change made)
+  886
+  786
+(1 real change made)
+(1 real change made)
+  885
+  783
+(1 real change made)
+  885
+  811
+(1 real change made)
+  882
+  808
+(1 real change made)
+  886
+  790
+(1 real change made)
+(1 real change made)
+  885
+  783
+(1 real change made)
+  885
+  811
+(1 real change made)
+  882
+  808
+(1 real change made)
+  886
+  790
+(1 real change made)
+(1 real change made)
+  885
+  785
+(1 real change made)
+  885
+  811
+(1 real change made)
+  882
+  809
+(1 real change made)
+  886
+  790
+(1 real change made)
+(1 real change made)
+  885
+  785
+(1 real change made)
+  885
+  811
+(1 real change made)
+  882
+  809
+(1 real change made)
+  886
+  790
+(1 real change made)
+(1 real change made)
+  885
+  788
+(1 real change made)
+  885
+  820
+(1 real change made)
+  882
+  814
+(1 real change made)
+  886
+  795
+(1 real change made)
+(1 real change made)
+  885
+  788
+(1 real change made)
+  885
+  820
+(1 real change made)
+  882
+  814
+(1 real change made)
+  886
+  795
+(1 real change made)
+(1 real change made)
+  885
+  788
+(1 real change made)
+  885
+  820
+(1 real change made)
+  882
+  814
+(1 real change made)
+  886
+  795
+(1 real change made)
+(1 real change made)
+  885
+  788
+(1 real change made)
+  885
+  820
+(1 real change made)
+  882
+  814
+(1 real change made)
+  886
+  795
+(1 real change made)
+(1 real change made)
+  885
+  789
+(1 real change made)
+  885
+  821
+(1 real change made)
+  882
+  816
+(1 real change made)
+  886
+  798
+(1 real change made)
+(1 real change made)
+  885
+  789
+(1 real change made)
+  885
+  821
+(1 real change made)
+  882
+  816
+(1 real change made)
+  886
+  798
+(1 real change made)
+(1 real change made)
+  885
+  793
+(1 real change made)
+  885
+  823
+(1 real change made)
+  882
+  816
+(1 real change made)
+  886
+  801
+(1 real change made)
+(1 real change made)
+  885
+  793
+(1 real change made)
+  885
+  823
+(1 real change made)
+  882
+  816
+(1 real change made)
+  886
+  801
+(1 real change made)
+(1 real change made)
+  885
+  796
+(1 real change made)
+  885
+  825
+(1 real change made)
+  882
+  818
+(1 real change made)
+  886
+  804
+(1 real change made)
+(1 real change made)
+  885
+  796
+(1 real change made)
+  885
+  825
+(1 real change made)
+  882
+  818
+(1 real change made)
+  886
+  804
+(1 real change made)
+(1 real change made)
+  885
+  809
+(1 real change made)
+  885
+  831
+(1 real change made)
+  882
+  821
+(1 real change made)
+  886
+  812
+(1 real change made)
+(1 real change made)
+  885
+  809
+(1 real change made)
+  885
+  831
+(1 real change made)
+  882
+  821
+(1 real change made)
+  886
+  812
+(1 real change made)
+(1 real change made)
+  885
+  809
+(1 real change made)
+  885
+  831
+(1 real change made)
+  882
+  823
+(1 real change made)
+  886
+  813
+(1 real change made)
+(1 real change made)
+  885
+  809
+(1 real change made)
+  885
+  831
+(1 real change made)
+  882
+  823
+(1 real change made)
+  886
+  813
+(1 real change made)
+(1 real change made)
+  885
+  811
+(1 real change made)
+  885
+  832
+(1 real change made)
+  882
+  823
+(1 real change made)
+  886
+  813
+(1 real change made)
+(1 real change made)
+  885
+  811
+(1 real change made)
+  885
+  832
+(1 real change made)
+  882
+  823
+(1 real change made)
+  886
+  813
+(1 real change made)
+(1 real change made)
+  885
+  811
+(1 real change made)
+  885
+  832
+(1 real change made)
+  882
+  824
+(1 real change made)
+  886
+  814
+(1 real change made)
+(1 real change made)
+  885
+  811
+(1 real change made)
+  885
+  832
+(1 real change made)
+  882
+  824
+(1 real change made)
+  886
+  814
+(1 real change made)
+(1 real change made)
+  885
+  812
+(1 real change made)
+  885
+  833
+(1 real change made)
+  882
+  825
+(1 real change made)
+  886
+  816
+(1 real change made)
+(1 real change made)
+  885
+  812
+(1 real change made)
+  885
+  833
+(1 real change made)
+  882
+  825
+(1 real change made)
+  886
+  816
+(1 real change made)
+(1 real change made)
+  885
+  821
+(1 real change made)
+  885
+  834
+(1 real change made)
+  882
+  832
+(1 real change made)
+  886
+  821
+(1 real change made)
+(1 real change made)
+  885
+  821
+(1 real change made)
+  885
+  834
+(1 real change made)
+  882
+  832
+(1 real change made)
+  886
+  821
+(1 real change made)
+(1 real change made)
+  885
+  821
+(1 real change made)
+  885
+  834
+(1 real change made)
+  882
+  832
+(1 real change made)
+  886
+  822
+(1 real change made)
+(1 real change made)
+  885
+  821
+(1 real change made)
+  885
+  834
+(1 real change made)
+  882
+  832
+(1 real change made)
+  886
+  822
+(1 real change made)
+(1 real change made)
+  885
+  823
+(1 real change made)
+  885
+  834
+(1 real change made)
+  882
+  832
+(1 real change made)
+  886
+  823
+(1 real change made)
+(1 real change made)
+  885
+  823
+(1 real change made)
+  885
+  834
+(1 real change made)
+  882
+  832
+(1 real change made)
+  886
+  823
+(1 real change made)
+(1 real change made)
+  885
+  823
+(1 real change made)
+  885
+  835
+(1 real change made)
+  882
+  834
+(1 real change made)
+  886
+  825
+(1 real change made)
+(1 real change made)
+  885
+  823
+(1 real change made)
+  885
+  835
+(1 real change made)
+  882
+  834
+(1 real change made)
+  886
+  825
+(1 real change made)
+(1 real change made)
+  885
+  823
+(1 real change made)
+  885
+  835
+(1 real change made)
+  882
+  834
+(1 real change made)
+  886
+  826
+(1 real change made)
+(1 real change made)
+  885
+  823
+(1 real change made)
+  885
+  835
+(1 real change made)
+  882
+  834
+(1 real change made)
+  886
+  826
+(1 real change made)
+(1 real change made)
+  885
+  832
+(1 real change made)
+  885
+  840
+(1 real change made)
+  882
+  844
+(1 real change made)
+  886
+  830
+(1 real change made)
+(1 real change made)
+  885
+  832
+(1 real change made)
+  885
+  840
+(1 real change made)
+  882
+  844
+(1 real change made)
+  886
+  830
+(1 real change made)
+(1 real change made)
+  885
+  832
+(1 real change made)
+  885
+  840
+(1 real change made)
+  882
+  844
+(1 real change made)
+  886
+  831
+(1 real change made)
+(1 real change made)
+  885
+  832
+(1 real change made)
+  885
+  840
+(1 real change made)
+  882
+  844
+(1 real change made)
+  886
+  831
+(1 real change made)
+(1 real change made)
+  885
+  833
+(1 real change made)
+  885
+  841
+(1 real change made)
+  882
+  846
+(1 real change made)
+  886
+  832
+(1 real change made)
+(1 real change made)
+  885
+  833
+(1 real change made)
+  885
+  841
+(1 real change made)
+  882
+  846
+(1 real change made)
+  886
+  832
+(1 real change made)
+(1 real change made)
+  885
+  834
+(1 real change made)
+  885
+  842
+(1 real change made)
+  882
+  847
+(1 real change made)
+  886
+  833
+(1 real change made)
+(1 real change made)
+  885
+  834
+(1 real change made)
+  885
+  842
+(1 real change made)
+  882
+  847
+(1 real change made)
+  886
+  833
+(1 real change made)
+(1 real change made)
+  885
+  835
+(1 real change made)
+  885
+  843
+(1 real change made)
+  882
+  849
+(1 real change made)
+  886
+  833
+(1 real change made)
+(1 real change made)
+  885
+  835
+(1 real change made)
+  885
+  843
+(1 real change made)
+  882
+  849
+(1 real change made)
+  886
+  833
+(1 real change made)
+(1 real change made)
+  885
+  847
+(1 real change made)
+  885
+  848
+(1 real change made)
+  882
+  853
+(1 real change made)
+  886
+  839
+(1 real change made)
+(1 real change made)
+  885
+  847
+(1 real change made)
+  885
+  848
+(1 real change made)
+  882
+  853
+(1 real change made)
+  886
+  839
+(1 real change made)
+(1 real change made)
+  885
+  847
+(1 real change made)
+  885
+  848
+(1 real change made)
+  882
+  853
+(1 real change made)
+  886
+  839
+(1 real change made)
+(1 real change made)
+  885
+  847
+(1 real change made)
+  885
+  848
+(1 real change made)
+  882
+  853
+(1 real change made)
+  886
+  839
+(1 real change made)
+(1 real change made)
+  885
+  850
+(1 real change made)
+  885
+  850
+(1 real change made)
+  882
+  855
+(1 real change made)
+  886
+  840
+(1 real change made)
+(1 real change made)
+  885
+  850
+(1 real change made)
+  885
+  850
+(1 real change made)
+  882
+  855
+(1 real change made)
+  886
+  840
+(1 real change made)
+(1 real change made)
+  885
+  851
+(1 real change made)
+  885
+  853
+(1 real change made)
+  882
+  857
+(1 real change made)
+  886
+  841
+(1 real change made)
+(1 real change made)
+  885
+  851
+(1 real change made)
+  885
+  853
+(1 real change made)
+  882
+  857
+(1 real change made)
+  886
+  841
+(1 real change made)
+(1 real change made)
+  885
+  853
+(1 real change made)
+  885
+  856
+(1 real change made)
+  882
+  859
+(1 real change made)
+  886
+  842
+(1 real change made)
+(1 real change made)
+  885
+  853
+(1 real change made)
+  885
+  856
+(1 real change made)
+  882
+  859
+(1 real change made)
+  886
+  842
+(1 real change made)
+(1 real change made)
+  885
+  859
+(1 real change made)
+  885
+  859
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  851
+(1 real change made)
+(1 real change made)
+  885
+  859
+(1 real change made)
+  885
+  859
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  851
+(1 real change made)
+(1 real change made)
+  885
+  860
+(1 real change made)
+  885
+  860
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  852
+(1 real change made)
+(1 real change made)
+  885
+  860
+(1 real change made)
+  885
+  860
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  852
+(1 real change made)
+(1 real change made)
+  885
+  862
+(1 real change made)
+  885
+  862
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  852
+(1 real change made)
+(1 real change made)
+  885
+  862
+(1 real change made)
+  885
+  862
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  852
+(1 real change made)
+(1 real change made)
+  885
+  862
+(1 real change made)
+  885
+  863
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  853
+(1 real change made)
+(1 real change made)
+  885
+  862
+(1 real change made)
+  885
+  863
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  853
+(1 real change made)
+(1 real change made)
+  885
+  863
+(1 real change made)
+  885
+  863
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  856
+(1 real change made)
+(1 real change made)
+  885
+  863
+(1 real change made)
+  885
+  863
+(1 real change made)
+  882
+  864
+(1 real change made)
+  886
+  856
+(1 real change made)
+(1 real change made)
+  885
+  867
+(1 real change made)
+  885
+  869
+(1 real change made)
+  882
+  866
+(1 real change made)
+  886
+  864
+(1 real change made)
+(1 real change made)
+  885
+  867
+(1 real change made)
+  885
+  869
+(1 real change made)
+  882
+  866
+(1 real change made)
+  886
+  864
+(1 real change made)
+(1 real change made)
+  885
+  868
+(1 real change made)
+  885
+  870
+(1 real change made)
+  882
+  866
+(1 real change made)
+  886
+  865
+(1 real change made)
+(1 real change made)
+  885
+  868
+(1 real change made)
+  885
+  870
+(1 real change made)
+  882
+  866
+(1 real change made)
+  886
+  865
+(1 real change made)
+(1 real change made)
+  885
+  868
+(1 real change made)
+  885
+  870
+(1 real change made)
+  882
+  867
+(1 real change made)
+  886
+  865
+(1 real change made)
+(1 real change made)
+  885
+  868
+(1 real change made)
+  885
+  870
+(1 real change made)
+  882
+  867
+(1 real change made)
+  886
+  865
+(1 real change made)
+(1 real change made)
+  885
+  869
+(1 real change made)
+  885
+  871
+(1 real change made)
+  882
+  867
+(1 real change made)
+  886
+  866
+(1 real change made)
+(1 real change made)
+  885
+  869
+(1 real change made)
+  885
+  871
+(1 real change made)
+  882
+  867
+(1 real change made)
+  886
+  866
+(1 real change made)
+(1 real change made)
+  885
+  871
+(1 real change made)
+  885
+  872
+(1 real change made)
+  882
+  869
+(1 real change made)
+  886
+  868
+(1 real change made)
+(1 real change made)
+  885
+  871
+(1 real change made)
+  885
+  872
+(1 real change made)
+  882
+  869
+(1 real change made)
+  886
+  868
+(1 real change made)
+(1 real change made)
+  885
+  873
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  872
+(1 real change made)
+(1 real change made)
+  885
+  873
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  872
+(1 real change made)
+(1 real change made)
+  885
+  873
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  872
+(1 real change made)
+(1 real change made)
+  885
+  873
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  872
+(1 real change made)
+(1 real change made)
+  885
+  874
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  872
+(1 real change made)
+(1 real change made)
+  885
+  874
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  872
+(1 real change made)
+(1 real change made)
+  885
+  874
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  873
+(1 real change made)
+(1 real change made)
+  885
+  874
+(1 real change made)
+  885
+  875
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  873
+(1 real change made)
+(1 real change made)
+  885
+  875
+(1 real change made)
+  885
+  876
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  875
+(1 real change made)
+(1 real change made)
+  885
+  875
+(1 real change made)
+  885
+  876
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  875
+(1 real change made)
+(1 real change made)
+  885
+  879
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  875
+(1 real change made)
+(1 real change made)
+  885
+  879
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  875
+(1 real change made)
+(1 real change made)
+  885
+  880
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  876
+(1 real change made)
+(1 real change made)
+  885
+  880
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  876
+(1 real change made)
+(1 real change made)
+  885
+  880
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  876
+(1 real change made)
+(1 real change made)
+  885
+  880
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  876
+(1 real change made)
+(1 real change made)
+  885
+  880
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  878
+(1 real change made)
+(1 real change made)
+  885
+  880
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  875
+(1 real change made)
+  886
+  878
+(1 real change made)
+(1 real change made)
+  885
+  881
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  877
+(1 real change made)
+  886
+  879
+(1 real change made)
+(1 real change made)
+  885
+  881
+(1 real change made)
+  885
+  881
+(1 real change made)
+  882
+  877
+(1 real change made)
+  886
+  879
+(1 real change made)
+(1 real change made)
+  885
+  885
+(1 real change made)
+  885
+  885
+(1 real change made)
+  882
+  882
+(1 real change made)
+  886
+  886
+(1 real change made)
+
+. 
+. * Calculate mean delta by arm
+. forvalues arm = 0/3 {
+  2.     sum delta if arm_n == `arm'
+  3.     local m`arm' = string(r(mean), "%3.2f")
+  4. }
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       delta |        885    15.40985    26.09716        -57        100
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       delta |        885    10.77795    25.68565        -90        100
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       delta |        882    12.03427    25.21814        -96        100
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       delta |        886    14.49074    27.40829        -75        100
+
+. 
+. * Regression for treatment effects
+. reg delta i.arm_n, r
+
+Linear regression                               Number of obs     =      3,538
+                                                F(3, 3534)        =       6.01
+                                                Prob > F          =     0.0004
+                                                R-squared         =     0.0050
+                                                Root MSE          =     26.116
+
+------------------------------------------------------------------------------
+             |               Robust
+       delta | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       arm_n |
+1. Industry  |  -4.631898   1.230872    -3.76   0.000    -7.045189   -2.218608
+2. Academic  |  -3.375579     1.2209    -2.76   0.006    -5.769318   -.9818392
+3. Personal  |  -.9191082   1.271784    -0.72   0.470    -3.412614    1.574397
+             |
+       _cons |   15.40985   .8772467    17.57   0.000     13.68989    17.12981
+------------------------------------------------------------------------------
+
+. forvalues n = 1/3 {
+  2.     local d`n' = string(_b[`n'.arm_n], "%3.2f")
+  3.     local se`n' = string(_se[`n'.arm_n], "%3.2f")
+  4. }
+
+. 
+. *----------------------------------------------------------------------------
+> --
+. * Create individual arm vs control plots
+. *----------------------------------------------------------------------------
+> --
+. 
+. * Industry arm
+. # delimit ;
+delimiter now ;
+. twoway
+>     (line p1 b if b >= -50)
+>     (line p0 b if b >= -50, color(gs10))
+>     ,
+>     legend(off)
+>     text(.82 20 "Industry arm", color(stc1) place(w) size(large))
+>     text(.75 31 "Control arm", color(gs10) place(e) size(large))
+>     text(.2 100
+>         "Control mean: `m0'"
+>         "Industry arm mean: `m1'"
+>         "Unadjusted difference: `d1'" "(SE: `se1')" ,
+>         place(w) justification(right) size(medlarge)
+>     )
+>     ytitle("", size(large))
+>     xtitle("Posterior believed side effect rate", size(large))
+>     xlabel(, labsize(large))
+>     ylabel(, labsize(large))
+>     title("Industry arm", span pos(11) ring(0) size(vlarge))
+>     xsize(3) ysize(3)
+>     name(industry, replace)
+> ;
+(option span ignored for position(0))
+
+. # delimit cr
+delimiter now cr
+. 
+. * Academic arm
+. # delimit ;
+delimiter now ;
+. twoway
+>     (line p2 b if b >= -50)
+>     (line p0 b if b >= -50, color(gs10))
+>     ,
+>     legend(off)
+>     text(.82 20 "Academic arm", color(stc1) place(w) size(large))
+>     text(.75 31 "Control arm", color(gs10) place(e) size(large))
+>     text(.2 100
+>         "Control mean: `m0'"
+>         "Academic arm mean: `m2'"
+>         "Unadjusted difference: `d2'" "(SE: `se2')" ,
+>         place(w) justification(right) size(medlarge)
+>     )
+>     ytitle("", size(large))
+>     xtitle("Posterior believed side effect rate", size(large))
+>     xlabel(, labsize(large))
+>     ylabel(, labsize(large))
+>     title("Academic arm", span pos(11) ring(0) size(vlarge))
+>     xsize(3) ysize(3)
+>     name(academic, replace)
+> ;
+(option span ignored for position(0))
+
+. # delimit cr
+delimiter now cr
+. 
+. * Personal arm
+. # delimit ;
+delimiter now ;
+. twoway
+>     (line p3 b if b >= -50)
+>     (line p0 b if b >= -50, color(gs10))
+>     ,
+>     legend(off)
+>     text(.82 20 "Personal arm", color(stc1) place(w) size(large))
+>     text(.75 31 "Control arm", color(gs10) place(e) size(large))
+>     text(.2 100
+>         "Control mean: `m0'"
+>         "Personal arm mean: `m3'"
+>         "Unadjusted difference: `d3'" "(SE: `se3')" ,
+>         place(w) justification(right) size(medlarge)
+>     )
+>     ytitle("", size(large))
+>     xtitle("Posterior believed side effect rate", size(large))
+>     xlabel(, labsize(large))
+>     ylabel(, labsize(large))
+>     title("Personal arm", span pos(11) ring(0) size(vlarge))
+>     xsize(3) ysize(3)
+>     name(personal, replace)
+> ;
+(option span ignored for position(0))
+
+. # delimit cr
+delimiter now cr
+. 
+. *----------------------------------------------------------------------------
+> --
+. * Combine and export
+. *----------------------------------------------------------------------------
+> --
+. 
+. graph combine industry academic personal, cols(3) xsize(8) ysize(4)
+
+. graph export "output/figures/belief_cdf_by_arm.png", replace width(2000) heig
+> ht(1000)
+file output/figures/belief_cdf_by_arm.png written in PNG format
+
+. 
+. capture log close
+
+. 
+end of do-file

@@ -1,0 +1,362 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do /Users/sacks/Projects/VaccSideEffects/code/explore_beliefs.do 
+
+. /*===========================================================================
+> ===
+>     Descriptive Analysis of Side Effect Beliefs
+> 
+>     Creates:
+>     1. CDF of posterior believed side effect rate (delta)
+>     2. Mean beliefs by flu/covid vaccine reaction experience
+>     3. Mean beliefs by trust in government and doctor-following
+> 
+>     Outputs:
+>         output/figures/beliefs_pooled.png
+>         output/figures/delta_by_vacc_reaction.png
+>         output/figures/delta_by_trust.png
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "explore_beliefs"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
+. local usr `c(username)'
+
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. cd "$projdir"
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for "Prefer not to say" responses
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/explore_beliefs.
+> log
+  log type:  text
+ opened on:  25 Jan 2026, 13:43:14
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: explore_beliefs ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/explore_beliefs.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. * Load merged data
+. use "derived/merged_main_pre.dta", clear
+
+. 
+. *----------------------------------------------------------------------------
+> --
+. * CDF of beliefs (pooled across all arms)
+. *----------------------------------------------------------------------------
+> --
+. 
+. assert ~missing(delta)
+
+. 
+. * Calculate distribution statistics
+. count if delta < 0
+  515
+
+. local plt0 = string(r(N)/_N, "%3.2f")
+
+. 
+. count if delta == 0
+  702
+
+. local p0 = string(r(N)/_N, "%3.2f")
+
+. 
+. count if delta > 0 & delta <= 2
+  431
+
+. local p02 = string(r(N)/_N, "%3.2f")
+
+. 
+. count if delta > 2 & delta <= 10
+  771
+
+. local p210 = string(r(N)/_N, "%3.2f")
+
+. 
+. count if delta > 10
+  1,119
+
+. local pgt10 = string(r(N)/_N, "%3.2f")
+
+. 
+. sum delta, detail
+
+            Posterior difference (vacc - novacc)
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%          -47            -96
+ 5%          -10            -90
+10%           -3            -80       Obs               3,538
+25%            0            -80       Sum of wgt.       3,538
+
+50%            3                      Mean           13.17955
+                        Largest       Std. dev.        26.171
+75%           20            100
+90%           52            100       Variance       684.9215
+95%           75            100       Skewness       1.137724
+99%           95            100       Kurtosis        5.08893
+
+. local mean = string(r(mean), "%3.2f")
+
+. local p25 = string(r(p25), "%3.2f")
+
+. local p50 = string(r(p50), "%3.2f")
+
+. local p75 = string(r(p75), "%3.2f")
+
+. 
+. * Generate CDF
+. cumul delta, gen(prob)
+
+. sort delta prob
+
+. 
+. # delimit ;
+delimiter now ;
+. twoway
+>     (line prob delta if delta >= -50),
+>     text(.65 -50
+>         "Clinical trial estimate: -1.7 to 1.0"
+>         " "
+>         "Subjective beliefs:"
+>         "  Pr({&Delta}<0) = `plt0'"
+>         "  Pr({&Delta}=0) = `p0'"
+>         "  Pr(0<{&Delta}<2) = `p02'"
+>         "  Pr(2<{&Delta}<10) = `p210'"
+>         "  Pr(10<{&Delta}) = `pgt10'"
+>         " "
+>         "  Mean: `mean'"
+>         "  p25: `p25'"
+>         "  p50: `p50'"
+>         "  p75: `p75'" ,
+>         place(e) justification(left) size(large))
+>     ytitle("", size(large))
+>     xtitle("Posterior believed side effect rate", size(large))
+>     xlabel(, labsize(large))
+>     ylabel(, labsize(large))
+>     title("Cumulative distribution of posterior believed side effect rate", s
+> ize(vlarge))
+> ;
+
+. # delimit cr
+delimiter now cr
+. 
+. graph export "output/figures/beliefs_pooled.png", replace width(2000) height(
+> 1000)
+file output/figures/beliefs_pooled.png written in PNG format
+
+. 
+. * Clean up CDF variable before next analysis
+. drop prob
+
+. 
+. *----------------------------------------------------------------------------
+> --
+. * Mean beliefs by vaccine experience and trust
+. *----------------------------------------------------------------------------
+> --
+. 
+. foreach cat in flu_vacc_reaction covid_vacc_reaction trust_govt follow_doctor
+>  {
+  2.     preserve
+  3. 
+.     if "`cat'" == "flu_vacc_reaction" local title "Flu vaccine reaction"
+  4.     if "`cat'" == "covid_vacc_reaction" local title "Covid vaccine reactio
+> n"
+  5.     if "`cat'" == "trust_govt" local title "Trust gov on vaccines"
+  6.     if "`cat'" == "follow_doctor" local title "Follow doc on vaccines"
+  7. 
+.     * Vaccine reaction panels need more bottom margin for angled labels
+.     if inlist("`cat'", "flu_vacc_reaction", "covid_vacc_reaction") {
+  8.         local panel_margin "graphregion(margin(b+15))"
+  9.     }
+ 10.     else {
+ 11.         local panel_margin "graphregion(margin(b+5))"
+ 12.     }
+ 13. 
+.     collapse (mean) delta (semean) se=delta, by(`cat')
+ 14.     gen upper = delta + 1.96*se
+ 15.     gen lower = delta - 1.96*se
+ 16.     drop if missing(`cat')
+ 17. 
+.     # delimit ;
+delimiter now ;
+.     twoway
+>         (bar delta `cat', color(stc1%60))
+>         (rcap upper lower `cat', color(black))
+>         ,
+>         legend(off)
+>         xlabel(,valuelabel labsize(medlarge) angle(45))
+>         ylabel(, labsize(medlarge))
+>         name(`cat', replace)
+>         title("`title'", pos(11) size(large))
+>         xtitle("")
+>         xsize(3) ysize(4)
+>         `panel_margin'
+>     ;
+ 18.     # delimit cr
+delimiter now cr
+. 
+.     restore
+ 19. }
+(1 observation deleted)
+(1 observation deleted)
+(1 observation deleted)
+(1 observation deleted)
+
+. 
+. * Combine vaccine reaction plots
+. graph combine flu_vacc_reaction covid_vacc_reaction, cols(2) ///
+>     graphregion(margin(b+5)) xsize(7) ysize(4)
+
+. graph export "output/figures/delta_by_vacc_reaction.png", replace width(1750)
+>  height(1000)
+file output/figures/delta_by_vacc_reaction.png written in PNG format
+
+. 
+. * Combine trust plots
+. graph combine trust_govt follow_doctor, cols(2) xsize(7) ysize(4) ///
+>     graphregion(margin(b+5))
+
+. graph export "output/figures/delta_by_trust.png", replace width(1750) height(
+> 1000)
+file output/figures/delta_by_trust.png written in PNG format
+
+. 
+. capture log close
+
+. 
+end of do-file

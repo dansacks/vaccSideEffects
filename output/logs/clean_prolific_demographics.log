@@ -1,27 +1,27 @@
 
-  ___  ____  ____  ____  ____ ©
- /__    /   ____/   /   ____/      17.0
-___/   /   /___/   /   /___/       MP—Parallel Edition
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
-                                   800-STATA-PC        https://www.stata.com
-                                   979-696-4600        stata@stata.com
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
 
-Stata license: Single-user 4-core  perpetual
-Serial number: 501709220187
-  Licensed to: Dan Sacks
-               Indiana University
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
       2. Unicode is supported; see help unicode_advice.
-      3. More than 2 billion observations are allowed; see help obs_advice.
-      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
 
-. do C:/Users/sacks/Box/VaccSideEffects/code/clean_prolific_demographics.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/clean_prolific_demographics.do 
 
 . /*===========================================================================
 > ===
@@ -68,13 +68,42 @@ Notes:
 . set rmsg off
 
 . 
-. * Set project directory
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
 . local usr `c(username)'
 
-. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
 
 . cd "$projdir"
-C:\Users\sacks\Box\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -89,16 +118,42 @@ C:\Users\sacks\Box\VaccSideEffects
 . capture mkdir "output/figures"
 
 . 
-. * Conditional logging: only log in batch mode
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for unselected responses
+. global UNSELECTED_VALUE  = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_prolific_demo
-> graphics.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_prolific_d
+> emographics.log
   log type:  text
- opened on:  18 Jan 2026, 11:01:20
+ opened on:  26 Jan 2026, 12:31:11
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prolific_demographics ===
 .     di "Log: output/logs/$scriptname.log"
@@ -266,16 +321,15 @@ Duplicates in terms of prolific_pid
 ----------+---------------------------
         1 |         8216             0
 --------------------------------------
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (427,232 bytes saved)
-(file derived/prolific_demographics_prescreen.dta not found)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (197,184 bytes saved)
 file derived/prolific_demographics_prescreen.dta saved
 Saved: derived/prolific_demographics_prescreen.dta
 Observations: 8216
@@ -309,16 +363,15 @@ Duplicates in terms of prolific_pid
 ----------+---------------------------
         1 |         2752             0
 --------------------------------------
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (143,104 bytes saved)
-(file derived/prolific_demographics_main.dta not found)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (66,048 bytes saved)
 file derived/prolific_demographics_main.dta saved
 Saved: derived/prolific_demographics_main.dta
 Observations: 2752
@@ -352,16 +405,15 @@ Duplicates in terms of prolific_pid
 ----------+---------------------------
         1 |          904             0
 --------------------------------------
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (47,008 bytes saved)
-(file derived/prolific_demographics_main_morepay.dta not found)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (21,696 bytes saved)
 file derived/prolific_demographics_main_morepay.dta saved
 Saved: derived/prolific_demographics_main_morepay.dta
 Observations: 904
@@ -395,16 +447,15 @@ Duplicates in terms of prolific_pid
 ----------+---------------------------
         1 |         3192             0
 --------------------------------------
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (165,984 bytes saved)
-(file derived/prolific_demographics_followup.dta not found)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (76,608 bytes saved)
 file derived/prolific_demographics_followup.dta saved
 Saved: derived/prolific_demographics_followup.dta
 Observations: 3192

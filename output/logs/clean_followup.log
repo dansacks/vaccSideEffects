@@ -1,27 +1,27 @@
 
-  ___  ____  ____  ____  ____ ©
- /__    /   ____/   /   ____/      17.0
-___/   /   /___/   /   /___/       MP—Parallel Edition
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2021 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
-                                   800-STATA-PC        https://www.stata.com
-                                   979-696-4600        stata@stata.com
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
 
-Stata license: Single-user 4-core  perpetual
-Serial number: 501709220187
-  Licensed to: Dan Sacks
-               Indiana University
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
       2. Unicode is supported; see help unicode_advice.
-      3. More than 2 billion observations are allowed; see help obs_advice.
-      4. Maximum number of variables is set to 5,000; see help set_maxvar.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
 
-. do code/clean_followup.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/clean_followup.do 
 
 . /*===========================================================================
 > ===
@@ -65,13 +65,42 @@ Notes:
 . set rmsg off
 
 . 
-. * Set project directory
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
 . local usr `c(username)'
 
-. global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
 
 . cd "$projdir"
-C:\Users\sacks\Box\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -86,15 +115,42 @@ C:\Users\sacks\Box\VaccSideEffects
 . capture mkdir "output/figures"
 
 . 
-. * Conditional logging: only log in batch mode
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for unselected responses
+. global UNSELECTED_VALUE  = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\sacks\Box\VaccSideEffects\output/logs/clean_followup.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_followup.l
+> og
   log type:  text
- opened on:  18 Jan 2026, 10:55:22
+ opened on:  26 Jan 2026, 16:47:12
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_followup ===
 .     di "Log: output/logs/$scriptname.log"
@@ -139,7 +195,24 @@ Loaded 3211 observations
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. * Rename Qualtrics metadata
+. * Standard Qualtrics metadata renames
+. do "code/include/_rename_qualtrics_metadata.do"
+
+. /*===========================================================================
+> ===
+>     Rename Standard Qualtrics Metadata Variables
+> 
+>     This include file standardizes the renaming of Qualtrics metadata variabl
+> es
+>     that are common across all survey exports (prescreen, main, followup).
+> 
+>     Must be called after import spss and before variable-specific cleaning.
+> 
+>     Usage: do "code/include/_rename_qualtrics_metadata.do"
+> =============================================================================
+> =*/
+. 
+. * Rename Qualtrics metadata to clean names
 . rename StartDate start_date
 
 . rename EndDate end_date
@@ -164,10 +237,15 @@ Loaded 3211 observations
 
 . rename UserLanguage _userlang
 
-. rename Progress progress
+. 
+. * Rename Progress if it exists (some surveys already have lowercase)
+. capture rename Progress progress
 
 . 
-. * Rename survey variables from SPSS names
+end of do-file
+
+. 
+. * Rename followup-specific variables from SPSS names
 . rename Survey_Information consent
 
 . rename prolific_pid prolific_id_entered
@@ -265,731 +343,148 @@ Loaded 3211 observations
 > -*/
 . 
 . * Status: 0 = IP Address (real), 1 = Survey Preview
-. gen is_preview = (_status == 1) 
+. gen is_preview = (_status == 1)
 
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     5. Define value labels (numbered format)
+>     5. Define value labels
 > -----------------------------------------------------------------------------
 > -*/
+. 
+. do "code/include/_define_value_labels.do"
+
+. /*===========================================================================
+> ===
+>     Define Common Value Labels
+> 
+>     This include file defines all value labels used across survey cleaning fi
+> les.
+>     Centralizes label definitions to ensure consistency and reduce duplicatio
+> n.
+> 
+>     Must be called before variable recoding/labeling.
+> 
+>     Usage: do "code/include/_define_value_labels.do"
+> =============================================================================
+> =*/
 . 
 . * Boolean (Yes/No)
-. label define yesno 0 "0. No" 1 "1. Yes"
+. label define yesno 0 "0. No" 1 "1. Yes", replace
 
 . 
-. * Pharmacy factor (SPSS codes)
-. label define factor_lbl ///
->     1 "1. Price" ///
->     2 "2. Convenience" ///
->     3 "3. Quality/reputation" ///
->     4 "4. Pharmacist access" ///
->     5 "5. None important"
+. * Insurance (Yes/No/Not sure) - prescreen only
+. label define insurance_lbl -1 "-1. Not sure" 0 "0. No" 1 "1. Yes", replace
 
 . 
-. * Price compare / coupons (SPSS codes)
-. label define shopping_lbl ///
->     1 "1. Yes, at least once" ///
->     2 "2. No" ///
->     3 "3. Did not shop for medicines"
+. * Likert agreement scale (1-5)
+. label define agree5 ///
+>     1 "1. Strongly disagree" ///
+>     2 "2. Somewhat disagree" ///
+>     3 "3. Neither agree nor disagree" ///
+>     4 "4. Somewhat agree" ///
+>     5 "5. Strongly agree", replace
 
 . 
-. * Recall study (SPSS codes)
-. label define recall_lbl ///
->     1 "1. Yes" ///
->     2 "2. No" ///
->     3 "3. Don't remember"
+. * Frequency scale (1-4)
+. label define freq4 ///
+>     1 "1. Never" ///
+>     2 "2. Rarely" ///
+>     3 "3. Sometimes" ///
+>     4 "4. Often", replace
 
 . 
-. * Recall info (SPSS codes)
-. label define recallinfo_lbl ///
->     1 "1. Yes" ///
->     2 "2. No" ///
->     3 "3. Don't remember study"
+. * Frequency scale with "no doctor" option
+. label define freq4_nodoc ///
+>     -1 "-1. No doctor" ///
+>     1 "1. Never" ///
+>     2 "2. Rarely" ///
+>     3 "3. Sometimes" ///
+>     4 "4. Often", replace
 
 . 
-. * Trustworthy (SPSS codes)
-. label define trust_lbl ///
->     1 "1. Don't remember study" ///
->     2 "2. Trustworthy" ///
->     3 "3. Somewhat trustworthy" ///
->     4 "4. Not trustworthy"
+. * Reliability scale (1-3)
+. label define reliable3 ///
+>     1 "1. Not reliable" ///
+>     2 "2. Somewhat reliable" ///
+>     3 "3. Yes, reliable", replace
 
 . 
-. /*---------------------------------------------------------------------------
-> ---
->     6. Convert/clean variables
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * --- Consent (SPSS codes: 1=Yes, 2=No, -99=missing) ---
-. tab consent, m nolabel
-
- University |
-         of |
-Wisconsin-M |
-adison
-
-Res |
-      earch |
-participant |
-information |
- sheet
-
-You |
-        are |      Freq.     Percent        Cum.
-------------+-----------------------------------
-        -99 |         55        1.71        1.71
-          1 |      3,152       98.16       99.88
-          2 |          4        0.12      100.00
-------------+-----------------------------------
-      Total |      3,211      100.00
-
-. * Recode to 0/1
-. recode consent (1=1) (2 -99=0) (-99=.)
-(59 changes made to consent)
-
-. label values consent yesno
+. * Flu vaccine last year - prescreen
+. label define fluvax_lastyear_lbl 0 "0. No" 1 "1. Yes", replace
 
 . 
-. * --- Attention check (should be 1163) ---
-. destring attn_check, replace force
-attn_check: contains nonnumeric characters; replaced as int
-(20 missing values generated)
+. * Prior vaccines - prescreen
+. label define prior_vax_lbl ///
+>     1 "1. Neither vaccine" ///
+>     2 "2. Flu only" ///
+>     3 "3. COVID only" ///
+>     4 "4. Both vaccines", replace
 
 . 
-. * --- Pharmacy factor (already numeric from SPSS) ---
-. label values pharmacy_factor factor_lbl
+. * Flu vaccine intent - prescreen
+. label define flu_intent_lbl ///
+>     1 "1. No, do not intend" ///
+>     2 "2. May or may not" ///
+>     3 "3. Intend to get" ///
+>     4 "4. Already got", replace
 
 . 
-. * --- Price compare / coupons (already numeric from SPSS) ---
-. label values price_compare shopping_lbl
-
-. label values use_coupons shopping_lbl
-
-. 
-. * --- GLP-1 (SPSS codes: recode to 0/1, prefer not to answer -> missing) ---
-. tab got_glp1, m nolabel
-
-   Over the |
-last month, |
-    did you |
-  receive a |
-      GLP-1 |
-prescriptio |
-      n for |
-  yourself? |
-     (GLP-1 |      Freq.     Percent        Cum.
-------------+-----------------------------------
-          1 |        199        6.20        6.20
-          2 |      2,907       90.53       96.73
-          3 |         17        0.53       97.26
-          . |         88        2.74      100.00
-------------+-----------------------------------
-      Total |      3,211      100.00
-
-. recode got_glp1 (1=1) (2=0) (3=.)
-(2924 changes made to got_glp1)
-
-. label values got_glp1 yesno
+. * Vaccine reaction - prescreen
+. label define reaction_lbl ///
+>     0 "0. No prior vaccine" ///
+>     1 "1. None/don't remember" ///
+>     2 "2. Mild (not severe)" ///
+>     3 "3. Severe", replace
 
 . 
-. * --- Flu vaccine (SPSS codes: recode to 0/1, prefer not to answer -> missing
-> ) ---
-. tab got_flu_vacc, m nolabel
-
-   Over the |
-last month, |
-did you get |
-    the flu |
-    vaccine |
- (sometimes |
-called  the |
-   flu shot |      Freq.     Percent        Cum.
-------------+-----------------------------------
-          1 |        187        5.82        5.82
-          2 |      2,914       90.75       96.57
-          3 |         22        0.69       97.26
-          . |         88        2.74      100.00
-------------+-----------------------------------
-      Total |      3,211      100.00
-
-. recode got_flu_vacc (1=1) (2=0) (3=.), gen(got_flu_vacc_new)
-(2936 differences between got_flu_vacc and got_flu_vacc_new)
-
-. drop got_flu_vacc
-
-. rename got_flu_vacc_new got_flu_vacc
-
-. label values got_flu_vacc yesno
+. * Main info source - prescreen
+. label define source_main_lbl ///
+>     1 "1. Doctor" ///
+>     2 "2. Social media" ///
+>     3 "3. Podcasts" ///
+>     4 "4. CDC" ///
+>     5 "5. News organizations" ///
+>     6 "6. None of the above", replace
 
 . 
-. * --- COVID vaccine (SPSS codes: recode to 0/1, prefer not to answer -> missi
-> ng) ---
-. tab got_covid_vacc, m nolabel
-
-   Over the |
-last month, |
-did you get |
-    a covid |
-   vaccine? |      Freq.     Percent        Cum.
-------------+-----------------------------------
-          1 |         54        1.68        1.68
-          2 |      3,050       94.99       96.67
-          3 |         19        0.59       97.26
-          . |         88        2.74      100.00
-------------+-----------------------------------
-      Total |      3,211      100.00
-
-. recode got_covid_vacc (1=1) (2=0) (3=.), gen(got_covid_vacc_new)
-(3069 differences between got_covid_vacc and got_covid_vacc_new)
-
-. drop got_covid_vacc
-
-. rename got_covid_vacc_new got_covid_vacc
-
-. label values got_covid_vacc yesno
+. * Treatment arm - main
+. label define arm_lbl ///
+>     0 "0. Control" ///
+>     1 "1. Industry" ///
+>     2 "2. Academic" ///
+>     3 "3. Personal", replace
 
 . 
-. * --- Recall study (already numeric from SPSS) ---
-. label values recall_study recall_lbl
+. * Prior beliefs (7-point) - main
+. label define prior7_lbl ///
+>     1 "1. Would definitely not" ///
+>     2 "2. Very unlikely" ///
+>     3 "3. Somewhat unlikely" ///
+>     4 "4. Neither likely nor unlikely" ///
+>     5 "5. Somewhat likely" ///
+>     6 "6. Very likely" ///
+>     7 "7. Would definitely", replace
 
 . 
-. * --- Recall manufacturer/university/gavi (already numeric from SPSS) ---
-. label values recall_manufacturer recallinfo_lbl
-
-. label values recall_university recallinfo_lbl
-
-. label values recall_gavi recallinfo_lbl
+. * Trust/relevance (0-10) - main
+. label define scale10_lbl ///
+>     0 "0" 1 "1" 2 "2" 3 "3" 4 "4" 5 "5" 6 "6" 7 "7" 8 "8" 9 "9" 10 "10", repl
+> ace
 
 . 
-. * --- Found trustworthy (already numeric from SPSS) ---
-. label values found_trustworthy trust_lbl
+. * Vaccination intentions - main
+. label define vacc_intent_lbl ///
+>     1 "1. No, do not intend" ///
+>     2 "2. May or may not" ///
+>     3 "3. Intend to get" ///
+>     4 "4. Already got" ///
+>     $PREF_NOT_SAY "$PREF_NOT_SAY. Prefer not to say", replace
+invalid syntax
+r(198);
 
-. 
-. * --- Numeric guesses ---
-. replace guess_placebo= subinstr(guess_placebo, "%", "", .)
-(10 real changes made)
-
-. replace guess_placebo = "4" if strpos(guess_placebo, "id say 4")
-(1 real change made)
-
-. replace guess_vaccine= subinstr(guess_vaccine, " ", "", .)
-(2 real changes made)
-
-. tab guess_placebo if missing(real(guess_placebo))
-
-    The study told participants about a |
-       clinical trial involving the flu |
-                            vaccine. So |      Freq.     Percent        Cum.
-----------------------------------------+-----------------------------------
-                                     ,7 |          1       20.00       20.00
-                         I dont remeber |          1       20.00       40.00
-Okay I do remember this one now! I do.. |          1       20.00       60.00
-so basically i think the main motive .. |          1       20.00       80.00
-                                    yes |          1       20.00      100.00
-----------------------------------------+-----------------------------------
-                                  Total |          5      100.00
-
-. 
-. replace guess_vaccine= subinstr(guess_vaccine, "%", "", .)
-(9 real changes made)
-
-. replace guess_vaccine= subinstr(guess_vaccine, " ", "", .)
-(0 real changes made)
-
-. 
-. destring guess_placebo, replace force
-guess_placebo: contains nonnumeric characters; replaced as double
-(107 missing values generated)
-
-. destring guess_vaccine, replace force
-guess_vaccine: contains nonnumeric characters; replaced as double
-(105 missing values generated)
-
-. 
-. * --- Medicine dummies (SPSS: 1=selected, missing=not selected) ---
-. foreach v of varlist med_pharmacy_chain med_grocery med_independent med_mail_
-> order ///
->     med_online med_provider med_other med_none {
-  2.     replace `v' = 0 if mi(`v')
-  3. }
-(78 real changes made)
-(78 real changes made)
-(78 real changes made)
-(78 real changes made)
-(78 real changes made)
-(78 real changes made)
-(78 real changes made)
-(78 real changes made)
-
-. 
-. * --- Flu why not dummies (SPSS: 1=selected, missing=not selected) ---
-. foreach v of varlist flu_why_already flu_why_side_effects flu_why_bad_flu flu
-> _why_needles ///
->     flu_why_time flu_why_location flu_why_cost flu_why_none {
-  2.     replace `v' = 0 if mi(`v')
-  3. }
-(301 real changes made)
-(301 real changes made)
-(301 real changes made)
-(301 real changes made)
-(301 real changes made)
-(301 real changes made)
-(301 real changes made)
-(301 real changes made)
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     7. Create quality/sample flags
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Incomplete flag
-. gen incomplete = (progress != 100 | _finished != 1)
-
-. label var incomplete "Incomplete response"
-
-. 
-. * Failed attention check (should be 1163)
-. gen failed_attn = (attn_check != 1163) if !mi(attn_check)
-(20 missing values generated)
-
-. replace failed_attn = 1 if mi(attn_check)
-(20 real changes made)
-
-. label var failed_attn "Failed attention check"
-
-. 
-. * PID mismatch
-. gen pid_mismatch = (prolific_pid != prolific_id_entered)
-
-. label var pid_mismatch "Prolific PID mismatch"
-
-. 
-. * Flag first attempt per PID (sort by start_date, keep first)
-. bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
-
-. label var first_attempt "First survey attempt for this PID"
-
-. 
-. * Duplicate PID (for reference/reporting only)
-. duplicates tag prolific_pid, gen(duplicate_pid)
-
-Duplicates in terms of prolific_pid
-
-. replace duplicate_pid = (duplicate_pid > 0)
-(3 real changes made)
-
-. label var duplicate_pid "Duplicate Prolific PID"
-
-. 
-. * Final sample flag (exclude previews)
-. gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonym
-> ous" & is_preview == 0 & first_attempt == 1)
-
-. gen quality_sample = final_sample
-
-. 
-. label var final_sample "Final analysis sample"
-
-. label var is_preview "Preview/test response"
-
-. 
-. * Report quality flags
-. di "=== QUALITY FLAG SUMMARY ==="
-=== QUALITY FLAG SUMMARY ===
-
-. count
-  3,211
-
-. di "Total observations: " r(N)
-Total observations: 3211
-
-. count if final_sample == 1
-  3,078
-
-. di "Final sample: " r(N)
-Final sample: 3078
-
-. count if incomplete == 1
-  48
-
-. di "Incomplete: " r(N)
-Incomplete: 48
-
-. count if failed_attn == 1
-  45
-
-. di "Failed attention check: " r(N)
-Failed attention check: 45
-
-. count if pid_mismatch == 1
-  29
-
-. di "PID mismatch: " r(N)
-PID mismatch: 29
-
-. count if duplicate_pid == 1
-  69
-
-. di "Duplicate PIDs: " r(N)
-Duplicate PIDs: 69
-
-. count if is_preview == 1
-  1
-
-. di "Preview responses: " r(N)
-Preview responses: 1
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     8. Create derived variables
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Correct placebo guess (3%) - exclude -99 values
-. gen placebo_correct = (guess_placebo >= 2 & guess_placebo <= 4) 
-
-. label var placebo_correct "Placebo guess within 1% of 3%"
-
-. label values placebo_correct yesno
-
-. 
-. * Correct vaccine guess (1.3%) - exclude -99 values
-. gen vaccine_correct = (guess_vaccine >= 0.3 & guess_vaccine <= 2.3) 
-
-. label var vaccine_correct "Vaccine guess within 1% of 1.3%"
-
-. label values vaccine_correct yesno
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     9. Apply variable labels
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. label var start_date "Survey start date/time"
-
-. label var end_date "Survey end date/time"
-
-. label var duration_sec "Survey duration (seconds)"
-
-. label var progress "Survey progress (%)"
-
-. label var response_id "Qualtrics response ID"
-
-. label var consent "Consent given"
-
-. label var prolific_id_entered "Prolific ID (entered)"
-
-. label var prolific_pid "Prolific ID (from URL)"
-
-. label var attn_check "Attention check value (should be 1163)"
-
-. label var pharmacy_factor "Most important factor for pharmacy choice"
-
-. label var price_compare "Compared prices at pharmacies"
-
-. label var use_coupons "Used coupons/deals like GoodRx"
-
-. label var got_glp1 "Got GLP-1 prescription last month"
-
-. label var got_flu_vacc "Got flu vaccine last month"
-
-. label var got_covid_vacc "Got COVID vaccine last month"
-
-. label var recall_study "Recalls participating in main study"
-
-. label var guess_placebo "Guessed placebo arm SE rate"
-
-. label var guess_vaccine "Guessed vaccine arm SE rate"
-
-. label var recall_manufacturer "Recalls manufacturer/trial info"
-
-. label var recall_university "Recalls university research info"
-
-. label var recall_gavi "Recalls Gavi info"
-
-. label var found_trustworthy "Found study info trustworthy"
-
-. label var comments "Final comments"
-
-. 
-. label var med_pharmacy_chain "Gets medicine: Pharmacy chain"
-
-. label var med_grocery "Gets medicine: Grocery/superstore"
-
-. label var med_independent "Gets medicine: Independent pharmacy"
-
-. label var med_mail_order "Gets medicine: Mail-order"
-
-. label var med_online "Gets medicine: Online pharmacy"
-
-. label var med_provider "Gets medicine: Healthcare provider"
-
-. label var med_other "Gets medicine: Somewhere else"
-
-. label var med_none "Gets medicine: Does not purchase"
-
-. 
-. label var flu_why_already "Flu why not: Already got earlier"
-
-. label var flu_why_side_effects "Flu why not: Worried about side effects"
-
-. label var flu_why_bad_flu "Flu why not: Worried about bad flu"
-
-. label var flu_why_needles "Flu why not: Don't like needles"
-
-. label var flu_why_time "Flu why not: Time concern"
-
-. label var flu_why_location "Flu why not: Location concern"
-
-. label var flu_why_cost "Flu why not: Cost concern"
-
-. label var flu_why_none "Flu why not: None relevant"
-
-. 
-. * Label all yes/no variables
-. foreach var of varlist final_sample incomplete failed_attn pid_mismatch dupli
-> cate_pid first_attempt is_preview ///
->     med_pharmacy_chain med_grocery med_independent med_mail_order med_online 
-> med_provider med_other med_none ///
->     flu_why_already flu_why_side_effects flu_why_bad_flu flu_why_needles flu_
-> why_time flu_why_location flu_why_cost flu_why_none ///
->     got_glp1 got_flu_vacc got_covid_vacc placebo_correct vaccine_correct {
-  2.     label values `var' yesno
-  3. }
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     10. Drop unnecessary variables and reorder
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Drop temporary variables
-. drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _user
-> lang
-
-. 
-. * Order variables logically
-. order response_id prolific_pid prolific_id_entered ///
->       start_date end_date duration_sec progress ///
->       consent final_sample incomplete failed_attn pid_mismatch duplicate_pid 
-> first_attempt is_preview ///
->       attn_check ///
->       med_pharmacy_chain med_grocery med_independent med_mail_order med_onlin
-> e med_provider med_other med_none ///
->       pharmacy_factor price_compare use_coupons ///
->       got_glp1 got_flu_vacc got_covid_vacc ///
->       flu_why_already flu_why_side_effects flu_why_bad_flu flu_why_needles fl
-> u_why_time flu_why_location flu_why_cost flu_why_none ///
->       recall_study guess_placebo guess_vaccine placebo_correct vaccine_correc
-> t ///
->       recall_manufacturer recall_university recall_gavi found_trustworthy ///
->       comments
-
-. 
-. /*---------------------------------------------------------------------------
-> ---
->     11. Final assertions and save
-> -----------------------------------------------------------------------------
-> -*/
-. 
-. * Verify key variable ranges
-. assert inlist(consent, 0, 1, .)
-
-. assert inlist(pharmacy_factor, 1, 2, 3, 4, 5, .)
-
-. assert inlist(price_compare, 1, 2, 3, .)
-
-. assert inlist(use_coupons, 1, 2, 3, .)
-
-. assert inlist(got_glp1, 0, 1, .)
-
-. assert inlist(got_flu_vacc, 0, 1, .)
-
-. assert inlist(got_covid_vacc, 0, 1, .)
-
-. assert inlist(recall_study, 1, 2, 3, .)
-
-. assert inlist(recall_manufacturer, 1, 2, 3, .)
-
-. assert inlist(recall_university, 1, 2, 3, .)
-
-. assert inlist(recall_gavi, 1, 2, 3, .)
-
-. assert inlist(found_trustworthy, 1, 2, 3, 4, .)
-
-. assert (guess_placebo >= 0 & guess_placebo <= 100) | guess_placebo == -99 if 
-> !mi(guess_placebo)
-
-. assert (guess_vaccine >= 0 & guess_vaccine <= 100) | guess_vaccine == -99 if 
-> !mi(guess_vaccine)
-
-. 
-. * Check variable count
-. desc
-
-Contains data
- Observations:         3,211                  
-    Variables:            49                  
--------------------------------------------------------------------------------
-Variable      Storage   Display    Value
-    name         type    format    label      Variable label
--------------------------------------------------------------------------------
-response_id     str17   %17s                  Qualtrics response ID
-prolific_pid    str24   %24s                  Prolific ID (from URL)
-prolific_id_e~d str43   %43s                  Prolific ID (entered)
-start_date      double  %tc..                 Survey start date/time
-end_date        double  %tc..                 Survey end date/time
-duration_sec    long    %40.2f                Survey duration (seconds)
-progress        byte    %40.2f                Survey progress (%)
-consent         byte    %40.0f     yesno      Consent given
-final_sample    double  %10.0g     yesno      Final analysis sample
-incomplete      double  %10.0g     yesno      Incomplete response
-failed_attn     double  %10.0g     yesno      Failed attention check
-pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
-duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
-first_attempt   double  %10.0g     yesno      First survey attempt for this PID
-is_preview      double  %10.0g     yesno      Preview/test response
-attn_check      int     %10.0g                Attention check value (should be
-                                                1163)
-med_pharmacy_~n byte    %40.0f     yesno      Gets medicine: Pharmacy chain
-med_grocery     byte    %40.0f     yesno      Gets medicine: Grocery/superstore
-med_independent byte    %40.0f     yesno      Gets medicine: Independent
-                                                pharmacy
-med_mail_order  byte    %40.0f     yesno      Gets medicine: Mail-order
-med_online      byte    %40.0f     yesno      Gets medicine: Online pharmacy
-med_provider    byte    %40.0f     yesno      Gets medicine: Healthcare
-                                                provider
-med_other       byte    %40.0f     yesno      Gets medicine: Somewhere else
-med_none        byte    %40.0f     yesno      Gets medicine: Does not purchase
-pharmacy_factor byte    %40.0f     factor_lbl
-                                              Most important factor for
-                                                pharmacy choice
-price_compare   byte    %40.0f     shopping_lbl
-                                              Compared prices at pharmacies
-use_coupons     byte    %40.0f     shopping_lbl
-                                              Used coupons/deals like GoodRx
-got_glp1        byte    %40.0f     yesno      Got GLP-1 prescription last month
-got_flu_vacc    byte    %10.0g     yesno      Got flu vaccine last month
-got_covid_vacc  byte    %10.0g     yesno      Got COVID vaccine last month
-flu_why_already byte    %40.0f     yesno      Flu why not: Already got earlier
-flu_why_side_~s byte    %40.0f     yesno      Flu why not: Worried about side
-                                                effects
-flu_why_bad_flu byte    %40.0f     yesno      Flu why not: Worried about bad
-                                                flu
-flu_why_needles byte    %40.0f     yesno      Flu why not: Don't like needles
-flu_why_time    byte    %40.0f     yesno      Flu why not: Time concern
-flu_why_locat~n byte    %40.0f     yesno      Flu why not: Location concern
-flu_why_cost    byte    %40.0f     yesno      Flu why not: Cost concern
-flu_why_none    byte    %40.0f     yesno      Flu why not: None relevant
-recall_study    byte    %40.0f     recall_lbl
-                                              Recalls participating in main
-                                                study
-guess_placebo   double  %10.0g                Guessed placebo arm SE rate
-guess_vaccine   double  %10.0g                Guessed vaccine arm SE rate
-placebo_correct double  %10.0g     yesno      Placebo guess within 1% of 3%
-vaccine_correct double  %10.0g     yesno      Vaccine guess within 1% of 1.3%
-recall_manufa~r byte    %40.0f     recallinfo_lbl
-                                              Recalls manufacturer/trial info
-recall_univer~y byte    %40.0f     recallinfo_lbl
-                                              Recalls university research info
-recall_gavi     byte    %40.0f     recallinfo_lbl
-                                              Recalls Gavi info
-found_trustwo~y byte    %40.0f     trust_lbl
-                                              Found study info trustworthy
-comments        str783  %783s                 Final comments
-quality_sample  double  %10.0g                
--------------------------------------------------------------------------------
-Sorted by: prolific_pid  start_date
-     Note: Dataset has changed since last saved.
-
-. local nvars = r(k)
-
-. di "Total variables: `nvars'"
-Total variables: 49
-
-. 
-. * Final quality summary
-. di ""
-
-
-. di "=== FINAL DATA QUALITY SUMMARY ==="
-=== FINAL DATA QUALITY SUMMARY ===
-
-. count
-  3,211
-
-. di "Total observations: " r(N)
-Total observations: 3211
-
-. count if final_sample == 1
-  3,078
-
-. di "Final sample: " r(N)
-Final sample: 3078
-
-. tab got_flu_vacc if final_sample == 1, m
-
-    Got flu |
-    vaccine |
- last month |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      2,836       92.14       92.14
-     1. Yes |        180        5.85       97.99
-          . |         62        2.01      100.00
-------------+-----------------------------------
-      Total |      3,078      100.00
-
-. tab recall_study if final_sample == 1, m
-
-          Recalls |
- participating in |
-       main study |      Freq.     Percent        Cum.
-------------------+-----------------------------------
-           1. Yes |        764       24.82       24.82
-            2. No |        483       15.69       40.51
-3. Don't remember |      1,780       57.83       98.34
-                . |         51        1.66      100.00
-------------------+-----------------------------------
-            Total |      3,078      100.00
-
-. 
-. * Compress and save
-. compress
-  variable final_sample was double now byte
-  variable incomplete was double now byte
-  variable failed_attn was double now byte
-  variable pid_mismatch was double now byte
-  variable first_attempt was double now byte
-  variable is_preview was double now byte
-  variable placebo_correct was double now byte
-  variable vaccine_correct was double now byte
-  variable quality_sample was double now byte
-  (202,293 bytes saved)
-
-. save "derived/followup_clean.dta", replace
-(file derived/followup_clean.dta not found)
-file derived/followup_clean.dta saved
-
-. 
-. di ""
-
-
-. di "=== CLEANING COMPLETE ==="
-=== CLEANING COMPLETE ===
-
-. di "Saved: derived/followup_clean.dta"
-Saved: derived/followup_clean.dta
-
-. 
-. capture log close
-
-. 
 end of do-file
+r(198);
+
+end of do-file
+r(198);
