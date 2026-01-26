@@ -74,17 +74,16 @@ Notes:
 . local usr `c(username)'
 
 . if "`c(os)'" == "Windows" {
-.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+.     global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
 . }
 
 . else {
 .     * macOS (Unix or MacOSX)
-.     global projdir "/Users/`usr'/Library/CloudStorage/Box-Box/VaccSideEffects
-> "
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
 . }
 
 . cd "$projdir"
-/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
@@ -95,8 +94,17 @@ Notes:
   [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
   [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
   [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/c
-> ode/include"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -127,8 +135,8 @@ Notes:
 . global ATTN_CHECK_FOLLOWUP = 1163
 
 . 
-. * Special code for "Prefer not to say" responses
-. global PREF_NOT_SAY = -99
+. * Special code for unselected responses
+. global UNSELECTED_VALUE  = -99
 
 . 
 . /*---------------------------------------------------------------------------
@@ -143,10 +151,10 @@ Notes:
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/sacks/Library/CloudStorage/Box-Box/VaccSideEffects/output/l
-> ogs/summary_stats_main.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/summary_stats_ma
+> in.log
   log type:  text
- opened on:  21 Jan 2026, 21:26:12
+ opened on:  26 Jan 2026, 12:31:10
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_main ===
 .     di "Log: output/logs/$scriptname.log"

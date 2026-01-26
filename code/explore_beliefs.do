@@ -93,9 +93,8 @@ drop prob
 * Mean beliefs by vaccine experience and trust
 *------------------------------------------------------------------------------
 label define ad_alt 1 "Strongly disagree" 2 " " 3 " " 4 " " 5 "Strongly agree"
-*label values trust_govt follow_doctor ad_alt
-*label values flu_vacc_reaction covid_vacc_reaction ad_alt
-label define rxn_alt 0 "No prior vaccine" 1 "No reaction" 2 "Mild" 3 "Severe " 
+label values trust_govt follow_doctor ad_alt
+label define rxn_alt 0 "No prior vaccine" 1 "No reaction remembered" 2 "Mild" 3 "Severe " 
 label values flu_vacc_reaction covid_vacc_reaction rxn_alt 
 
 foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
@@ -125,7 +124,7 @@ foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
 				legend(off) name(`cat', replace)
         xlabel(,valuelabel labsize(medlarge) angle(45))
 				
-        ylabel(, labsize(medlarge))
+        ylabel(`ylabel', labsize(medlarge))
         title("`title'", pos(11) size(large) span)
         xtitle("")
         xsize(7) ysize(8) 

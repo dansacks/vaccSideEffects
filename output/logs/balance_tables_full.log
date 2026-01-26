@@ -1,9 +1,173 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do /Users/sacks/Projects/VaccSideEffects/code/balance_tables_full.do 
+
+. /*===========================================================================
+> ===
+>     Comprehensive Balance Tables by Domain
+> 
+>     Input:  derived/merged_main_pre.dta (with indicator variables from cleani
+> ng files)
+>     Output: output/tables/balance_prior_beliefs.tex
+>             output/tables/balance_vacc.tex
+>             output/tables/balance_demographics.tex
+>             output/tables/balance_trust.tex
+>             output/tables/balance_health.tex
+>             output/tables/balance_omnibus.tex
+> 
+>     Creates balance tables for all control variables used in treatment_effect
+> s.do,
+>     organized by domain. Each table includes a joint significance test.
+>     Omnibus tests across all domains and excluding demographics.
+> 
+>     Indicator variables are created in:
+>     - clean_prescreen.do: intent_no, covid_react_*, flu_react_*, trust_*
+>     - clean_main.do: prior_placebo_*, prior_vacc_*, age_*, female, gender_oth
+> er,
+>                      educ_*, income_*, race_*, hispanic, polviews_*
+> 
+>     Requires: code/ado/balance_table.ado
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "balance_tables_full"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
+. local usr `c(username)'
+
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Box/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. cd "$projdir"
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for "Prefer not to say" responses
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/balance_tables_f
 > ull.log
   log type:  text
- opened on:  22 Jan 2026, 13:34:12
+ opened on:  25 Jan 2026, 11:38:53
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: balance_tables_full ===
 .     di "Log: output/logs/$scriptname.log"
@@ -1393,3 +1557,6 @@ Saved: output/tables/balance_health.tex
 
 . 
 . capture log close
+
+. 
+end of do-file

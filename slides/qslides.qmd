@@ -14,7 +14,7 @@ author:
       and Tropical Medicine
       Tulane University
 format:
-  revealjs:
+  clean-revealjs:
     slide-number: true
     width: 1600
     height: 900
@@ -68,7 +68,7 @@ format:
 ::: {.column width="50%"}
 Outcomes
 
-- Primary: side effect delta
+- $\Delta_{self}$ Side effect delta (pre-specified primary)
 - Side effect experienced in treatment arm of clinical trial
 - Intend to vaccinate
 - Clicked on a link
@@ -76,7 +76,7 @@ Outcomes
 :::
 
 ::: {.column width="50%" .fragment}
-**Covariates** (pre-specified, power-improving)
+Controls (pre-specified, power-improving)
 
 - Covariate 1
 - Covariate 2
@@ -90,11 +90,11 @@ Outcomes
 
 ![](../output/figures/beliefs_pooled.png){fig-align="center" width="95%"}
 
-## Beliefs are correlated with components of vaccine hesitancy
+## Side effect beliefs $\Delta_{self}$ has high face validity 
 
 ![](../output/figures/delta_by_trust.png){fig-align="center" width="95%"}
 
-## Prior vaccine reactions predict beliefs 
+## Side effect beliefs $\Delta_{self}$ has high face validity  
 
 ![](../output/figures/delta_by_vacc_reaction.png){fig-align="center" width="95%"}
 
@@ -106,36 +106,47 @@ Outcomes
 
 ![](../output/figures/belief_cdf_by_arm.png){fig-align="center" width="95%"}
 
+
+## Treatment Effects blah
+
+|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
+{{< include ../output/tables/treatment_effects.md >}}
+
+Notes: Robust standard errors in parentheses. Controls included but not shown. 
+
+
 ## Treatment Effects
 
 ::: {.table-stack}
 
 ::: {.show-1-col}
-|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-2-cols .fragment .fade-in}
-|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-3-cols .fragment .fade-in}
-|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-4-cols .fragment .fade-in}
-|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-5-cols .fragment .fade-in}
-|  | Post-Trial SE | Posterior Diff | Vacc Intent | Link Click | Follow-up Vacc |
+|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 :::
+
+Notes: Robust standard errors in parentheses. Controls included but not shown. 
 
 ## Heterogeneous Effects by Prior Belief
 
