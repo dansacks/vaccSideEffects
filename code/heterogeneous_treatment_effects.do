@@ -70,29 +70,30 @@ foreach split in high_prior bad_experience high_trust high_relevance {
     di as text "Split: `split'"
     di as text "=============================================="
 
-    * Initialize matrices (3 keyvars x 4 columns)
-    matrix coefs = J(3, 4, .)
-    matrix ses = J(3, 4, .)
-    matrix ctrl_means = J(1, 4, .)
-    matrix n_obs = J(1, 4, .)
+    * Initialize matrices (3 keyvars x 6 columns)
+    matrix coefs = J(3, 6, .)
+    matrix ses = J(3, 6, .)
+    matrix ctrl_means = J(1, 6, .)
+    matrix n_obs = J(1, 6, .)
 
     * Column mapping: 1=post_trial split0, 2=post_trial split1, 3=delta split0, 4=delta split1
     local col = 1
-    foreach y in post_trial delta {
+    foreach y in post_trial delta main_maybe {
         foreach splitval in 0 1 {
 
             di as text ""
             di as text "--- `y', `split'=`splitval' ---"
 
             * Run regression
-            quietly regress `y' `keyvars' $controls if `split' == `splitval', robust
-
+            qui regress `y' `keyvars' $controls if `split' == `splitval', robust
+						
             * Store sample size
             matrix n_obs[1, `col'] = e(N)
 
             * Store coefficients and SEs
             local row = 1
             foreach keyvar of varlist `keyvars' {
+								noi di "`keyvar' : " _b[`keyvar'] "(" _se[`keyvar'] ")"
                 capture local b = _b[`keyvar']
                 if _rc {
                     matrix coefs[`row', `col'] = .
@@ -112,7 +113,8 @@ foreach split in high_prior bad_experience high_trust high_relevance {
             local ++col
         }
     }
-
+}
+ss
     /*--------------------------------------------------------------------------
         Write .tex file
     --------------------------------------------------------------------------*/
