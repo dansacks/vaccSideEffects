@@ -285,9 +285,15 @@ label var prior_vacc_6 "Prior vacc: Very likely"
 label var prior_vacc_7 "Prior vacc: Would definitely"
 
 * --- Demographics ---
-* Convert $PREF_NOT_SAY (prefer not to say) to missing for demographic analysis
-foreach var in age gender education income race ethnicity {
-    replace `var' = . if `var' == $PREF_NOT_SAY
+* Create missing indicators and impute missing values to avoid dropping observations
+* in regressions. The missing indicator captures any systematic missingness effect.
+* Treat both Stata-missing and PREF_NOT_SAY (-99) as missing.
+* Note: trust_govt is from prescreen, handled in merge step
+foreach var in age gender education income race ethnicity polviews {
+    gen `var'_miss = (missing(`var') | `var' == $PREF_NOT_SAY)
+    label var `var'_miss "`var' missing"
+    * Impute missing/PREF_NOT_SAY to base category (will be absorbed by factor variable)
+    replace `var' = 1 if missing(`var') | `var' == $PREF_NOT_SAY
 }
 
 * Age (2=18-34, 3=35-49, 4=50-64, 5=65+)
@@ -408,7 +414,7 @@ assert posterior_vacc >= 0 & posterior_vacc <= 100 if !mi(posterior_vacc)
 assert inlist(trust_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
 assert inlist(relevant_trial, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .)
 assert inlist(vacc_intent, 1, 2, 3, 4, $PREF_NOT_SAY, .)
-assert inlist(age, 1, 2, 3, 4, 5, 6, $PREF_NOT_SAY, .)
+assert inlist(age, 1, 2, 3, 4, 5, 6, .)  // PREF_NOT_SAY recoded to 1
 assert inlist(gender, 1, 2, 3, 4, .)
 assert inlist(education, 1, 2, 3, 4, 5, 6, .)
 assert inlist(income, 1, 2, 3, 4, 5, 6, .)

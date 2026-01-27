@@ -35,7 +35,14 @@ rename failed_attn pre_failed_attn
 rename pid_mismatch pre_pid_mismatch
 rename duplicate_pid pre_duplicate_pid
 rename comments pre_comments
-rename vacc_intent pre_vacc_intent_pre
+rename vacc_intent pre_vacc_intent
+
+* Rename missing indicators with pre_ prefix
+rename vacc_intent_miss pre_vacc_intent_miss
+rename had_prior_covid_vacc_miss pre_had_prior_covid_vacc_miss
+rename had_prior_flu_vacc_miss pre_had_prior_flu_vacc_miss
+rename covid_vacc_reaction_miss pre_covid_vacc_reaction_miss
+rename flu_vacc_reaction_miss pre_flu_vacc_reaction_miss
 
 * Keep the key variable unchanged
 * prolific_pid is the merge key

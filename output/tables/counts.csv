@@ -3,20 +3,20 @@ Prescreen,Started (non-preview),8198
 Prescreen,Consented,8093
 Prescreen,Passed attention check,8052
 Prescreen,First attempt only,8003
-Prescreen,Hesitant (final prescreen sample),4525
-Prescreen,Matches to demographics,4525
+Prescreen,Hesitant (final prescreen sample),4591
+Prescreen,Matches to demographics,4591
 
 Main,Started (non-preview),3651
-Main,Linked to prescreen final,3637
-Main,Consented,3635
-Main,Passed attention check,3619
-Main,Non-missing delta (valid posteriors),3547
-Main,First attempt only (final main sample),3526
-Main,Matches to demographics,3526
+Main,Linked to prescreen final,3647
+Main,Consented,3645
+Main,Passed attention check,3629
+Main,Non-missing delta (valid posteriors),3555
+Main,First attempt only (final main sample),3534
+Main,Matches to demographics,3534
 
 Followup,Started (non-preview),3210
-Followup,Linked to main final,3178
-Followup,Passed attention check,3134
-Followup,Has non-missing outcome,3074
-Followup,First attempt only (final followup sample),3046
-Followup,Matches to demographics,3046
+Followup,Linked to main final,3188
+Followup,Passed attention check,3144
+Followup,Has non-missing outcome,3081
+Followup,First attempt only (final followup sample),3052
+Followup,Matches to demographics,3052
