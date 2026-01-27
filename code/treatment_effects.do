@@ -3,6 +3,7 @@
 
     Input:  derived/merged_all.dta
     Output: output/tables/treatment_effects.tex
+            output/tables/treatment_effects.md
 
     Estimates treatment effects of information source on:
     - post_trial: Post-trial side effect estimate
@@ -10,8 +11,6 @@
     - main_maybe: Binary vaccination intention
     - link_click: Any link clicked
     - vacc_post: Got flu vaccine or already had it (followup)
-
-    Requires: code/ado/regression_table.ado
 
     Created by Dan + Claude Code
 ==============================================================================*/
@@ -54,11 +53,39 @@ label var arm_academic "Academic"
 label var arm_personal "Personal"
 
 /*------------------------------------------------------------------------------
-    3. Generate treatment effects table
+    3. Generate treatment effects table using esttab
 ------------------------------------------------------------------------------*/
 
-regression_table post_trial delta main_maybe link_click vacc_post, ///
-    keyvars(arm_industry arm_academic arm_personal) ///
-    controls($controls) saving(output/tables/treatment_effects.tex)
+local keyvars arm_industry arm_academic arm_personal
+
+eststo clear
+
+foreach y in post_trial delta main_maybe link_click vacc_post {
+    regress `y' `keyvars' $controls, robust
+    sum `y' if arm_control==1
+    estadd scalar cm = r(mean)
+    eststo m_`y'
+}
+
+* Column titles for output
+local coltitles mtitles("SE (trial)" "Delta" "Vacc Intent" "Link Click" "Vaccinated")
+
+* .tex output: remove header, rules, and spacing for input into larger doc
+esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
+    using output/tables/treatment_effects.tex, ///
+    b(%9.3f) se(%9.3f) ///
+    keep(`keyvars') ///
+    label nostar ///
+    stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+    fragment replace nomtitles nonotes nonumbers nolines nogaps
+
+* .md output: include column titles in header row
+esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
+    using output/tables/treatment_effects.md, ///
+    b(%9.3f) se(%9.3f) ///
+    keep(`keyvars') ///
+    label nostar `coltitles' ///
+    stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+    fragment replace nonotes nonumbers
 
 capture log close

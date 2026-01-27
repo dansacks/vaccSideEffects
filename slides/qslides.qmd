@@ -123,10 +123,9 @@ first column of table, showing info moved beliefs about trial outcomes
 
 ## Treatment Effects blah
 
-|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 
-Notes: Robust standard errors in parentheses. Controls included but not shown. 
+Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 
 ## Treatment Effects
@@ -134,27 +133,22 @@ Notes: Robust standard errors in parentheses. Controls included but not shown.
 ::: {.table-stack}
 
 ::: {.show-1-col}
-|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-2-cols .fragment .fade-in}
-|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-3-cols .fragment .fade-in}
-|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-4-cols .fragment .fade-in}
-|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
 ::: {.show-5-cols .fragment .fade-in}
-|Outcome:   | $SE_{trial}$ | $\Delta_{self}$ | Vacc Intent | Link Click | Vacced |
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
@@ -164,28 +158,24 @@ Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 ## Effects by priors belief
 
-| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
 {{< include ../output/tables/het_high_prior.md >}}
 
 Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 ## Effects by [prior experiences]{.alert}
 
-| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
 {{< include ../output/tables/het_bad_experience.md >}}
 
 Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 ## Effects by [trust in trial]{.alert}
 
-| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
 {{< include ../output/tables/het_high_trust.md >}}
 
 Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 ## Effects by [trial relevance]{.alert}
 
-| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
 {{< include ../output/tables/het_high_relevance.md >}}
 
 Notes: Robust standard errors in parentheses. Controls included but not shown.

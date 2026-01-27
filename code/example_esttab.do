@@ -1,6 +1,6 @@
 
 clear all
-global scriptname "treatment_effects"
+global scriptname "example_esttab"
 do "code/_config.do"
 
 /*------------------------------------------------------------------------------
@@ -32,15 +32,23 @@ estadd scalar cm = r(mean)
 eststo m_delta
 
 
-esttab m_delta m_main_maybe using output/tables/esttab_example.tex, b(%9.3f) se(%9.3f) ///
-	keep(arm_industry arm_academic arm_personal) /// 
+* Column titles for .md output
+local coltitles mtitles("Delta" "Vacc Intent")
+
+* .tex output: remove header, rules, and spacing for input into larger doc
+esttab m_delta m_main_maybe using output/tables/esttab_example.tex, ///
+	b(%9.3f) se(%9.3f) ///
+	keep(arm_industry arm_academic arm_personal) ///
 	label nostar ///
-	stats(cm N, labels("Control mean" "Sample size") fmt(%5.2f  %4.0fc)) ///
-	fragment replace  nomtitles nonotes
-	
-	
-esttab m_delta m_main_maybe using output/tables/esttab_example.md, b(%9.3f) se(%9.3f) ///
-	keep(arm_industry arm_academic arm_personal) /// 
-	label nostar ///
-	stats(cm N, labels("Control mean" "Sample size") fmt(%5.2f  %4.0fc)) ///
-	fragment replace nomtitles nonotes
+	stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+	fragment replace nomtitles nonotes nonumbers nolines nogaps
+
+* .md output: include column titles in header row
+esttab m_delta m_main_maybe using output/tables/esttab_example.md, ///
+	b(%9.3f) se(%9.3f) ///
+	keep(arm_industry arm_academic arm_personal) ///
+	label nostar `coltitles' ///
+	stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+	fragment replace nonotes nonumbers
+
+capture log close

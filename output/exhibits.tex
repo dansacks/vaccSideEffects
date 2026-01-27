@@ -138,38 +138,17 @@ Variable & Control & Industry & Academic & Personal & P-value \\
 \end{minipage}
 \end{table}
 
-\subsubsection{Vaccination Intent}
+\subsubsection{Vaccination Intent and Experience}
 
 \begin{table}[H]
-\caption{Balance Table: Vaccination Intent}
-\label{tab:balance_intent}
+\caption{Balance Table: Vaccination Intent and Experience}
+\label{tab:balance_vacc}
 \centering
 \begin{tabular}{lccccc}
 \toprule
 Variable & Control & Industry & Academic & Personal & P-value \\
 \midrule
-\input{tables/balance_vacc_intent.tex}
-\\
-\bottomrule
-\end{tabular}
-\begin{minipage}{\textwidth}
-\vspace{0.5em}
-\footnotesize
-\textit{Notes:} See Table \ref{tab:balance_main} for details.
-\end{minipage}
-\end{table}
-
-\subsubsection{Vaccine Experience}
-
-\begin{table}[H]
-\caption{Balance Table: Vaccine Experience}
-\label{tab:balance_vacc_exp}
-\centering
-\begin{tabular}{lccccc}
-\toprule
-Variable & Control & Industry & Academic & Personal & P-value \\
-\midrule
-\input{tables/balance_vacc_experience.tex}
+\input{tables/balance_vacc.tex}
 \\
 \bottomrule
 \end{tabular}
@@ -207,17 +186,38 @@ Variable & Control & Industry & Academic & Personal & P-value \\
 \end{landscape}
 
 
-\subsubsection{Trust and Health Conditions}
+\subsubsection{Trust in Government}
 
 \begin{table}[H]
-\caption{Balance Table: Trust and Health Conditions}
+\caption{Balance Table: Trust in Government}
 \label{tab:balance_trust}
 \centering
 \begin{tabular}{lccccc}
 \toprule
 Variable & Control & Industry & Academic & Personal & P-value \\
 \midrule
-\input{tables/balance_trust_health.tex}
+\input{tables/balance_trust.tex}
+\\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} See Table \ref{tab:balance_main} for details.
+\end{minipage}
+\end{table}
+
+\subsubsection{Health Conditions}
+
+\begin{table}[H]
+\caption{Balance Table: Health Conditions}
+\label{tab:balance_health}
+\centering
+\begin{tabular}{lccccc}
+\toprule
+Variable & Control & Industry & Academic & Personal & P-value \\
+\midrule
+\input{tables/balance_health.tex}
 \\
 \bottomrule
 \end{tabular}
@@ -431,22 +431,20 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 
 \begin{table}[H]
 \caption{Heterogeneous Treatment Effects by Prior Side Effect Belief}
-\label{tab:het_low_prior}
+\label{tab:het_high_prior}
 \centering
-\begin{tabular}{lcccc}
+\begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{2}{c}{Post-Trial SE Estimate} & \multicolumn{2}{c}{Posterior Difference} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-& High Prior & Low Prior & High Prior & Low Prior \\
-\midrule
-\input{tables/het_low_prior.tex}
+& \multicolumn{2}{c}{Post-Trial SE} & \multicolumn{2}{c}{Posterior Diff} & \multicolumn{2}{c}{Vacc Intent} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\input{tables/het_high_prior.tex}
 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\textwidth}
 \vspace{0.5em}
 \footnotesize
-\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. High Prior: prior belief that side effects are somewhat likely or higher (prior\_self\_vacc $\geq$ 5). Low Prior: prior belief below somewhat likely (prior\_self\_vacc $<$ 5).
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. High Prior: prior belief that side effects are somewhat likely or higher (prior\_self\_vacc $\geq$ 5). Low Prior: prior belief below somewhat likely (prior\_self\_vacc $<$ 5). Bottom row shows split variable and values.
 \end{minipage}
 \end{table}
 
@@ -456,22 +454,20 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 
 \begin{table}[H]
 \caption{Heterogeneous Treatment Effects by Prior Vaccine Experience}
-\label{tab:het_good_experience}
+\label{tab:het_bad_experience}
 \centering
-\begin{tabular}{lcccc}
+\begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{2}{c}{Post-Trial SE Estimate} & \multicolumn{2}{c}{Posterior Difference} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-& Bad Experience & Good Experience & Bad Experience & Good Experience \\
-\midrule
-\input{tables/het_good_experience.tex}
+& \multicolumn{2}{c}{Post-Trial SE} & \multicolumn{2}{c}{Posterior Diff} & \multicolumn{2}{c}{Vacc Intent} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\input{tables/het_bad_experience.tex}
 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\textwidth}
 \vspace{0.5em}
 \footnotesize
-\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. Good Experience: reported no side effects or mild side effects from prior flu vaccine. Bad Experience: reported moderate or severe side effects, or did not receive prior flu vaccine.
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. Benign: reported no side effects or mild side effects from prior flu vaccine. Severe/No vacc: reported severe side effects, or did not receive prior flu vaccine. Bottom row shows split variable and values.
 \end{minipage}
 \end{table}
 
@@ -483,12 +479,10 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 \caption{Heterogeneous Treatment Effects by Trust in Clinical Trial}
 \label{tab:het_high_trust}
 \centering
-\begin{tabular}{lcccc}
+\begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{2}{c}{Post-Trial SE Estimate} & \multicolumn{2}{c}{Posterior Difference} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-& Low Trust & High Trust & Low Trust & High Trust \\
-\midrule
+& \multicolumn{2}{c}{Post-Trial SE} & \multicolumn{2}{c}{Posterior Diff} & \multicolumn{2}{c}{Vacc Intent} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
 \input{tables/het_high_trust.tex}
 \\
 \bottomrule
@@ -496,7 +490,7 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 \begin{minipage}{\textwidth}
 \vspace{0.5em}
 \footnotesize
-\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. High Trust: trust\_trial $>$ 5 (above median). Low Trust: trust\_trial $\leq$ 5.
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. High Trust: trust\_trial $>$ 5 (above median). Low Trust: trust\_trial $\leq$ 5. Bottom row shows split variable and values.
 \end{minipage}
 \end{table}
 
@@ -508,12 +502,10 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 \caption{Heterogeneous Treatment Effects by Perceived Trial Relevance}
 \label{tab:het_high_relevance}
 \centering
-\begin{tabular}{lcccc}
+\begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{2}{c}{Post-Trial SE Estimate} & \multicolumn{2}{c}{Posterior Difference} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-& Low Relevance & High Relevance & Low Relevance & High Relevance \\
-\midrule
+& \multicolumn{2}{c}{Post-Trial SE} & \multicolumn{2}{c}{Posterior Diff} & \multicolumn{2}{c}{Vacc Intent} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
 \input{tables/het_high_relevance.tex}
 \\
 \bottomrule
@@ -521,7 +513,7 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 \begin{minipage}{\textwidth}
 \vspace{0.5em}
 \footnotesize
-\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. High Relevance: relevant\_trial $>$ 5 (above median). Low Relevance: relevant\_trial $\leq$ 5.
+\textit{Notes:} OLS regression coefficients with robust standard errors in parentheses. Control arm is the omitted category. All specifications include controls. High Relevance: relevant\_trial $>$ 5 (above median). Low Relevance: relevant\_trial $\leq$ 5. Bottom row shows split variable and values.
 \end{minipage}
 \end{table}
 
