@@ -114,6 +114,8 @@ Controls (pre-specified, power-improving)
 
 ## The Provided Information Was Salient
 
+first column of table, showing info moved beliefs about trial outcomes
+
 ## Belief CDFs by Treatment Arm
 
 ![](../output/figures/belief_cdf_by_arm.png){fig-align="center" width="95%"}
