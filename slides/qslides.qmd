@@ -24,12 +24,18 @@ format:
 
 ## Can we persuade people to vaccinate?
 
-- historically, coercive approaches: school and work mandates
-  - "coercive" meaning individuals weakly worse off under rational choice
-  - Current administration does not support
-- Persuasive approaches: subsidies, **information provision**
-  - Subsidies are expensive
-  - Information is promising
+- Vaccination rates are falling 
+- Limited appetite for mandates
+- Persuasion is promising
+  - Vaccines are effective
+  - Vaccines are [innocuous]{.alert}
+- MOTIVATE
+
+(1) SIDE EFFECT INFO
+(2) BELIEF AS OUTCOME
+(3) SPECIFIC PROVISION
+
+assertion: little effort to convince people by showing them quality of scientific evidence, rather than making arguments from authority [cite nyt article; background]
 
 # Background
 
@@ -55,7 +61,9 @@ format:
   - trial
   - self 
 - vaccine intentions (re-ask), plus link-to-click
-- views about info provisions 
+- views about info provisios
+  - trial trustworthy?
+  - trial relevant? 
 
 ## Info provision intervention
 
@@ -90,13 +98,17 @@ Controls (pre-specified, power-improving)
 
 ![](../output/figures/beliefs_pooled.png){fig-align="center" width="95%"}
 
-## Side effect beliefs $\Delta_{self}$ has high face validity 
+## Side effect beliefs $\Delta_{self}$ have high face validity 
 
 ![](../output/figures/delta_by_trust.png){fig-align="center" width="95%"}
 
-## Side effect beliefs $\Delta_{self}$ has high face validity  
+## Side effect beliefs $\Delta_{self}$ have high face validity  
 
 ![](../output/figures/delta_by_vacc_reaction.png){fig-align="center" width="95%"}
+
+## Side effect beliefs $\Delta_{self}$  and perceived of trial quality
+![](../output/figures/delta_by_trial_views.png){fig-align="center"}
+
 
 # Results: Treatment Effects
 
@@ -148,9 +160,43 @@ Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 Notes: Robust standard errors in parentheses. Controls included but not shown. 
 
-## Heterogeneous Effects by Prior Belief
+## Effects by priors belief
 
-## Heterogeneous Effects by Prior Experience
+| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
+{{< include ../output/tables/het_high_prior.md >}}
+
+Notes: Robust standard errors in parentheses. Controls included but not shown.
+
+## Effects by [prior experiences]{.alert}
+
+| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
+{{< include ../output/tables/het_bad_experience.md >}}
+
+Notes: Robust standard errors in parentheses. Controls included but not shown.
+
+## Effects by [trust in trial]{.alert}
+
+| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
+{{< include ../output/tables/het_high_trust.md >}}
+
+Notes: Robust standard errors in parentheses. Controls included but not shown.
+
+## Effects by [trial relevance]{.alert}
+
+| Outcome: | $SE_{trial}$ | $SE_{trial}$ | $\Delta_{self}$ | $\Delta_{self}$ |
+{{< include ../output/tables/het_high_relevance.md >}}
+
+Notes: Robust standard errors in parentheses. Controls included but not shown.
+
+## Heterogeneous effects point to real learning rather than experimenter demand
+- Effects are larger when learning is more plausible
+  - ... because priors are higher (direct measure or via prior experience)
+  - ... because people trust trial more  (despite [lower]{.alert} control mean)
+  - ... because people find trial more  relevant (despite [lower]{.alert} control mean)
+
+- Suggests experimenter demand does not drive belief effects
+  - Experimenter demand likely implies low level for $\Delta_{self}$
+  - Hard to see how it could generate [heterogeneous]{.alert} effects
 
 ## Persistence of Learning
 
