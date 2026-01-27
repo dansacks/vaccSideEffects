@@ -38,7 +38,6 @@ file write fout "Survey,Condition,Count" _n
 file write fout "Prescreen,Started (non-preview),`=_N'" _n
 
 * Count after each sequential filter
-local n_started = _N
 keep if consent == 1
 local n_consent = _N
 file write fout "Prescreen,Consented,`=_N'" _n
@@ -102,23 +101,29 @@ merge m:1 prolific_pid using `prescreen_final', keep(1 3)
 keep if _merge == 3
 drop _merge
 local n_linked = _N
+coun
 file write fout "Main,Linked to prescreen final,`=_N'" _n
 
 keep if consent == 1
 local n_consent = _N
+coun
 file write fout "Main,Consented,`=_N'" _n
 
 keep if failed_attn == 0
 local n_attn = _N
+coun
 file write fout "Main,Passed attention check,`=_N'" _n
 
 * Non-missing delta and no -99 values in posteriors
-keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99
+keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99  ///
+	& ~missing(post_trial)
 local n_outcome = _N
+count 
 file write fout "Main,Non-missing delta (valid posteriors),`=_N'" _n
 
 keep if first_attempt == 1
 local n_first = _N
+count 
 file write fout "Main,First attempt only (final main sample),`=_N'" _n
 
 * Save main final sample PIDs for linking

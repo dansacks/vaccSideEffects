@@ -136,6 +136,10 @@ Notes:
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -151,7 +155,7 @@ Notes:
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/merge_prescreen_
 > main.log
   log type:  text
- opened on:  26 Jan 2026, 16:47:12
+ opened on:  27 Jan 2026, 13:08:52
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: merge_prescreen_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -201,7 +205,19 @@ end of do-file
 
 . rename comments pre_comments
 
-. rename vacc_intent pre_vacc_intent_pre
+. rename vacc_intent pre_vacc_intent
+
+. 
+. * Rename missing indicators with pre_ prefix
+. rename vacc_intent_miss pre_vacc_intent_miss
+
+. rename had_prior_covid_vacc_miss pre_had_prior_covid_vacc_miss
+
+. rename had_prior_flu_vacc_miss pre_had_prior_flu_vacc_miss
+
+. rename covid_vacc_reaction_miss pre_covid_vacc_reaction_miss
+
+. rename flu_vacc_reaction_miss pre_flu_vacc_reaction_miss
 
 . 
 . * Keep the key variable unchanged
@@ -211,7 +227,7 @@ end of do-file
 . tempfile prescreen
 
 . save `prescreen'
-file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St67594.000001 saved
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St89961.000001 saved
     as .dta format
 
 . 
@@ -364,12 +380,12 @@ file output/logs/main_only_observations.csv saved
 
 Contains data from derived/main_clean.dta
  Observations:         3,538                  
-    Variables:           164                  25 Jan 2026 11:38
+    Variables:           183                  27 Jan 2026 13:08
 Sorted by: prolific_pid
      Note: Dataset has changed since last saved.
 
 . di "Total variables: " r(k)
-Total variables: 164
+Total variables: 183
 
 . 
 . * Drop merge indicator

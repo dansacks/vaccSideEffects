@@ -138,6 +138,10 @@ Notes:
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -153,7 +157,7 @@ Notes:
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_prolific_d
 > emographics.log
   log type:  text
- opened on:  26 Jan 2026, 12:31:11
+ opened on:  27 Jan 2026, 12:48:02
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prolific_demographics ===
 .     di "Log: output/logs/$scriptname.log"

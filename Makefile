@@ -49,7 +49,7 @@ ADO_REGRESSION := $(CODE)/ado/regression_table.ado
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis persistence beliefs exhibits dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte persistence beliefs exhibits dirs clean-data clean-all help
 
 all: prescreen main followup prolific counts balance
 
@@ -64,6 +64,7 @@ help:
 	@echo "  balance      - Generate main balance table"
 	@echo "  balance-full - Generate balance tables by domain + omnibus test"
 	@echo "  analysis     - Run treatment effects regressions"
+	@echo "  hte          - Run heterogeneous treatment effects"
 	@echo "  persistence  - Run persistence of information analysis"
 	@echo "  beliefs      - Generate belief distribution figures"
 	@echo "  exhibits     - Compile exhibits.pdf (all tables/figures)"
@@ -233,6 +234,19 @@ analysis: $(TREATMENT_EFFECTS)
 
 $(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do $(ADO_REGRESSION)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/treatment_effects.do && mv treatment_effects.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# HETEROGENEOUS TREATMENT EFFECTS
+#-------------------------------------------------------------------------------
+HTE_HIGH_PRIOR := $(OUT_TABLES)/het_high_prior.tex
+HTE_BAD_EXP := $(OUT_TABLES)/het_bad_experience.tex
+HTE_HIGH_TRUST := $(OUT_TABLES)/het_high_trust.tex
+HTE_HIGH_REL := $(OUT_TABLES)/het_high_relevance.tex
+
+hte: $(HTE_HIGH_PRIOR)
+
+$(HTE_HIGH_PRIOR) $(HTE_BAD_EXP) $(HTE_HIGH_TRUST) $(HTE_HIGH_REL) &: $(MERGED_ALL) $(CODE)/heterogeneous_treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/heterogeneous_treatment_effects.do && mv heterogeneous_treatment_effects.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
 # PERSISTENCE ANALYSIS

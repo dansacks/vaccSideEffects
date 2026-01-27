@@ -140,6 +140,10 @@ Notes:
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -155,7 +159,7 @@ Notes:
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/summary_stats_pr
 > escreen.log
   log type:  text
- opened on:  26 Jan 2026, 12:31:06
+ opened on:  27 Jan 2026, 13:07:13
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_prescreen ===
 .     di "Log: output/logs/$scriptname.log"
@@ -309,104 +313,104 @@ delimiter now cr
   Flu vaccine intent |
          this season |      Freq.     Percent        Cum.
 ---------------------+-----------------------------------
-1. No, do not intend |      3,005       37.86       37.86
-   2. May or may not |      1,520       19.15       57.01
-    3. Intend to get |      1,141       14.38       71.39
-      4. Already got |      2,271       28.61      100.00
+1. No, do not intend |      3,071       38.37       38.37
+   2. May or may not |      1,520       18.99       57.37
+    3. Intend to get |      1,141       14.26       71.62
+      4. Already got |      2,271       28.38      100.00
 ---------------------+-----------------------------------
-               Total |      7,937      100.00
+               Total |      8,003      100.00
 
   Had prior |
       COVID |
     vaccine |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      1,842       23.21       23.21
-     1. Yes |      6,095       76.79      100.00
+      0. No |      1,908       23.84       23.84
+     1. Yes |      6,095       76.16      100.00
 ------------+-----------------------------------
-      Total |      7,937      100.00
+      Total |      8,003      100.00
 
   Had prior |
 flu vaccine |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      1,863       23.47       23.47
-     1. Yes |      6,074       76.53      100.00
+      0. No |      1,929       24.10       24.10
+     1. Yes |      6,074       75.90      100.00
 ------------+-----------------------------------
-      Total |      7,937      100.00
+      Total |      8,003      100.00
 
 COVID vaccine reaction |      Freq.     Percent        Cum.
 -----------------------+-----------------------------------
-   0. No prior vaccine |      1,842       23.23       23.23
-1. None/don't remember |      2,709       34.16       57.38
-  2. Mild (not severe) |      2,596       32.73       90.11
-             3. Severe |        784        9.89      100.00
+   0. No prior vaccine |      1,914       23.92       23.92
+1. None/don't remember |      2,709       33.85       57.77
+  2. Mild (not severe) |      2,596       32.44       90.20
+             3. Severe |        784        9.80      100.00
 -----------------------+-----------------------------------
-                 Total |      7,931      100.00
+                 Total |      8,003      100.00
 
   Flu vaccine reaction |      Freq.     Percent        Cum.
 -----------------------+-----------------------------------
-   0. No prior vaccine |      1,863       23.50       23.50
-1. None/don't remember |      3,520       44.39       67.89
-  2. Mild (not severe) |      2,185       27.56       95.45
-             3. Severe |        361        4.55      100.00
+   0. No prior vaccine |      1,937       24.20       24.20
+1. None/don't remember |      3,520       43.98       68.19
+  2. Mild (not severe) |      2,185       27.30       95.49
+             3. Severe |        361        4.51      100.00
 -----------------------+-----------------------------------
-                 Total |      7,929      100.00
+                 Total |      8,003      100.00
 
   No health |
  conditions |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      1,713       21.63       21.63
-     1. Yes |      6,206       78.37      100.00
+      0. No |      1,797       22.45       22.45
+     1. Yes |      6,206       77.55      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
  Has asthma |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      6,899       87.12       87.12
-     1. Yes |      1,020       12.88      100.00
+      0. No |      6,983       87.25       87.25
+     1. Yes |      1,020       12.75      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
         Has |
    diabetes |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      7,383       93.23       93.23
-     1. Yes |        536        6.77      100.00
+      0. No |      7,467       93.30       93.30
+     1. Yes |        536        6.70      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
   Has heart |
     disease |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      7,697       97.20       97.20
-     1. Yes |        222        2.80      100.00
+      0. No |      7,781       97.23       97.23
+     1. Yes |        222        2.77      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
    Has lung |
     disease |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      7,817       98.71       98.71
-     1. Yes |        102        1.29      100.00
+      0. No |      7,901       98.73       98.73
+     1. Yes |        102        1.27      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
  Has kidney |
     disease |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      7,812       98.65       98.65
-     1. Yes |        107        1.35      100.00
+      0. No |      7,896       98.66       98.66
+     1. Yes |        107        1.34      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
      Health |
 conditions: |
  rather not |
         say |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      7,880       99.51       99.51
+      0. No |      7,964       99.51       99.51
      1. Yes |         39        0.49      100.00
 ------------+-----------------------------------
-      Total |      7,919      100.00
+      Total |      8,003      100.00
 
   Has health |
    insurance |      Freq.     Percent        Cum.
@@ -420,13 +424,13 @@ conditions: |
   Trust government info about |
                   flu vaccine |      Freq.     Percent        Cum.
 ------------------------------+-----------------------------------
-         1. Strongly disagree |        690        8.72        8.72
-         2. Somewhat disagree |      1,121       14.16       22.88
-3. Neither agree nor disagree |      1,694       21.40       44.28
-            4. Somewhat agree |      3,044       38.45       82.73
-            5. Strongly agree |      1,367       17.27      100.00
+         1. Strongly disagree |        777        9.71        9.71
+         2. Somewhat disagree |      1,121       14.01       23.72
+3. Neither agree nor disagree |      1,694       21.17       44.88
+            4. Somewhat agree |      3,044       38.04       82.92
+            5. Strongly agree |      1,367       17.08      100.00
 ------------------------------+-----------------------------------
-                        Total |      7,916      100.00
+                        Total |      8,003      100.00
 
     Prior trust in government |
                          info |      Freq.     Percent        Cum.
