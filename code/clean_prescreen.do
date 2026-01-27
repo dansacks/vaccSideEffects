@@ -138,6 +138,11 @@ label values trust_govt agree5
 label values follow_doctor agree5
 label values trust_govt_prior agree5
 
+* Create missing indicator for trust_govt (used in regressions with main data)
+gen trust_govt_miss = missing(trust_govt)
+label var trust_govt_miss "trust_govt missing"
+replace trust_govt = 1 if missing(trust_govt)
+
 * --- Main info source (SPSS already 1-6 matching) ---
 label values info_source_main source_main_lbl
 
@@ -339,7 +344,43 @@ label var trust_somewhat_agree "Trust govt: Somewhat agree"
 label var trust_strongly_agree "Trust govt: Strongly agree"
 
 /*------------------------------------------------------------------------------
-    12. Drop unnecessary variables and reorder
+    12. Create missing indicators for control variables
+------------------------------------------------------------------------------*/
+
+* Create missing indicators and impute missing to base category
+* These are needed for regressions with main survey data
+
+* Vaccination intent
+gen vacc_intent_miss = missing(vacc_intent)
+label var vacc_intent_miss "vacc_intent missing"
+replace vacc_intent = 1 if missing(vacc_intent)
+
+* Vaccine experience variables
+gen had_prior_covid_vacc_miss = missing(had_prior_covid_vacc)
+label var had_prior_covid_vacc_miss "had_prior_covid_vacc missing"
+replace had_prior_covid_vacc = 0 if missing(had_prior_covid_vacc)
+
+gen had_prior_flu_vacc_miss = missing(had_prior_flu_vacc)
+label var had_prior_flu_vacc_miss "had_prior_flu_vacc missing"
+replace had_prior_flu_vacc = 0 if missing(had_prior_flu_vacc)
+
+gen covid_vacc_reaction_miss = missing(covid_vacc_reaction)
+label var covid_vacc_reaction_miss "covid_vacc_reaction missing"
+replace covid_vacc_reaction = 0 if missing(covid_vacc_reaction)
+
+gen flu_vacc_reaction_miss = missing(flu_vacc_reaction)
+label var flu_vacc_reaction_miss "flu_vacc_reaction missing"
+replace flu_vacc_reaction = 0 if missing(flu_vacc_reaction)
+
+* Health condition dummies - impute 0 (no condition) if missing
+foreach v of varlist cond_asthma cond_lung cond_heart cond_diabetes cond_kidney cond_rather_not_say cond_none {
+    gen `v'_miss = missing(`v')
+    label var `v'_miss "`v' missing"
+    replace `v' = 0 if missing(`v')
+}
+
+/*------------------------------------------------------------------------------
+    13. Drop unnecessary variables and reorder
 ------------------------------------------------------------------------------*/
 
 * Drop temporary variables
@@ -361,7 +402,7 @@ order response_id prolific_pid prolific_id_entered ///
       comments
 
 /*------------------------------------------------------------------------------
-    12. Final assertions and save
+    14. Final assertions and save
 ------------------------------------------------------------------------------*/
 
 

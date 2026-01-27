@@ -134,7 +134,7 @@ use "derived/merged_main_pre.dta", clear
 gen prior_vacc_likely = (prior_self_vacc >= 5) if ~missing(prior_self_vacc)
 label var prior_vacc_likely "Prior: SE likely with vaccine"
 
-gen pre_no_intent = (pre_vacc_intent_pre == 1) if ~missing(pre_vacc_intent_pre)
+gen pre_no_intent = (pre_vacc_intent == 1) if ~missing(pre_vacc_intent)
 label var pre_no_intent "Do not intend to vaccinate"
 
 gen pre_had_flu = had_prior_flu_vacc
