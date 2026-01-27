@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1769114767.45531 "/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex" "exhibits.pdf" "exhibits" 1769114767.78762 2
+["pdflatex"] 1769464242.16063 "/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex" "exhibits.pdf" "exhibits" 1769464242.43918 2
   "/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex" 1769100301.50855 14007 07aa2720b5732dc3ba3d17edddfc14f9 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
@@ -52,11 +52,11 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1769023361 5467155 19efa205003f9ecad95fbbaa6ff24da1 ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741450574 3345740 46b66fdb0378f7bf5921b5eabf1762b8 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "exhibits.aux" 1769114767.77572 748 ee028cd6478dabcddadbad13d0a7f6d8 "pdflatex"
+  "exhibits.aux" 1769464242.42939 748 ee028cd6478dabcddadbad13d0a7f6d8 "pdflatex"
   "exhibits.tex" 1769100301.50855 14007 07aa2720b5732dc3ba3d17edddfc14f9 ""
-  "exhibits.toc" 1769114767.67717 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "tables/balance_prior_beliefs.tex" 1769110452.30331 1093 de725710a92d6adceb4343960efe23a7 ""
-  "tables/balance_table.tex" 1769109465.93739 1034 a785b82b56042f81cfe3dc5c1bd72878 ""
+  "exhibits.toc" 1769464242.32409 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "tables/balance_prior_beliefs.tex" 1769362733.47693 1093 de725710a92d6adceb4343960efe23a7 ""
+  "tables/balance_table.tex" 1769464241.89727 1041 25fd2b0b775190746e846d278413a4ae ""
   "tables/balance_vacc_intent.tex" 0 -1 0 ""
   (generated)
   "exhibits.aux"

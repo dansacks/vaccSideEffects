@@ -1,0 +1,5 @@
+\beamer@sectionintoc {1}{Background}{3}{0}{1}
+\beamer@sectionintoc {2}{Design}{5}{0}{2}
+\beamer@sectionintoc {3}{Results: Beliefs and Their Correlates}{7}{0}{3}
+\beamer@sectionintoc {4}{Results: Treatment Effects}{11}{0}{4}
+\beamer@sectionintoc {5}{Discussion}{18}{0}{5}

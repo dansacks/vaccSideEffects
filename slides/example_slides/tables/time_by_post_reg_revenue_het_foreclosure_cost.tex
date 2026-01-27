@@ -1,0 +1,16 @@
+                    &\multicolumn{1}{c}{Baseline}&\multicolumn{3}{c}{Foreclosure Cost Proxies}                     \\\cmidrule(lr){2-2}\cmidrule(lr){3-5}
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+                    &\multicolumn{1}{c}{} &\multicolumn{1}{c}{\specialcell{Recourse \& \\ Moratorium}}&\multicolumn{1}{c}{\specialcell{Judicial \& \\ Moratorium}}&\multicolumn{1}{c}{\specialcell{Servicer \\ History}}\\
+\midrule
+PandemicMaturity $\times$ Post&      -0.166\sym{***}&      -0.262\sym{***}&      -0.217\sym{***}&      -0.316\sym{***}\\
+                    &     (0.023)         &     (0.043)         &     (0.036)         &     (0.044)         \\
+PandemicMaturity $\times$ Post $\times$ CostlyForeclosure&                     &       0.167\sym{***}&       0.122\sym{**} &       0.544\sym{***}\\
+                    &                     &     (0.051)         &     (0.049)         &     (0.087)         \\
+PandemicMaturity $\times$ Post $\times$ EasyForeclosure&                     &       0.114\sym{***}&       0.055         &       0.480\sym{***}\\
+                    &                     &     (0.040)         &     (0.037)         &     (0.096)         \\
+\midrule
+Hotel FEs           &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         \\
+MSA $\times$ Year FEs&\multicolumn{1}c{X}         &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         \\
+Matured Loan FE     &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         &\multicolumn{1}c{X}         \\
+\midrule R-Squared  &\multicolumn{1}c{0.85}         &\multicolumn{1}c{0.86}         &\multicolumn{1}c{0.85}         &\multicolumn{1}c{0.86}         \\
+Number of Observations&\multicolumn{1}c{131,349}         &\multicolumn{1}c{131,349}         &\multicolumn{1}c{131,349}         &\multicolumn{1}c{124,778}         \\
