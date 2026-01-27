@@ -250,10 +250,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | No, do not intend  | 3,005 (37.86%) |
-| 2 | May or may not  | 1,520 (19.15%) |
-| 3 | Intend to get  | 1,141 (14.38%) |
-| 4 | Already got  | 2,271 (28.61%) |
+| 1 | No, do not intend  | 3,071 (38.37%) |
+| 2 | May or may not  | 1,520 (18.99%) |
+| 3 | Intend to get  | 1,141 (14.26%) |
+| 4 | Already got  | 2,271 (28.38%) |
 
 ### `had_prior_covid`
 - **Type:** Binary (derived)
@@ -380,11 +380,11 @@ These variables consolidate responses from multiple survey questions that were s
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | Strongly disagree  | 690 (8.72%) |
-| 2 | Somewhat disagree  | 1,121 (14.16%) |
-| 3 | Neither agree nor disagree  | 1,694 (21.40%) |
-| 4 | Somewhat agree  | 3,044 (38.45%) |
-| 5 | Strongly agree  | 1,367 (17.27%) |
+| 1 | Strongly disagree  | 777 (9.71%) |
+| 2 | Somewhat disagree  | 1,121 (14.01%) |
+| 3 | Neither agree nor disagree  | 1,694 (21.17%) |
+| 4 | Somewhat agree  | 3,044 (38.04%) |
+| 5 | Strongly agree  | 1,367 (17.08%) |
 
 ### `trust_govt_prior`
 - **Type:** Categorical (Likert 5-point)

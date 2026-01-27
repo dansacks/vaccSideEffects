@@ -54,6 +54,9 @@ global ATTN_CHECK_FOLLOWUP = 1163
 * Special code for unselected responses
 global UNSELECTED_VALUE  = -99
 
+* Special code for "prefer not to say" responses (same as unselected)
+global PREF_NOT_SAY = -99
+
 /*------------------------------------------------------------------------------
     Conditional Logging
 ------------------------------------------------------------------------------*/

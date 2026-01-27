@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do code/merge_followup.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/merge_followup.do 
 
 . /*===========================================================================
 > ===
@@ -135,6 +135,10 @@ Notes:
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -150,7 +154,7 @@ Notes:
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/merge_followup.l
 > og
   log type:  text
- opened on:  26 Jan 2026, 16:47:23
+ opened on:  27 Jan 2026, 13:08:52
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: merge_followup ===
 .     di "Log: output/logs/$scriptname.log"
@@ -175,7 +179,7 @@ end of do-file
 . tempfile followup
 
 . save `followup'
-file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St67653.000001 saved
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St89964.000001 saved
     as .dta format
 
 . 

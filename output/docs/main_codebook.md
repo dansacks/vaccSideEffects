@@ -46,15 +46,6 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `duration_sec`
 - **Type:** Numeric (continuous)
 - **Label:** Survey duration (seconds)
-- **Summary Statistics (N=3,538):**
-
-| Statistic | Value |
-|-----------|-------|
-| Mean | 405.0 |
-| SD | 981.9 |
-| Min | 49 |
-| Median | 317 |
-| Max | 56,447 |
 
 ### `progress`
 - **Type:** Numeric (continuous)
@@ -217,15 +208,6 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `prior_diff`
 - **Type:** Numeric (derived)
 - **Label:** Prior belief difference (vacc - placebo)
-- **Summary Statistics (N=3,538):**
-
-| Statistic | Value |
-|-----------|-------|
-| Mean | 1.5 |
-| SD | 2.0 |
-| Min | -6 |
-| Median | 1 |
-| Max | 6 |
 - **Range:** -6 to +6
 
 ---
@@ -235,15 +217,6 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `post_trial`
 - **Type:** Numeric (continuous)
 - **Label:** Post-trial side effect estimate (0-100)
-- **Summary Statistics (N=3,538):**
-
-| Statistic | Value |
-|-----------|-------|
-| Mean | 16.0 |
-| SD | 19.0 |
-| Min | 0 |
-| Median | 6 |
-| Max | 98 |
 - **Description:** Consolidated from arm-specific variables; percentage estimate of side effect rate in vaccine group
 
 ### `post_c_trial`
@@ -273,43 +246,16 @@ This codebook documents all variables in the cleaned main survey dataset. The ma
 ### `posterior_novacc`
 - **Type:** Numeric (continuous, 0-100)
 - **Label:** Posterior: SE probability without vaccine
-- **Summary Statistics (N=3,538):**
-
-| Statistic | Value |
-|-----------|-------|
-| Mean | 12.5 |
-| SD | 20.2 |
-| Min | 0 |
-| Median | 3 |
-| Max | 100 |
 - **Question:** "After seeing the information, what do you estimate is the probability of experiencing a side effect without the vaccine?"
 
 ### `posterior_vacc`
 - **Type:** Numeric (continuous, 0-100)
 - **Label:** Posterior: SE probability with vaccine
-- **Summary Statistics (N=3,538):**
-
-| Statistic | Value |
-|-----------|-------|
-| Mean | 25.7 |
-| SD | 28.1 |
-| Min | 0 |
-| Median | 10 |
-| Max | 100 |
 - **Question:** "After seeing the information, what do you estimate is the probability of experiencing a side effect with the vaccine?"
 
 ### `delta`
 - **Type:** Numeric (derived)
 - **Label:** Posterior difference (vacc - novacc)
-- **Summary Statistics (N=3,538):**
-
-| Statistic | Value |
-|-----------|-------|
-| Mean | 13.2 |
-| SD | 26.2 |
-| Min | -96 |
-| Median | 3 |
-| Max | 100 |
 - **Description:** posterior_vacc - posterior_novacc
 
 ---

@@ -39,11 +39,6 @@ if _rc {
     label var link_click "Any link clicked"
 }
 
-* Convert -99 (prefer not to say) to missing for categorical variables
-foreach var in age gender education income race ethnicity {
-    replace `var' = . if `var' == -99
-}
-
 * Create vaccination outcome (got vaccine or already had it)
 gen vacc_post = got_flu_vacc == 1 | flu_why_already == 1 if ~missing(got_flu_vacc)
 

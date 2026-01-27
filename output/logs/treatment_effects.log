@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do code/treatment_effects.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/treatment_effects.do 
 
 . /*===========================================================================
 > ===
@@ -29,6 +29,7 @@ Notes:
 > 
 >     Input:  derived/merged_all.dta
 >     Output: output/tables/treatment_effects.tex
+>             output/tables/treatment_effects.md
 > 
 >     Estimates treatment effects of information source on:
 >     - post_trial: Post-trial side effect estimate
@@ -36,8 +37,6 @@ Notes:
 >     - main_maybe: Binary vaccination intention
 >     - link_click: Any link clicked
 >     - vacc_post: Got flu vaccine or already had it (followup)
-> 
->     Requires: code/ado/regression_table.ado
 > 
 >     Created by Dan + Claude Code
 > =============================================================================
@@ -142,6 +141,10 @@ Notes:
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -157,7 +160,7 @@ Notes:
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/treatment_effect
 > s.log
   log type:  text
- opened on:  26 Jan 2026, 16:47:23
+ opened on:  27 Jan 2026, 13:08:52
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: treatment_effects ===
 .     di "Log: output/logs/$scriptname.log"
@@ -197,14 +200,24 @@ end of do-file
 > reaction i.flu_vacc_reaction"
 
 . 
-. * Demographics from main survey
+. * Demographics from main survey (with missing indicators)
 . global demographics "i.age i.gender i.education i.income i.race i.ethnicity i
 > .polviews"
+
+. global demo_miss "age_miss gender_miss education_miss income_miss race_miss e
+> thnicity_miss polviews_miss"
+
+. 
+. * Prescreen control missing indicators (from clean_prescreen.do, renamed in m
+> erge)
+. global pre_miss "trust_govt_miss pre_vacc_intent_miss pre_had_prior_covid_vac
+> c_miss pre_had_prior_flu_vacc_miss pre_covid_vacc_reaction_miss pre_flu_vacc_
+> reaction_miss"
 
 . 
 . * All controls combined
 . global controls "$prior_beliefs i.pre_vacc_intent $vacc_experience $demograph
-> ics i.trust_govt cond_*"
+> ics i.trust_govt $demo_miss $pre_miss cond_*"
 
 . 
 end of do-file
@@ -232,18 +245,6 @@ end of do-file
 . }
 
 . 
-. * Convert -99 (prefer not to say) to missing for categorical variables
-. foreach var in age gender education income race ethnicity {
-  2.     replace `var' = . if `var' == -99
-  3. }
-(0 real changes made)
-(0 real changes made)
-(0 real changes made)
-(0 real changes made)
-(0 real changes made)
-(0 real changes made)
-
-. 
 . * Create vaccination outcome (got vaccine or already had it)
 . gen vacc_post = got_flu_vacc == 1 | flu_why_already == 1 if ~missing(got_flu_
 > vacc)
@@ -260,49 +261,826 @@ end of do-file
 . 
 . /*---------------------------------------------------------------------------
 > ---
->     3. Generate treatment effects table
+>     3. Generate treatment effects table using esttab
 > -----------------------------------------------------------------------------
 > -*/
 . 
-. regression_table post_trial delta main_maybe link_click vacc_post, ///
->     keyvars(arm_industry arm_academic arm_personal) ///
->     controls($controls) saving(output/tables/treatment_effects.tex)
+. local keyvars arm_industry arm_academic arm_personal
 
-=== Regression: post_trial ===
+. 
+. eststo clear
 
-=== Regression: delta ===
+. 
+. foreach y in post_trial delta main_maybe link_click vacc_post {
+  2.     regress `y' `keyvars' $controls, robust
+  3.     sum `y' if arm_control==1
+  4.     estadd scalar cm = r(mean)
+  5.     eststo m_`y'
+  6. }
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: pre_vacc_intent_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
 
-=== Regression: main_maybe ===
+Linear regression                               Number of obs     =      3,534
+                                                F(67, 3465)       =          .
+                                                Prob > F          =          .
+                                                R-squared         =     0.1589
+                                                Root MSE          =     17.631
 
-=== Regression: link_click ===
+------------------------------------------------------------------------------
+             |               Robust
+  post_trial | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |  -7.895317   .8511511    -9.28   0.000    -9.564126   -6.226509
+arm_academic |  -4.185225    .876714    -4.77   0.000    -5.904154   -2.466297
+arm_personal |   -4.63418   .8783854    -5.28   0.000    -6.356386   -2.911975
+             |
+prior_self~o |
+2. Very u..  |  -.9090888   .8279318    -1.10   0.272    -2.532372    .7141948
+3. Somewh..  |   2.050625    1.01652     2.02   0.044     .0575867    4.043664
+4. Neithe..  |   3.606879   1.474322     2.45   0.014     .7162513    6.497508
+5. Somewh..  |   2.803983   1.219261     2.30   0.022     .4134408    5.194525
+6. Very l..  |   1.711043   1.849648     0.93   0.355    -1.915468    5.337553
+7. Would ..  |   1.520883   3.948104     0.39   0.700    -6.219962    9.261729
+             |
+prior_self~c |
+2. Very u..  |  -7.874065   2.205611    -3.57   0.000    -12.19849   -3.549636
+3. Somewh..  |  -6.545089   2.192237    -2.99   0.003     -10.8433   -2.246882
+4. Neithe..  |  -2.936194   2.346071    -1.25   0.211    -7.536016    1.663627
+5. Somewh..  |  -2.007496    2.21179    -0.91   0.364     -6.34404    2.329048
+6. Very l..  |   4.530773   2.384176     1.90   0.057    -.1437594    9.205305
+7. Would ..  |   9.904662   3.053729     3.24   0.001     3.917372    15.89195
+             |
+pre_vacc_i~t |
+2. May or..  |    1.41206   .6867559     2.06   0.040     .0655729    2.758547
+had_p~d_vacc |   -.100568   1.230453    -0.08   0.935    -2.513055    2.311919
+had_p~u_vacc |  -1.433387   1.586017    -0.90   0.366    -4.543009    1.676235
+             |
+covid_vacc~n |
+1. None/d..  |  -.4640974   1.170208    -0.40   0.692    -2.758465     1.83027
+2. Mild ..)  |   .8763122   1.182279     0.74   0.459    -1.441721    3.194346
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |   -.361921   1.607109    -0.23   0.822    -3.512897    2.789055
+2. Mild ..)  |   1.878562   1.634119     1.15   0.250    -1.325372    5.082497
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |   26.98115   4.278456     6.31   0.000      18.5926     35.3697
+   3. 35-49  |   24.31678   4.313068     5.64   0.000     15.86037    32.77319
+   4. 50-64  |   24.44767   4.326549     5.65   0.000     15.96483    32.93051
+   5. 65-74  |   22.82337   4.476233     5.10   0.000     14.04705    31.59969
+     6. 75+  |   21.79871   6.536773     3.33   0.001     8.982391    34.61502
+             |
+      gender |
+  2. Female  |   .7832125   .6315209     1.24   0.215    -.4549782    2.021403
+   3. Other  |  -3.543666   2.885134    -1.23   0.219      -9.2004    2.113068
+4. Prefer..  |    3.26985   5.217486     0.63   0.531    -6.959808    13.49951
+             |
+   education |
+      2. HS  |   5.714365   3.771103     1.52   0.130    -1.679444    13.10817
+3. Some c..  |   3.686649   3.719384     0.99   0.322    -3.605756    10.97905
+4. 4-year..  |   3.802899   3.737519     1.02   0.309    -3.525062    11.13086
+5. More t..  |   3.486334   3.808115     0.92   0.360    -3.980043    10.95271
+6. Prefer..  |  -5.074905   5.941776    -0.85   0.393    -16.72464    6.574833
+             |
+      income |
+ 2. $25-50k  |  -.9213988    1.09757    -0.84   0.401    -3.073348     1.23055
+ 3. $50-75k  |  -.5067554   1.110356    -0.46   0.648    -2.683773    1.670262
+4. $75-100k  |  -1.022328   1.186879    -0.86   0.389    -3.349381    1.304725
+  5. >$100k  |  -1.426311    1.14648    -1.24   0.214    -3.674156    .8215336
+6. Prefer..  |  -.6100121   2.332673    -0.26   0.794    -5.183565    3.963541
+             |
+        race |
+   2. Black  |   3.343682   .9921985     3.37   0.001     1.398329    5.289035
+   3. Asian  |  -3.430635   3.344979    -1.03   0.305    -9.988964    3.127695
+4. Am Ind..  |   .5691565   1.312363     0.43   0.665    -2.003927     3.14224
+5. Pacifi..  |  -2.738632   9.419443    -0.29   0.771    -21.20685    15.72959
+   6. Other  |   2.059361   2.038373     1.01   0.312    -1.937174    6.055895
+7. Prefer..  |  -2.494311   3.776985    -0.66   0.509    -9.899653     4.91103
+             |
+   ethnicity |
+      2. No  |  -.3319514   1.129615    -0.29   0.769     -2.54673    1.882827
+3. Prefer..  |   -2.28163   3.706103    -0.62   0.538    -9.547996    4.984736
+             |
+    polviews |
+ 2. Liberal  |    .525899   1.109473     0.47   0.636    -1.649387    2.701185
+3. Slight..  |   1.371926   1.205296     1.14   0.255    -.9912352    3.735088
+4. Moderate  |   1.546509   1.175869     1.32   0.189    -.7589573    3.851975
+5. Slight..  |   3.644127   1.356269     2.69   0.007     .9849596    6.303294
+6. Conser..  |   3.634749   1.268446     2.87   0.004     1.147771    6.121727
+7. Very c..  |   3.642102   1.705879     2.14   0.033     .2974716    6.986732
+8. Prefer..  |   10.84667   3.859594     2.81   0.005     3.279364    18.41398
+             |
+  trust_govt |
+2. Somewh..  |  -.9815942   1.359747    -0.72   0.470    -3.647581    1.684392
+3. Neithe..  |  -2.862403   1.276752    -2.24   0.025    -5.365665   -.3591414
+4. Somewh..  |  -3.915946   1.242653    -3.15   0.002    -6.352352   -1.479539
+5. Strong..  |  -5.305747     1.4123    -3.76   0.000    -8.074771   -2.536722
+             |
+    age_miss |          0  (omitted)
+ gender_miss |   50.10407   13.33451     3.76   0.000     23.95978    76.24836
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |  -.6760236   6.951071    -0.10   0.923    -14.30463    12.95259
+pre_vacc_i~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |   2.967839   2.147921     1.38   0.167    -1.243479    7.179157
+   cond_lung |  -2.716798   2.781487    -0.98   0.329    -8.170318    2.736722
+  cond_heart |    3.36453   2.490579     1.35   0.177     -1.51862     8.24768
+cond_diab~es |   1.479826   2.212221     0.67   0.504    -2.857564    5.817215
+ cond_kidney |   2.288268    3.04777     0.75   0.453    -3.687338    8.263874
+cond_rathe~y |   .0755966   4.902244     0.02   0.988    -9.535982    9.687175
+   cond_none |   4.023493    2.18688     1.84   0.066    -.2642114    8.311197
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |  -10.46037   6.592937    -1.59   0.113     -23.3868    2.466063
+------------------------------------------------------------------------------
 
-=== Regression: vacc_post ===
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+  post_trial |        885    20.19263    20.65807          0         98
 
-Regression Table
--------------------------------------------------------------------------------
-                      post_trial       delta  main_maybe  link_click   vacc_pos
-> t
--------------------------------------------------------------------------------
-Industry                  -7.971      -3.303      -0.000      -0.002      -0.01
-> 4
-                        ( 0.853)    ( 1.022)    ( 0.012)    ( 0.006)    ( 0.013
-> )
-Academic                  -4.392      -2.857       0.031      -0.003       0.02
-> 1
-                        ( 0.874)    ( 1.010)    ( 0.013)    ( 0.006)    ( 0.015
-> )
-Personal                  -4.728       0.387       0.024      -0.002       0.01
-> 8
-                        ( 0.878)    ( 1.018)    ( 0.013)    ( 0.006)    ( 0.014
-> )
--------------------------------------------------------------------------------
-Control mean              20.193      15.410       0.069       0.015       0.08
-> 3
-N                          3,516       3,516       3,516       3,516       2,99
-> 2
--------------------------------------------------------------------------------
-Saved: output/tables/treatment_effects.tex
-Saved: output/tables/treatment_effects.md
+added scalar:
+                 e(cm) =  20.192633
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: pre_vacc_intent_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
+
+Linear regression                               Number of obs     =      3,534
+                                                F(67, 3465)       =          .
+                                                Prob > F          =          .
+                                                R-squared         =     0.3646
+                                                Root MSE          =     21.066
+
+------------------------------------------------------------------------------
+             |               Robust
+       delta | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |  -3.495221   1.020655    -3.42   0.001    -5.496366   -1.494075
+arm_academic |  -2.971715    1.00654    -2.95   0.003    -4.945186   -.9982448
+arm_personal |   .2814176   1.017892     0.28   0.782    -1.714311    2.277146
+             |
+prior_self~o |
+2. Very u..  |  -4.217942   1.057544    -3.99   0.000    -6.291414    -2.14447
+3. Somewh..  |  -8.206651   1.162229    -7.06   0.000    -10.48537   -5.927929
+4. Neithe..  |  -12.65555   1.644979    -7.69   0.000    -15.88078   -9.430324
+5. Somewh..  |  -16.16611   1.411375   -11.45   0.000    -18.93332    -13.3989
+6. Very l..  |     -26.05   2.683076    -9.71   0.000    -31.31057   -20.78943
+7. Would ..  |  -25.14875      5.001    -5.03   0.000    -34.95396   -15.34355
+             |
+prior_self~c |
+2. Very u..  |   3.653648   2.314039     1.58   0.114    -.8833701    8.190667
+3. Somewh..  |   6.545778   2.298263     2.85   0.004     2.039691    11.05187
+4. Neithe..  |   9.196928   2.444563     3.76   0.000     4.403997    13.98986
+5. Somewh..  |   16.95626   2.345941     7.23   0.000      12.3567    21.55583
+6. Very l..  |   35.49125   2.604899    13.62   0.000     30.38395    40.59854
+7. Would ..  |   50.44804   3.556504    14.18   0.000     43.47498    57.42109
+             |
+pre_vacc_i~t |
+2. May or..  |  -.2595809    .794122    -0.33   0.744    -1.816575    1.297413
+had_p~d_vacc |   1.538554   1.595417     0.96   0.335    -1.589498    4.666606
+had_p~u_vacc |   9.054557   2.252321     4.02   0.000     4.638546    13.47057
+             |
+covid_vacc~n |
+1. None/d..  |  -2.599311   1.529026    -1.70   0.089    -5.597194    .3985721
+2. Mild ..)  |  -.1196108   1.545264    -0.08   0.938     -3.14933    2.910109
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |  -11.04021   2.256104    -4.89   0.000    -15.46363   -6.616779
+2. Mild ..)  |  -7.332889   2.317628    -3.16   0.002    -11.87694   -2.788834
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |   21.56822   4.769082     4.52   0.000     12.21772    30.91871
+   3. 35-49  |   21.74571   4.793303     4.54   0.000     12.34773     31.1437
+   4. 50-64  |   22.95851   4.824661     4.76   0.000     13.49905    32.41798
+   5. 65-74  |    20.9501    5.02429     4.17   0.000     11.09924    30.80097
+     6. 75+  |    18.1195   11.17638     1.62   0.105    -3.793453    40.03245
+             |
+      gender |
+  2. Female  |    2.15622   .7329763     2.94   0.003     .7191107    3.593329
+   3. Other  |   4.494412   3.979848     1.13   0.259    -3.308672     12.2975
+4. Prefer..  |   7.101852   8.652606     0.82   0.412    -9.862869    24.06657
+             |
+   education |
+      2. HS  |   .8945566   5.024199     0.18   0.859    -8.956134    10.74525
+3. Some c..  |   .5005294   4.992121     0.10   0.920    -9.287267    10.28833
+4. 4-year..  |   .3543855    5.00987     0.07   0.944    -9.468211    10.17698
+5. More t..  |  -.2960773   5.067161    -0.06   0.953      -10.231    9.638846
+6. Prefer..  |   .3470471   8.362416     0.04   0.967    -16.04871    16.74281
+             |
+      income |
+ 2. $25-50k  |  -1.293566   1.243652    -1.04   0.298    -3.731932      1.1448
+ 3. $50-75k  |  -1.490574   1.273265    -1.17   0.242       -3.987    1.005853
+4. $75-100k  |  -1.549643   1.409208    -1.10   0.272    -4.312606    1.213319
+  5. >$100k  |  -1.882659   1.299363    -1.45   0.147    -4.430255    .6649364
+6. Prefer..  |   1.565546   2.726822     0.57   0.566    -3.780795    6.911886
+             |
+        race |
+   2. Black  |  -2.471194    1.13344    -2.18   0.029    -4.693472   -.2489161
+   3. Asian  |  -2.793313   3.764204    -0.74   0.458     -10.1736    4.586968
+4. Am Ind..  |  -.2872134   1.570617    -0.18   0.855    -3.366642    2.792215
+5. Pacifi..  |  -15.32317   3.663938    -4.18   0.000    -22.50687   -8.139476
+   6. Other  |  -.1783082   2.198276    -0.08   0.935    -4.488356    4.131739
+7. Prefer..  |  -10.87265    5.85037    -1.86   0.063    -22.34317    .5978691
+             |
+   ethnicity |
+      2. No  |  -.6318039   1.339723    -0.47   0.637     -3.25853    1.994922
+3. Prefer..  |   3.322014   4.740751     0.70   0.484    -5.972934    12.61696
+             |
+    polviews |
+ 2. Liberal  |   1.570328   1.369719     1.15   0.252     -1.11521    4.255866
+3. Slight..  |   1.070261   1.436664     0.74   0.456    -1.746532    3.887055
+4. Moderate  |   1.680126   1.362747     1.23   0.218    -.9917427    4.351994
+5. Slight..  |   3.059708   1.547672     1.98   0.048      .025268    6.094149
+6. Conser..  |   3.442572   1.517305     2.27   0.023     .4676703    6.417474
+7. Very c..  |   4.171749   2.032722     2.05   0.040     .1862949    8.157204
+8. Prefer..  |   12.25619   4.227009     2.90   0.004     3.968507    20.54387
+             |
+  trust_govt |
+2. Somewh..  |  -1.152449   1.597415    -0.72   0.471     -4.28442    1.979521
+3. Neithe..  |  -1.651239   1.515025    -1.09   0.276    -4.621671    1.319192
+4. Somewh..  |  -1.288667   1.482468    -0.87   0.385    -4.195267    1.617933
+5. Strong..  |  -3.865566   1.713782    -2.26   0.024     -7.22569   -.5054419
+             |
+    age_miss |          0  (omitted)
+ gender_miss |   11.16161   8.859768     1.26   0.208    -6.209287     28.5325
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |  -5.958909   8.499933    -0.70   0.483    -22.62429    10.70648
+pre_vacc_i~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |   5.978668   2.720397     2.20   0.028     .6449248    11.31241
+   cond_lung |  -1.938649   3.385058    -0.57   0.567    -8.575559    4.698261
+  cond_heart |  -.0265625    3.27169    -0.01   0.994    -6.441198    6.388073
+cond_diab~es |   4.401473   2.743591     1.60   0.109    -.9777446    9.780691
+ cond_kidney |   3.183344   3.304635     0.96   0.335    -3.295885    9.662574
+cond_rathe~y |   5.938104   4.832081     1.23   0.219    -3.535911    15.41212
+   cond_none |   5.263625   2.801779     1.88   0.060    -.2296798    10.75693
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |  -22.41999   8.228525    -2.72   0.006    -38.55324   -6.286742
+------------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       delta |        885    15.40985    26.09716        -57        100
+
+added scalar:
+                 e(cm) =  15.409853
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: gender_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: pre_vacc_intent_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
+
+Linear regression                               Number of obs     =      3,526
+                                                F(67, 3458)       =       5.62
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1344
+                                                Root MSE          =     .25852
+
+------------------------------------------------------------------------------
+             |               Robust
+  main_maybe | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |   .0009206   .0119369     0.08   0.939    -.0224835    .0243247
+arm_academic |   .0312869   .0125552     2.49   0.013     .0066704    .0559033
+arm_personal |   .0249207   .0125388     1.99   0.047     .0003365    .0495049
+             |
+prior_self~o |
+2. Very u..  |  -.0218672   .0113114    -1.93   0.053     -.044045    .0003105
+3. Somewh..  |   .0088774   .0164576     0.54   0.590    -.0233902     .041145
+4. Neithe..  |   .0408772   .0225502     1.81   0.070     -.003336    .0850903
+5. Somewh..  |   .0203083   .0172372     1.18   0.239    -.0134879    .0541045
+6. Very l..  |   .0225335   .0220785     1.02   0.308    -.0207547    .0658217
+7. Would ..  |    .036198   .0340273     1.06   0.287    -.0305177    .1029136
+             |
+prior_self~c |
+2. Very u..  |   -.001997   .0323259    -0.06   0.951    -.0653767    .0613828
+3. Somewh..  |  -.0184944   .0316903    -0.58   0.560     -.080628    .0436391
+4. Neithe..  |  -.0285226   .0325786    -0.88   0.381    -.0923978    .0353527
+5. Somewh..  |  -.0358467    .030189    -1.19   0.235    -.0950367    .0233434
+6. Very l..  |  -.0511621   .0307159    -1.67   0.096    -.1113852    .0090611
+7. Would ..  |  -.0399122   .0341301    -1.17   0.242    -.1068293    .0270049
+             |
+pre_vacc_i~t |
+2. May or..  |   .1444984   .0126009    11.47   0.000     .1197925    .1692044
+had_p~d_vacc |   .0078358    .015823     0.50   0.620    -.0231876    .0388591
+had_p~u_vacc |   .0007136   .0144143     0.05   0.961    -.0275478    .0289749
+             |
+covid_vacc~n |
+1. None/d..  |   .0143612   .0179213     0.80   0.423    -.0207763    .0494986
+2. Mild ..)  |   .0132194   .0182808     0.72   0.470    -.0226229    .0490617
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |   .0149297   .0169993     0.88   0.380    -.0184001    .0482594
+2. Mild ..)  |   .0412058    .017537     2.35   0.019     .0068218    .0755897
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |   .1069434   .0475421     2.25   0.025     .0137299    .2001569
+   3. 35-49  |   .0902008   .0468383     1.93   0.054    -.0016327    .1820344
+   4. 50-64  |    .094568   .0474625     1.99   0.046     .0015106    .1876253
+   5. 65-74  |    .070047   .0493918     1.42   0.156    -.0267931     .166887
+     6. 75+  |   .1815359   .0913548     1.99   0.047     .0024212    .3606507
+             |
+      gender |
+  2. Female  |  -.0124411   .0095437    -1.30   0.192    -.0311529    .0062708
+   3. Other  |   .0642564   .0636142     1.01   0.313    -.0604688    .1889815
+4. Prefer..  |  -.0277489   .0775171    -0.36   0.720    -.1797329    .1242351
+             |
+   education |
+      2. HS  |   -.036402   .0473131    -0.77   0.442    -.1291665    .0563625
+3. Some c..  |  -.0128407   .0475177    -0.27   0.787    -.1060063    .0803248
+4. 4-year..  |   .0007292   .0478564     0.02   0.988    -.0931005    .0945589
+5. More t..  |   .0260441   .0493955     0.53   0.598    -.0708031    .1228914
+6. Prefer..  |  -.0590562   .0699318    -0.84   0.398    -.1961679    .0780556
+             |
+      income |
+ 2. $25-50k  |   .0082125   .0136926     0.60   0.549     -.018634     .035059
+ 3. $50-75k  |   .0073712   .0147227     0.50   0.617    -.0214949    .0362373
+4. $75-100k  |  -.0085819   .0153059    -0.56   0.575    -.0385914    .0214275
+  5. >$100k  |   .0271602   .0160192     1.70   0.090    -.0042478    .0585682
+6. Prefer..  |  -.0418127   .0235633    -1.77   0.076     -.088012    .0043866
+             |
+        race |
+   2. Black  |   .0182824   .0145018     1.26   0.208    -.0101505    .0467153
+   3. Asian  |  -.0068267   .0389217    -0.18   0.861    -.0831385    .0694851
+4. Am Ind..  |  -.0381056   .0203341    -1.87   0.061    -.0779736    .0017623
+5. Pacifi..  |   .2489633   .1427793     1.74   0.081     -.030977    .5289037
+   6. Other  |  -.0565137    .020781    -2.72   0.007     -.097258   -.0157693
+7. Prefer..  |   .0182121   .0595535     0.31   0.760    -.0985514    .1349756
+             |
+   ethnicity |
+      2. No  |   .0061628   .0175329     0.35   0.725    -.0282132    .0405387
+3. Prefer..  |  -.0684939   .0428366    -1.60   0.110    -.1524816    .0154937
+             |
+    polviews |
+ 2. Liberal  |  -.0177566   .0212829    -0.83   0.404    -.0594849    .0239717
+3. Slight..  |  -.0056149    .022464    -0.25   0.803    -.0496589    .0384291
+4. Moderate  |  -.0152987   .0193757    -0.79   0.430    -.0532877    .0226903
+5. Slight..  |  -.0158321   .0214951    -0.74   0.461    -.0579766    .0263123
+6. Conser..  |    .005937   .0207363     0.29   0.775    -.0347196    .0465936
+7. Very c..  |   .0060813    .022307     0.27   0.785     -.037655    .0498176
+8. Prefer..  |   .0306589   .0413357     0.74   0.458    -.0503861    .1117038
+             |
+  trust_govt |
+2. Somewh..  |   .0051517   .0102402     0.50   0.615    -.0149257    .0252292
+3. Neithe..  |  -.0156735   .0100122    -1.57   0.118    -.0353038    .0039568
+4. Somewh..  |   .0298656   .0112789     2.65   0.008     .0077515    .0519796
+5. Strong..  |   .0377513   .0200286     1.88   0.060    -.0015177    .0770203
+             |
+    age_miss |          0  (omitted)
+ gender_miss |          0  (omitted)
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |   .1159757   .1186685     0.98   0.328    -.1166918    .3486432
+pre_vacc_i~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |  -.0063443   .0376522    -0.17   0.866    -.0801672    .0674785
+   cond_lung |    .106205   .0638191     1.66   0.096     -.018922     .231332
+  cond_heart |   .0471466   .0443799     1.06   0.288    -.0398667      .13416
+cond_diab~es |   .0087698   .0381919     0.23   0.818    -.0661112    .0836508
+ cond_kidney |   .0101262   .0509541     0.20   0.842    -.0897769    .1100293
+cond_rathe~y |   .0448313   .0926727     0.48   0.629    -.1368675    .2265301
+   cond_none |  -.0160022   .0390333    -0.41   0.682    -.0925329    .0605285
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |  -.0673553   .0857971    -0.79   0.432    -.2355735    .1008628
+------------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+  main_maybe |        882     .069161    .2538717          0          1
+
+added scalar:
+                 e(cm) =  .069161
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: pre_vacc_intent_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
+
+Linear regression                               Number of obs     =      3,534
+                                                F(67, 3465)       =          .
+                                                Prob > F          =          .
+                                                R-squared         =     0.0314
+                                                Root MSE          =     .11505
+
+------------------------------------------------------------------------------
+             |               Robust
+  link_click | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |  -.0024802   .0055025    -0.45   0.652    -.0132687    .0083082
+arm_academic |  -.0031023   .0055101    -0.56   0.573    -.0139056    .0077011
+arm_personal |  -.0017951   .0056114    -0.32   0.749    -.0127972     .009207
+             |
+prior_self~o |
+2. Very u..  |    .001239    .005305     0.23   0.815    -.0091622    .0116402
+3. Somewh..  |  -.0078191    .005131    -1.52   0.128    -.0178793     .002241
+4. Neithe..  |   .0034301   .0107113     0.32   0.749    -.0175711    .0244313
+5. Somewh..  |   .0056899   .0081114     0.70   0.483    -.0102138    .0215936
+6. Very l..  |   .0211192   .0138512     1.52   0.127    -.0060382    .0482766
+7. Would ..  |   .0106058   .0191433     0.55   0.580    -.0269274     .048139
+             |
+prior_self~c |
+2. Very u..  |  -.0142569   .0150757    -0.95   0.344    -.0438151    .0153013
+3. Somewh..  |  -.0102834   .0144929    -0.71   0.478     -.038699    .0181321
+4. Neithe..  |  -.0038439   .0161264    -0.24   0.812    -.0354621    .0277743
+5. Somewh..  |  -.0063467   .0145666    -0.44   0.663    -.0349068    .0222133
+6. Very l..  |  -.0080741   .0146802    -0.55   0.582    -.0368568    .0207086
+7. Would ..  |  -.0070716   .0155764    -0.45   0.650    -.0376115    .0234682
+             |
+pre_vacc_i~t |
+2. May or..  |   .0206436   .0055584     3.71   0.000     .0097455    .0315417
+had_p~d_vacc |   .0051552    .007629     0.68   0.499    -.0098025     .020113
+had_p~u_vacc |  -.0102894   .0065667    -1.57   0.117    -.0231643    .0025855
+             |
+covid_vacc~n |
+1. None/d..  |   .0038942   .0080951     0.48   0.631    -.0119774    .0197657
+2. Mild ..)  |   -.001132   .0080803    -0.14   0.889    -.0169745    .0147106
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |   .0030512   .0073004     0.42   0.676    -.0112623    .0173647
+2. Mild ..)  |   .0052876   .0072544     0.73   0.466    -.0089358    .0195111
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |  -.0275267   .0156119    -1.76   0.078    -.0581361    .0030828
+   3. 35-49  |  -.0225323   .0155028    -1.45   0.146    -.0529278    .0078632
+   4. 50-64  |  -.0264966   .0157493    -1.68   0.093    -.0573754    .0043822
+   5. 65-74  |  -.0112451   .0211488    -0.53   0.595    -.0527105    .0302204
+     6. 75+  |  -.0091259   .0247915    -0.37   0.713    -.0577333    .0394816
+             |
+      gender |
+  2. Female  |  -.0052711   .0041958    -1.26   0.209    -.0134976    .0029553
+   3. Other  |   .0143387   .0307978     0.47   0.642    -.0460451    .0747224
+4. Prefer..  |   .0309895   .0216123     1.43   0.152    -.0113846    .0733636
+             |
+   education |
+      2. HS  |  -.0522186    .051862    -1.01   0.314    -.1539017    .0494645
+3. Some c..  |  -.0521637    .051879    -1.01   0.315    -.1538802    .0495527
+4. 4-year..  |  -.0452834   .0518002    -0.87   0.382    -.1468454    .0562787
+5. More t..  |  -.0378119   .0519491    -0.73   0.467    -.1396658     .064042
+6. Prefer..  |  -.0806589   .0531809    -1.52   0.129    -.1849279    .0236102
+             |
+      income |
+ 2. $25-50k  |  -.0008712   .0066973    -0.13   0.897    -.0140022    .0122599
+ 3. $50-75k  |  -.0069192   .0066036    -1.05   0.295    -.0198666    .0060282
+4. $75-100k  |  -.0041173   .0073681    -0.56   0.576    -.0185637     .010329
+  5. >$100k  |   -.009737   .0061186    -1.59   0.112    -.0217335    .0022595
+6. Prefer..  |   .0267168   .0238062     1.12   0.262    -.0199589    .0733924
+             |
+        race |
+   2. Black  |   .0181473   .0080668     2.25   0.025     .0023312    .0339634
+   3. Asian  |   .0306615    .039002     0.79   0.432    -.0458078    .1071307
+4. Am Ind..  |  -.0049849   .0077622    -0.64   0.521    -.0202037     .010234
+5. Pacifi..  |  -.0172426   .0072361    -2.38   0.017    -.0314301   -.0030552
+   6. Other  |    .001711   .0116906     0.15   0.884    -.0212102    .0246322
+7. Prefer..  |  -.0185475   .0112841    -1.64   0.100    -.0406716    .0035766
+             |
+   ethnicity |
+      2. No  |  -.0068036    .008914    -0.76   0.445    -.0242808    .0106737
+3. Prefer..  |  -.0305552   .0137892    -2.22   0.027    -.0575909   -.0035195
+             |
+    polviews |
+ 2. Liberal  |   .0017398    .008247     0.21   0.833    -.0144297    .0179093
+3. Slight..  |  -.0084102    .007837    -1.07   0.283    -.0237759    .0069555
+4. Moderate  |   .0023971   .0077404     0.31   0.757    -.0127791    .0175733
+5. Slight..  |   .0080177   .0095503     0.84   0.401    -.0107071    .0267425
+6. Conser..  |   .0023562    .008002     0.29   0.768    -.0133328    .0180452
+7. Very c..  |   .0151606   .0116501     1.30   0.193    -.0076811    .0380024
+8. Prefer..  |  -.0200272   .0112179    -1.79   0.074    -.0420216    .0019672
+             |
+  trust_govt |
+2. Somewh..  |   .0082272   .0040251     2.04   0.041     .0003354     .016119
+3. Neithe..  |   .0135073   .0046619     2.90   0.004      .004367    .0226476
+4. Somewh..  |   .0171551   .0048713     3.52   0.000     .0076041    .0267061
+5. Strong..  |   .0067559   .0065548     1.03   0.303    -.0060957    .0196075
+             |
+    age_miss |          0  (omitted)
+ gender_miss |  -.0872505   .0564415    -1.55   0.122    -.1979125    .0234115
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |   .0027229   .0199886     0.14   0.892    -.0364677    .0419134
+pre_vacc_i~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |  -.0088035   .0198421    -0.44   0.657    -.0477068    .0300998
+   cond_lung |  -.0218183   .0123974    -1.76   0.079    -.0461253    .0024887
+  cond_heart |  -.0111384    .020566    -0.54   0.588     -.051461    .0291843
+cond_diab~es |   .0253891   .0179242     1.42   0.157     -.009754    .0605322
+ cond_kidney |   .0007476   .0263235     0.03   0.977    -.0508636    .0523588
+cond_rathe~y |   .0493234     .06866     0.72   0.473    -.0852947    .1839415
+   cond_none |  -.0058521    .019179    -0.31   0.760    -.0434553    .0317511
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |   .0891983   .0598671     1.49   0.136      -.02818    .2065767
+------------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+  link_click |        885    .0146893    .1203738          0          1
+
+added scalar:
+                 e(cm) =  .01468927
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: gender_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: pre_vacc_intent_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
+
+Linear regression                               Number of obs     =      3,000
+                                                F(66, 2932)       =          .
+                                                Prob > F          =          .
+                                                R-squared         =     0.1143
+                                                Root MSE          =     .27334
+
+------------------------------------------------------------------------------
+             |               Robust
+   vacc_post | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |  -.0128151   .0134154    -0.96   0.340    -.0391196    .0134894
+arm_academic |   .0216121   .0146707     1.47   0.141    -.0071539    .0503781
+arm_personal |   .0188385    .014493     1.30   0.194    -.0095789    .0472559
+             |
+prior_self~o |
+2. Very u..  |  -.0414081   .0136998    -3.02   0.003    -.0682703    -.014546
+3. Somewh..  |   .0140335   .0196096     0.72   0.474    -.0244164    .0524835
+4. Neithe..  |  -.0042751   .0248163    -0.17   0.863    -.0529342    .0443841
+5. Somewh..  |      .0201   .0200305     1.00   0.316    -.0191752    .0593752
+6. Very l..  |   .0580707   .0291846     1.99   0.047     .0008464    .1152951
+7. Would ..  |   .0083018   .0308946     0.27   0.788    -.0522755    .0688791
+             |
+prior_self~c |
+2. Very u..  |  -.0031666   .0389604    -0.08   0.935    -.0795592     .073226
+3. Somewh..  |  -.0376455   .0378699    -0.99   0.320    -.1118998    .0366088
+4. Neithe..  |  -.0125773   .0391282    -0.32   0.748    -.0892988    .0641441
+5. Somewh..  |  -.0417864     .03625    -1.15   0.249    -.1128644    .0292916
+6. Very l..  |  -.0574285   .0364987    -1.57   0.116    -.1289942    .0141371
+7. Would ..  |  -.0635878   .0378644    -1.68   0.093    -.1378313    .0106557
+             |
+pre_vacc_i~t |
+2. May or..  |   .1274066   .0145891     8.73   0.000     .0988006    .1560125
+had_p~d_vacc |   .0016218   .0196084     0.08   0.934     -.036826    .0400695
+had_p~u_vacc |   .0068625   .0153209     0.45   0.654    -.0231784    .0369034
+             |
+covid_vacc~n |
+1. None/d..  |   .0035352   .0209331     0.17   0.866    -.0375098    .0445803
+2. Mild ..)  |   .0267955   .0213624     1.25   0.210    -.0150913    .0686823
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |   .0313761   .0181763     1.73   0.084    -.0042636    .0670157
+2. Mild ..)  |   .0338583   .0190535     1.78   0.076    -.0035014    .0712179
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |   .1117547   .0519945     2.15   0.032     .0098053    .2137041
+   3. 35-49  |   .0707256   .0516868     1.37   0.171    -.0306204    .1720717
+   4. 50-64  |   .0746371   .0525169     1.42   0.155    -.0283367    .1776109
+   5. 65-74  |   .0731439   .0546661     1.34   0.181    -.0340439    .1803317
+     6. 75+  |   .2060792    .095127     2.17   0.030     .0195567    .3926016
+             |
+      gender |
+  2. Female  |  -.0256077    .011135    -2.30   0.022     -.047441   -.0037745
+   3. Other  |  -.0573523   .0594267    -0.97   0.335    -.1738746      .05917
+4. Prefer..  |  -.1400737   .1216122    -1.15   0.249    -.3785277    .0983804
+             |
+   education |
+      2. HS  |   .0089722   .0211817     0.42   0.672    -.0325604    .0505048
+3. Some c..  |   .0141408   .0196347     0.72   0.471    -.0243584    .0526401
+4. 4-year..  |   .0161487   .0203475     0.79   0.427    -.0237481    .0560455
+5. More t..  |   .0572994   .0247013     2.32   0.020     .0088658     .105733
+6. Prefer..  |  -.0424947   .0577521    -0.74   0.462    -.1557336    .0707441
+             |
+      income |
+ 2. $25-50k  |   .0058583   .0152388     0.38   0.701    -.0240215    .0357381
+ 3. $50-75k  |    .014194   .0161421     0.88   0.379     -.017457     .045845
+4. $75-100k  |    .025379   .0177384     1.43   0.153     -.009402      .06016
+  5. >$100k  |   .0310893    .017293     1.80   0.072    -.0028184    .0649969
+6. Prefer..  |  -.0348871   .0317408    -1.10   0.272    -.0971237    .0273494
+             |
+        race |
+   2. Black  |   .0250787   .0164817     1.52   0.128    -.0072381    .0573956
+   3. Asian  |   .0250966   .0534119     0.47   0.638    -.0796321    .1298253
+4. Am Ind..  |   .0419863   .0275282     1.53   0.127    -.0119902    .0959629
+5. Pacifi..  |  -.0965372   .0585182    -1.65   0.099    -.2112782    .0182037
+   6. Other  |   .0341386   .0313201     1.09   0.276    -.0272729    .0955501
+7. Prefer..  |   .0023234    .080202     0.03   0.977    -.1549346    .1595814
+             |
+   ethnicity |
+      2. No  |     .02623   .0193829     1.35   0.176    -.0117755    .0642354
+3. Prefer..  |   .0523227    .135258     0.39   0.699    -.2128877     .317533
+             |
+    polviews |
+ 2. Liberal  |   .0035339   .0232777     0.15   0.879    -.0421084    .0491761
+3. Slight..  |  -.0196794   .0237472    -0.83   0.407    -.0662422    .0268834
+4. Moderate  |  -.0048432    .021216    -0.23   0.819    -.0464431    .0367566
+5. Slight..  |  -.0140548   .0233241    -0.60   0.547     -.059788    .0316784
+6. Conser..  |   .0172481   .0222154     0.78   0.438    -.0263112    .0608074
+7. Very c..  |   .0147838   .0254352     0.58   0.561     -.035089    .0646566
+8. Prefer..  |   .0021933   .0458266     0.05   0.962    -.0876622    .0920488
+             |
+  trust_govt |
+2. Somewh..  |  -.0051742   .0140294    -0.37   0.712    -.0326827    .0223344
+3. Neithe..  |    -.01773    .014587    -1.22   0.224    -.0463318    .0108717
+4. Somewh..  |    .014489   .0154509     0.94   0.348    -.0158068    .0447847
+5. Strong..  |   -.022184   .0219179    -1.01   0.312    -.0651601    .0207921
+             |
+    age_miss |          0  (omitted)
+ gender_miss |          0  (omitted)
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |   .0697079   .1429823     0.49   0.626    -.2106481    .3500639
+pre_vacc_i~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |  -.0621039   .0312402    -1.99   0.047    -.1233589    -.000849
+   cond_lung |  -.0003944   .0578739    -0.01   0.995     -.113872    .1130833
+  cond_heart |  -.0122787    .040919    -0.30   0.764    -.0925115    .0679542
+cond_diab~es |  -.0028163   .0332958    -0.08   0.933    -.0681018    .0624693
+ cond_kidney |  -.0704402   .0335671    -2.10   0.036    -.1362577   -.0046228
+cond_rathe~y |  -.0565573   .0833468    -0.68   0.497    -.2199815    .1068669
+   cond_none |  -.0678602   .0335019    -2.03   0.043    -.1335498   -.0021707
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |   -.016658   .0776115    -0.21   0.830    -.1688365    .1355205
+------------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+   vacc_post |        745    .0832215    .2764023          0          1
+
+added scalar:
+                 e(cm) =  .08322148
+
+. 
+. * Column titles for output
+. local coltitles mtitles("SE (trial)" "Delta" "Vacc Intent" "Link Click" "Vacc
+> inated")
+
+. 
+. * .tex output: remove header, rules, and spacing for input into larger doc
+. esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
+>     using output/tables/treatment_effects.tex, ///
+>     b(%9.3f) se(%9.3f) ///
+>     keep(`keyvars') ///
+>     label nostar ///
+>     stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+>     fragment replace nomtitles nonotes nonumbers nolines nogaps
+(output written to output/tables/treatment_effects.tex)
+
+. 
+. * .md output: include column titles in header row
+. esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
+>     using output/tables/treatment_effects.md, ///
+>     b(%9.3f) se(%9.3f) ///
+>     keep(`keyvars') ///
+>     label nostar `coltitles' ///
+>     stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+>     fragment replace nonotes nonumbers
+(output written to output/tables/treatment_effects.md)
 
 . 
 . capture log close

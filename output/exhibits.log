@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  26 JAN 2026 15:50
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  27 JAN 2026 13:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -162,8 +162,7 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count287
 \l__pdf_internal_box=\box61
-)
-No file exhibits.aux.
+) (./exhibits.aux)
 \openout1 = `exhibits.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
@@ -180,6 +179,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
 LaTeX Font Info:    ... okay on input line 42.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
 LaTeX Font Info:    ... okay on input line 42.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -241,8 +241,10 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 44.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 44.
-
-No file exhibits.toc.
+ (./exhibits.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 3.
+)
 \tf@toc=\write3
 \openout3 = `exhibits.toc'.
 
@@ -250,39 +252,93 @@ No file exhibits.toc.
 
 [1
 
-{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 56.
- (./tables/balance_table.tex)
+{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./tables/balance_table.tex)
 
 [2] (./tables/balance_prior_beliefs.tex)
 
-LaTeX Warning: Reference `tab:balance_main' on page 3 undefined on input line 137.
+[3] (./tables/balance_vacc.tex)
+Overfull \hbox (31.1205pt too wide) in paragraph at lines 147--160
+ [][] 
+ []
 
 
 
-[3]
+[4]
 
-! LaTeX Error: File `tables/balance_vacc_intent.tex' not found.
+[5]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 172.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 172.
+ (./tables/balance_demographics.tex)
 
-Type X to quit or <RETURN> to proceed,
-or enter new name. (Default extension: tex)
+[6
 
-Enter file name: 
-/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex:151: Emergency stop.
-<read *> 
-         
-l.151 \input{tables/balance_vacc_intent.tex}
-                                            ^^M
-*** (cannot \read from terminal in nonstop modes)
+{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] (./tables/balance_trust.tex) (./tables/balance_health.tex) (./tables/balance_omnibus.tex) (./tables/treatment_effects.tex)
 
- 
+[7
+
+] (./tables/persistence_attrition.tex) (./tables/persistence_recall.tex)
+
+[8] (./tables/persistence_adverse.tex)
+<figures/beliefs_pooled.png, id=39, 1756.5625pt x 752.8125pt>
+File: figures/beliefs_pooled.png Graphic file (type png)
+<use figures/beliefs_pooled.png>
+Package pdftex.def Info: figures/beliefs_pooled.png  used on input line 366.
+(pdftex.def)             Requested size: 422.77664pt x 181.18411pt.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 372.
+
+
+[9]
+<figures/delta_by_vacc_reaction.png, id=43, 1756.5625pt x 752.8125pt>
+File: figures/delta_by_vacc_reaction.png Graphic file (type png)
+<use figures/delta_by_vacc_reaction.png>
+Package pdftex.def Info: figures/delta_by_vacc_reaction.png  used on input line 382.
+(pdftex.def)             Requested size: 375.80544pt x 161.05893pt.
+<figures/delta_by_trust.png, id=44, 1756.5625pt x 752.8125pt>
+File: figures/delta_by_trust.png Graphic file (type png)
+<use figures/delta_by_trust.png>
+Package pdftex.def Info: figures/delta_by_trust.png  used on input line 398.
+(pdftex.def)             Requested size: 375.80544pt x 161.05893pt.
+
+
+[10 <./figures/beliefs_pooled.png> <./figures/delta_by_vacc_reaction.png>]
+<figures/belief_cdf_by_arm.png, id=48, 1756.5625pt x 1003.75pt>
+File: figures/belief_cdf_by_arm.png Graphic file (type png)
+<use figures/belief_cdf_by_arm.png>
+Package pdftex.def Info: figures/belief_cdf_by_arm.png  used on input line 414.
+(pdftex.def)             Requested size: 469.75502pt x 268.42772pt.
+ (./tables/het_high_prior.tex)
+
+[11 <./figures/delta_by_trust.png> <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
+Overfull \hbox (4.61304pt too wide) in paragraph at lines 459--472
+ [][] 
+ []
+
+(./tables/het_high_trust.tex)
+
+[12] (./tables/het_high_relevance.tex)
+
+[13] (./exhibits.aux)
+ ***********
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ ***********
+ ) 
 Here is how much of TeX's memory you used:
- 3841 strings out of 473190
- 67390 string characters out of 5715801
- 472832 words of memory out of 5000000
- 27068 multiletter control sequences out of 15000+600000
- 565306 words of font info for 57 fonts, out of 8000000 for 9000
+ 3990 strings out of 473190
+ 71533 string characters out of 5715801
+ 479271 words of memory out of 5000000
+ 27169 multiletter control sequences out of 15000+600000
+ 565946 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,9n,95p,344b,337s stack positions out of 10000i,1000n,20000p,200000b,200000s
-/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex:151:  ==> Fatal error occurred, no output PDF file produced!
+ 89i,9n,95p,773b,311s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on exhibits.pdf (13 pages, 495763 bytes).
+PDF statistics:
+ 117 PDF objects out of 1000 (max. 8388607)
+ 71 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+
