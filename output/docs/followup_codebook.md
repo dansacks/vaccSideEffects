@@ -140,8 +140,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 2,101 (68.26%) |
+| 0 | No | 944 (31.00%) |
+| 1 | Yes | 2,101 (69.00%) |
 
 ### `med_grocery`
 - **Type:** Binary
@@ -150,8 +150,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 1,208 (39.25%) |
+| 0 | No | 1,837 (60.33%) |
+| 1 | Yes | 1,208 (39.67%) |
 
 ### `med_independent`
 - **Type:** Binary
@@ -159,8 +159,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 397 (12.90%) |
+| 0 | No | 2,648 (86.96%) |
+| 1 | Yes | 397 (13.04%) |
 
 ### `med_mail_order`
 - **Type:** Binary
@@ -168,8 +168,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 279 (9.06%) |
+| 0 | No | 2,766 (90.84%) |
+| 1 | Yes | 279 (9.16%) |
 
 ### `med_online`
 - **Type:** Binary
@@ -177,8 +177,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 228 (7.41%) |
+| 0 | No | 2,817 (92.51%) |
+| 1 | Yes | 228 (7.49%) |
 
 ### `med_provider`
 - **Type:** Binary
@@ -186,8 +186,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 712 (23.13%) |
+| 0 | No | 2,333 (76.62%) |
+| 1 | Yes | 712 (23.38%) |
 
 ### `med_other`
 - **Type:** Binary
@@ -195,8 +195,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 16 (0.52%) |
+| 0 | No | 3,029 (99.47%) |
+| 1 | Yes | 16 (0.53%) |
 
 ### `med_none`
 - **Type:** Binary
@@ -204,8 +204,8 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 33 (1.07%) |
-| 1 | Yes | 111 (3.61%) |
+| 0 | No | 2,934 (96.35%) |
+| 1 | Yes | 111 (3.65%) |
 
 ### `pharmacy_chain`
 - **Type:** String (multi-select)
@@ -312,8 +312,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 95 (3.09%) |
+| 0 | No | 2,737 (96.65%) |
+| 1 | Yes | 95 (3.35%) |
 
 ### `flu_why_side_effects`
 - **Type:** Binary
@@ -321,8 +321,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 1,164 (37.82%) |
+| 0 | No | 1,668 (58.90%) |
+| 1 | Yes | 1,164 (41.10%) |
 
 ### `flu_why_bad_flu`
 - **Type:** Binary
@@ -331,8 +331,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 323 (10.49%) |
+| 0 | No | 2,509 (88.59%) |
+| 1 | Yes | 323 (11.41%) |
 
 ### `flu_why_needles`
 - **Type:** Binary
@@ -340,8 +340,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 462 (15.01%) |
+| 0 | No | 2,370 (83.69%) |
+| 1 | Yes | 462 (16.31%) |
 
 ### `flu_why_time`
 - **Type:** Binary
@@ -349,8 +349,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 175 (5.69%) |
+| 0 | No | 2,657 (93.82%) |
+| 1 | Yes | 175 (6.18%) |
 
 ### `flu_why_location`
 - **Type:** Binary
@@ -359,8 +359,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 104 (3.38%) |
+| 0 | No | 2,728 (96.33%) |
+| 1 | Yes | 104 (3.67%) |
 
 ### `flu_why_cost`
 - **Type:** Binary
@@ -368,8 +368,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 196 (6.37%) |
+| 0 | No | 2,636 (93.08%) |
+| 1 | Yes | 196 (6.92%) |
 
 ### `flu_why_none`
 - **Type:** Binary
@@ -377,8 +377,8 @@ These variables are parsed from the multi-select question asked of those who did
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No | 246 (7.99%) |
-| 1 | Yes | 1,105 (35.90%) |
+| 0 | No | 1,727 (60.98%) |
+| 1 | Yes | 1,105 (39.02%) |
 
 ---
 
