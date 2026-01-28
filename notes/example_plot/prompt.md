@@ -1,0 +1,2 @@
+I have  an experiment with 4 arms (3 treatment, 1 control) and two outcomes of interest. I am interesting in presenting the 6 treatment effects for several subgroup splits of the data (i.e. splitting the data in half based on some covariate). I have 4 splitting variable, so 3*2*6 = 36 total effects to present (plus confidence intervals). I want to present them in a single figure that is not too had to parse.  Suggest a figure layout.
+
