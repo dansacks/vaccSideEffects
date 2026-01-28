@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      StataNow 19.5
+ /__    /   ____/   /   ____/      Stata 18.0
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Daniel Sacks
-               
+  Licensed to: Wisconsin School of Business
+               University of Wisconsin - Madison
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do /Users/sacks/Projects/VaccSideEffects/code/summary_stats_main.do 
+. do C:/Users/dwsacks/Projects/vaccSideEffects/code/summary_stats_main.do 
 
 . /*===========================================================================
 > ===
@@ -83,28 +83,28 @@ Notes:
 . }
 
 . cd "$projdir"
-/Users/sacks/Projects/VaccSideEffects
+C:\Users\dwsacks\Projects\VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
+  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
   [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
+  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
+  [6]  (OLDPLACE)  "c:\ado/"
+  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
+  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
   [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
-  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
+  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
+  [6]  (OLDPLACE)  "c:\ado/"
+  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -139,10 +139,6 @@ Notes:
 . global UNSELECTED_VALUE  = -99
 
 . 
-. * Special code for "prefer not to say" responses (same as unselected)
-. global PREF_NOT_SAY = -99
-
-. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -155,10 +151,10 @@ Notes:
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/summary_stats_ma
-> in.log
+       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/summary_stat
+> s_main.log
   log type:  text
- opened on:  27 Jan 2026, 13:13:57
+ opened on:  28 Jan 2026, 09:26:14
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_main ===
 .     di "Log: output/logs/$scriptname.log"
