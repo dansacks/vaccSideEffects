@@ -1,7 +1,8 @@
-Data (raw, binary, large)
+# Data (raw, binary, large)
 data/
 figures/
 images/
+derived/
 
 # Non-code project materials
 design_materials/
