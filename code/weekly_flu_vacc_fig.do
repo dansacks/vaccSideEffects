@@ -7,7 +7,8 @@ gen date = date(substr(start_date, 1, 11), "YMD")
 format date %td 
 
 gen ns = real(substr(influenza_season, 1,4))
-bysort influenza_season (date):  gen label = substr(influenza_season, 3,2) + "-" + substr(influenza_season,8,2) if _n==_N
+bysort influenza_season (date):  gen label = substr(influenza_season, 3,2) + ///
+	"-" + substr(influenza_season,8,2) if _n==_N
 list influenza_season date label if ~missing(label)
 
 rename cumulative_flu_doses_distributed doses
@@ -34,7 +35,10 @@ twoway
 	xlabel(1 10 20 30 32)
 	graphregion(margin(r+10))
 	text(1 32 "Source: data.cdc.gov", place(w))
+	xsize(7) ysize(4)
 ;
 
 
 # delimit cr
+
+graph export output/figures/weekly_flu_doses.png, replace width(1750) height(1000)

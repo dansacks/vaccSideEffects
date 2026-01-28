@@ -21,6 +21,12 @@ procurement/
 *.xlsx
 *.xls
 *.html
+*.gph
+
+# keep non-changing pngs
+!slides/nyt1.png 
+!slides/nyt1.png 
+
 
 # System/editor
 .DS_Store
