@@ -39,7 +39,7 @@ format:
 
 ::::
 
-## Communicating scientific information is a promising strategy 
+## Persuasion is an alternative to mandates 
 - Pro-vaccine scientific consensus built on clinical trials and more showing 
   - Vaccines are effective
   - Vaccines are [innocuous]{.alert}
@@ -48,7 +48,7 @@ format:
 
 
 ::: {.fragment}
-- Communication reduces vaccine hesitance when
+- Communication reduces vaccine hesitance only when
   1. Beliefs inconsistent with scientific evidence
   2. Choices are sensitive to beliefs
   3. Vaccine hesitant find evidence credible and relevant
@@ -57,7 +57,7 @@ format:
 ## Experiment on flu vaccine [side effect]{.alert} information 
 - Main intervention is to provide info from clinical trials on side effects
 - Promising: Excess pessimism about side effects, side effects matter
-- Uncertian whether 
+- Uncertian whether
   - Vaccine skepticism strongly associated with mistrust of institutions 
 - Research questions:
   1. Does information about side effects in clinical trials shift beliefs about 
