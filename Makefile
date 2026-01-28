@@ -20,6 +20,11 @@
 #===============================================================================
 
 # Configuration - OS detection and auto-detect project directory
+test:
+	HOSTNAME := $(shell HOSTNAME)
+	@echo "Hostname is: [$(HOSTNAME)]"
+
+HOSTNAME := $(shell HOSTNAME)
 UNAME_S := $(shell uname -s)
 PROJDIR := $(CURDIR)
 ifeq ($(UNAME_S),Darwin)
@@ -27,7 +32,11 @@ ifeq ($(UNAME_S),Darwin)
     STATA := /Applications/StataNow/StataSE.app/Contents/MacOS/stata-se
 else
     # Windows (Git Bash)
-    STATA := "/c/Program Files/Stata17/StataMP-64.exe"
+    ifeq ($(HOSTNAME),RIDWSACKS)
+        STATA := "/c/Program Files/Stata18/StataSE-64.exe" 
+    else
+        STATA := "/c/Program Files/Stata17/StataMP-64.exe"
+    endif
 endif
 PYTHON := python3
 

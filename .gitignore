@@ -1,7 +1,8 @@
-Data (raw, binary, large)
+# Data (raw, binary, large)
 data/
 figures/
 images/
+derived/
 
 # Non-code project materials
 design_materials/
@@ -20,6 +21,12 @@ procurement/
 *.xlsx
 *.xls
 *.html
+*.gph
+
+# keep non-changing pngs
+!slides/nyt1.png 
+!slides/nyt1.png 
+
 
 # System/editor
 .DS_Store
