@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/Projects/vaccSideEffects/code/count_sample_size.do 
+. do C:/Users/dwsacks/projects/vaccSideEffects/code/count_sample_size.do 
 
 . /*===========================================================================
 > ===
@@ -139,6 +139,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -154,7 +158,7 @@ C:\Users\dwsacks\Projects\VaccSideEffects
        log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/count_sample
 > _size.log
   log type:  text
- opened on:  28 Jan 2026, 09:26:16
+ opened on:  29 Jan 2026, 10:36:56
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: count_sample_size ===
 .     di "Log: output/logs/$scriptname.log"
@@ -196,8 +200,6 @@ end of do-file
 
 . 
 . * Count after each sequential filter
-. local n_started = _N
-
 . keep if consent == 1
 (105 observations deleted)
 
@@ -223,7 +225,7 @@ end of do-file
 
 . 
 . keep if vacc_intent <= 2
-(3,478 observations deleted)
+(3,412 observations deleted)
 
 . local n_hesitant = _N
 
@@ -238,7 +240,7 @@ end of do-file
 . tempfile prescreen_final
 
 . save `prescreen_final'
-file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000002.tmp saved as
+file C:\Users\dwsacks\projects\vaccSideEffects\ST_9e2c_000002.tmp saved as
     .dta format
 
 . restore
@@ -251,11 +253,11 @@ file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000002.tmp saved as
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
-    Matched                             4,525  (_merge==3)
+    Matched                             4,591  (_merge==3)
     -----------------------------------------
 
 . count if _merge == 3
-  4,525
+  4,591
 
 . local n_demog = r(N)
 
@@ -271,7 +273,7 @@ file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000002.tmp saved as
 === PRESCREEN SUMMARY ===
 
 . di "Started (non-preview): `n_started'"
-Started (non-preview): 8198
+Started (non-preview): 
 
 . di "Consented: `n_consent'"
 Consented: 8093
@@ -283,10 +285,10 @@ Passed attention: 8052
 First attempt: 8003
 
 . di "Hesitant (final): `n_hesitant'"
-Hesitant (final): 4525
+Hesitant (final): 4591
 
 . di "Matches to demographics: `n_demog'"
-Matches to demographics: 4525
+Matches to demographics: 4591
 
 . 
 . /*---------------------------------------------------------------------------
@@ -321,19 +323,22 @@ Matches to demographics: 4525
 
     Result                      Number of obs
     -----------------------------------------
-    Not matched                            14
-        from master                        14  (_merge==1)
+    Not matched                             4
+        from master                         4  (_merge==1)
         from using                          0  (_merge==2)
 
-    Matched                             3,637  (_merge==3)
+    Matched                             3,647  (_merge==3)
     -----------------------------------------
 
 . keep if _merge == 3
-(14 observations deleted)
+(4 observations deleted)
 
 . drop _merge
 
 . local n_linked = _N
+
+. coun
+  3,647
 
 . file write fout "Main,Linked to prescreen final,`=_N'" _n
 
@@ -343,6 +348,9 @@ Matches to demographics: 4525
 
 . local n_consent = _N
 
+. coun
+  3,645
+
 . file write fout "Main,Consented,`=_N'" _n
 
 . 
@@ -351,14 +359,22 @@ Matches to demographics: 4525
 
 . local n_attn = _N
 
+. coun
+  3,629
+
 . file write fout "Main,Passed attention check,`=_N'" _n
 
 . 
 . * Non-missing delta and no -99 values in posteriors
-. keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99
-(72 observations deleted)
+. keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99  //
+> /
+>         & ~missing(post_trial)
+(74 observations deleted)
 
 . local n_outcome = _N
+
+. count 
+  3,555
 
 . file write fout "Main,Non-missing delta (valid posteriors),`=_N'" _n
 
@@ -367,6 +383,9 @@ Matches to demographics: 4525
 (21 observations deleted)
 
 . local n_first = _N
+
+. count 
+  3,534
 
 . file write fout "Main,First attempt only (final main sample),`=_N'" _n
 
@@ -379,7 +398,7 @@ Matches to demographics: 4525
 . tempfile main_final
 
 . save `main_final'
-file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000004.tmp saved as
+file C:\Users\dwsacks\projects\vaccSideEffects\ST_9e2c_000004.tmp saved as
     .dta format
 
 . restore
@@ -404,7 +423,7 @@ Duplicates in terms of prolific_pid
 . tempfile main_demog_combined
 
 . save `main_demog_combined'
-file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000006.tmp saved as
+file C:\Users\dwsacks\projects\vaccSideEffects\ST_9e2c_000006.tmp saved as
     .dta format
 
 . restore
@@ -417,11 +436,11 @@ file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000006.tmp saved as
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
-    Matched                             3,526  (_merge==3)
+    Matched                             3,534  (_merge==3)
     -----------------------------------------
 
 . count if _merge == 3
-  3,526
+  3,534
 
 . local n_demog = r(N)
 
@@ -440,22 +459,22 @@ file C:\Users\dwsacks\Projects\vaccSideEffects\ST_1119c_000006.tmp saved as
 Started (non-preview): 3651
 
 . di "Linked to prescreen: `n_linked'"
-Linked to prescreen: 3637
+Linked to prescreen: 3647
 
 . di "Consented: `n_consent'"
-Consented: 3635
+Consented: 3645
 
 . di "Passed attention: `n_attn'"
-Passed attention: 3619
+Passed attention: 3629
 
 . di "Non-missing delta: `n_outcome'"
-Non-missing delta: 3547
+Non-missing delta: 3555
 
 . di "First attempt (final): `n_first'"
-First attempt (final): 3526
+First attempt (final): 3534
 
 . di "Matches to demographics: `n_demog'"
-Matches to demographics: 3526
+Matches to demographics: 3534
 
 . 
 . /*---------------------------------------------------------------------------
@@ -487,15 +506,15 @@ Matches to demographics: 3526
 
     Result                      Number of obs
     -----------------------------------------
-    Not matched                            32
-        from master                        32  (_merge==1)
+    Not matched                            22
+        from master                        22  (_merge==1)
         from using                          0  (_merge==2)
 
-    Matched                             3,178  (_merge==3)
+    Matched                             3,188  (_merge==3)
     -----------------------------------------
 
 . keep if _merge == 3
-(32 observations deleted)
+(22 observations deleted)
 
 . drop _merge
 
@@ -513,7 +532,7 @@ Matches to demographics: 3526
 
 . 
 . keep if ~missing(got_flu_vacc)
-(60 observations deleted)
+(63 observations deleted)
 
 . local n_outcome = _N
 
@@ -521,7 +540,7 @@ Matches to demographics: 3526
 
 . 
 . keep if first_attempt == 1
-(28 observations deleted)
+(29 observations deleted)
 
 . local n_first = _N
 
@@ -536,11 +555,11 @@ Matches to demographics: 3526
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
-    Matched                             3,046  (_merge==3)
+    Matched                             3,052  (_merge==3)
     -----------------------------------------
 
 . count if _merge == 3
-  3,046
+  3,052
 
 . local n_demog = r(N)
 
@@ -559,19 +578,19 @@ Matches to demographics: 3526
 Started (non-preview): 3210
 
 . di "Linked to main: `n_linked'"
-Linked to main: 3178
+Linked to main: 3188
 
 . di "Passed attention: `n_attn'"
-Passed attention: 3134
+Passed attention: 3144
 
 . di "Non-missing outcome: `n_outcome'"
-Non-missing outcome: 3074
+Non-missing outcome: 3081
 
 . di "First attempt (final): `n_first'"
-First attempt (final): 3046
+First attempt (final): 3052
 
 . di "Matches to demographics: `n_demog'"
-Matches to demographics: 3046
+Matches to demographics: 3052
 
 . 
 . file close fout

@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/Projects/vaccSideEffects/code/summary_stats_followup.do 
+. do C:/Users/dwsacks/projects/vaccSideEffects/code/summary_stats_followup.do 
 
 . /*===========================================================================
 > ===
@@ -139,6 +139,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 . global UNSELECTED_VALUE  = -99
 
 . 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
 . /*---------------------------------------------------------------------------
 > ---
 >     Conditional Logging
@@ -154,7 +158,7 @@ C:\Users\dwsacks\Projects\VaccSideEffects
        log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/summary_stat
 > s_followup.log
   log type:  text
- opened on:  28 Jan 2026, 09:26:15
+ opened on:  29 Jan 2026, 10:36:53
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_followup ===
 .     di "Log: output/logs/$scriptname.log"

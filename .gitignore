@@ -26,6 +26,11 @@ procurement/
 # keep non-changing pngs
 !slides/nyt1.png 
 !slides/nyt1.png 
+!slides/control.png 
+!slides/industry.png 
+!slides/academic.png 
+!slides/personal.png 
+!slides/trial_info.png 
 
 
 # System/editor

@@ -50,82 +50,206 @@ Shouldn't information about clinical trials be enough to persuade people to vacc
 [We ran an experiment to find out]{.fragment}
 :::
 
-## Persuasion is an alternative to mandates 
-Pro-vaccine scientific consensus built on clinical trials and more showing 
+## Testing persuasive communication is valuable 
+Communicating safety and efficacy of trials is potentially welfare improving 
 
-- Vaccines are effective
-- Vaccines are [innocuous]{.alert}
+- Addresses [internality]{.alert}, not externality 
 
-Communicating that information is potentially welfare improving 
+Communication reduces vaccine hesitancy only under certain conditions
 
+::: {.incremental}
 
-::: {.fragment}
-Communication reduces vaccine hesitance only when
+1. Beliefs inconsistent with scientific evidence; internality present
+2. Vaccine hesitant find evidence credible and relevant $\leftarrow$ Far from obviously true! 
 
-1. Beliefs inconsistent with scientific evidence
-2. Choices are sensitive to beliefs
-3. Vaccine hesitant find evidence credible and relevant
 ::: 
 
 ::: {.fragment}
-Our experiment: provide trial info on flu vaccine [side effects]{.alert} 
+If communication fails, either
+
+- It is not persuasive; does not move [beliefs]{.alert}
+- There is a hole in the scientific record; we aren't measuring some salient cost or benefit
+
+::: 
+
+## An experiment in flu vaccine side effect information 
+
+Why flu vaccine side effects? 
 
 - low and falling flu vaccination rates, important for health
 - Excess pessimism about side effects, side effects matter
-- Unclear whether informoation from trials affects beliefs
+- Unclear whether information from trials affects beliefs
+
+Research questions:
+
+::: {.incremental}
+
+1. Can side effect information from scientific studies shift beliefs about [personal risk]{.alert}?
+2. Do responses vary with [source]{.alert} and [study population]{.alert}?
+3. Does information shift vaccine [intention]{.alert} and [take-up]{.alert}?
+
+:::
+
+## Study overview
+
+Recruit of 3500 flu vaccine hesitant Amercians on prolific, to Qualtrics survey experiment
+
+Explain clinical trials and report placebo group side effect rate in clinicial trial. Randomize
+
+1. Control: No info about vaccine group side effect rate
+2. Industry: Info about vaccine group side effect rate in [manufacturer clinical trial]{.alert}
+3. Academic: Info about vaccine group side effect rate in [academic study]{.alert}
+4. Personal: As academic, but explain participants are [vaccine hesitant prolific users]{.alert}
+
+[The information provision is extremely uncreative and unslick.]{.fragment}
+
+:::{.fragment}
+Elicit beliefs about personal side effect risk and vaccine intentions, actual vaccination
+
+- Personal risk belief is pre-specified primary outcome 
+
+:::
+
+## Preliminary study results 
+
+1. Can side effect information from scientific studies shift [beliefs about personal risk]{.alert}?
+  - Yes, by 3 percentage points on a base of 15
+  - Implied learning rate of 20\% smaller effect here than in other contexts 
+
+:::{.fragment}
+
+2. Do belief responses vary with [source]{.alert} and [study population]{.alert}?
+  - Yes, in surprising way: industry and academic arms similar; personal arm null
+:::
+
+:::{.fragment}
+3. Does information shift vaccine [intention]{.alert} and [take-up]{.alert}?
+
+  - Yes, in surprising way: academic and personal moved intentions a lot; industry did not
+  - Effects on take-up are positive but noisy
+:::
+
+## What is new here?
+Literature on vaccine hesitancy and beliefs
+
+- One strand finds it is not helpful to correct false beliefs 
+- Another shows vaccine hesitancy correlated with pessimistic side effect beliefs
+- Contribution: Side effect infomation can move side effect beliefs 
+
+Literature on information provision experiments 
+
+- Simple information provisions shift beliefs and behaviors 
+- Contribution: Simple information provision can move beliefs even with skeptical audience 
+
+# Experiment Design
+
+## Experiment overivew
+
+[Screening wave]{.alert} Recruit 8,000, screen for vaccine hesitancy, late November
+
+- Don't intend to vaccinate against flu; may or may not vaccinate against flu
+- Also measure vaccine information sources and experience with flu and COVID vaccines
+
+[Main wave]{.alert} 3,500 vaccine hesitant participants, 1-7 days later
+
+- Randomize information provision, measure priors, posteriors, vaccine intentions 
+- Ask about trustworthiness and relevance of information
+
+[Follow-up wave]{.alert} 3,000 participants, 2-4 weeks later
+
+- Obfuscate intentions then measure whether vaccinated this season
+- Also measure recall of wave 2 (not discussed today)
+
+## Eliciting side effect beliefs 
+### Conceptualization 
+
+"Side effect" is causal effect of vaccine on severe adverse event rate
+
+"Severe" corresponds to grade 3, disruptive to your day - real cost, not just notiecable 
+
+Two requirements for us
+
+1. Person specific: participant's expected effect, not population or trial average effect
+2. Causal contrast, not level of symptom: $\Delta_{self,i} = y_i(1)-y_i(0)$
+
+
+## Eliciting side effect beliefs 
+### Operationalizaiton  
+
+We get causal contrast by eliciting both potential outcomes. To elicit $\tilde{y}_{i}(0)$:
+
+> For this question, please imagine, regardless of your actual vaccination status, that you **DO NOT** get the flu vaccine tomorrow or in the following few days.
+>
+> Thinking about yourself, how likely do you think you would be to experience a severe adverse event, such as headache, muscle ache, tiredness, joint pain, fever, chills, or general discomfort, in the following few days? 
+>*(As a reminder, severe means bad enough to disrupty your daily activity)*
+
+Elicit $\tilde{y}_i(1)$ analogously.  Subjective side effect rate $\Delta_{self,i} = y_{i}(1)-y_{i}(0)$.
+
+:::{.fragment}
+Before information provision, elicit priors for $y_i(0)$ and $y_i(1)$ using [likert scale]{.alert}
 :::
 
 
 
+## Info provision: Control arm 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](control.png){width="100%"}
+:::
+
+::: {.column width="50%"}
+:::
+
+::::
+
+## Info provision: Industry info arm 
 
 
-## Research questions and hypotheses
+:::: {.columns}
 
-1. Does information from clinical trials about side effects shift personal beliefs?
-   [H1: As vaccine hesitant people's beliefs are generally more pessimistic than warranted by tials, this information will reduce expected side effects, especially for people with more biased beliefs]{.hyp}
+::: {.column width="50%"}
+![](industry.png){width="100%"}
+:::
 
-2. Does information [source]{.alert} and [relevance]{.alert} matter?
-   [H2.A: As vaccine hesitant people are often skeptical about institutions and pharmacy companies, beliefs will respond more to [academic]{.alert} than [industry]{.alert} trials]{.hyp}
+::: {.column width="50%"}
+:::
 
-   [H2.B: As vaccine hesitant people believe they experience worse-than-average side effects, beliefs will respond more to trials with [relevant population]{.alert} trials]{.hyp}
+::::
 
-3. Does information shift vaccine intentions and behaviors?
-   [H3: As side effects are relevant for vaccinations, info will increase vaccinations]{.hyp}
-   
-   [We are underpowerd for this outcome and pre-registered it as secondary]{.hyp}
+## Info provision: Academic info arm 
 
+:::: {.columns}
 
+::: {.column width="50%"}
+![](control.png){width="100%"}
+:::
 
+::: {.column width="50%"}
+[![](academic.png){width="100%"}]{.fragment}
 
-## Background
+:::
 
-# Design
+::::
 
-## Experiment overview
-- goal
-- waves 
-- interventions
+## Info provision: Academic-Personal info arm 
 
-## screening wave
-- measure vaccine intentent
-- ask about trust in gov, docs, info sources
-- prior vaccination experience (ever taken, side effect)
+:::: {.columns}
 
-## Main wave 
-- consent
-- priors
-- info provision
-- posteriors
-  - trial
-  - self 
-- vaccine intentions (re-ask), plus link-to-click
-- views about info provisios
-  - trial trustworthy?
-  - trial relevant? 
+::: {.column width="50%"}
+![](control.png){width="100%"}
+:::
 
-## Info provision intervention
+::: {.column width="50%"}
+![](personal.png){width="100%"}
+:::
 
-- slick slide unfolding with different treatments + rationales
+::::
+
+## Incentivized elicitation for information salience
+
+![](trial_info.png){width="100%"}
 
 ## Key measures
 
@@ -185,6 +309,8 @@ first column of table, showing info moved beliefs about trial outcomes
 
 Notes: Robust standard errors in parentheses. Controls included but not shown.
 
+## learning rates benchmarks
+xyzw 
 
 ## Treatment Effects
 
@@ -250,6 +376,14 @@ Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 ## Persistence of Learning
 
-# Discussion
+## Take-aways and open questions
 
-## Discussion
+An extremely uncreative, unslick presentation of scientific information made vaccine hesitant people somewhat more optimistic about vaccines
+
+Some evidence that the information shifted intentions
+
+Moving vaccinations likely requires bigger belief updating 
+
+- Possibly a bigger information intervention would be more effective
+- Possibly some people are too skeptical of industry+academia to shift their beliefs
+- Possibly other dimensions of information are more important 
