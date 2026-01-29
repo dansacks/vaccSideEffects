@@ -1,5 +1,5 @@
 .reveal {
-  font-size: 45px;
+  font-size: 40px;
 }
 
 .reveal h1 {
@@ -12,6 +12,14 @@
 
 .reveal .columns p {
   font-size: 1.2em;
+}
+
+/* Nested lists: 20% smaller font */
+.reveal ul ul,
+.reveal ul ol,
+.reveal ol ul,
+.reveal ol ol {
+  font-size: 0.8em;
 }
 
 /* Highlight class for emphasis */
@@ -85,4 +93,24 @@
 .show-5-cols td:nth-child(6),
 .show-5-cols th:nth-child(6) {
   background-color: #fff3cd;
+}
+
+/* Large vertically centered text for statement slides */
+.center-large {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 90%;
+  text-align: left;
+  font-size: 1.6em;
+  line-height: 1.4;
+}
+
+/* Hypothesis text styling */
+.hyp {
+  display: block;
+  margin-top: 0.3em;
+  margin-left: 1.5em;
+  font-style: italic;
+  color: #555;
 }

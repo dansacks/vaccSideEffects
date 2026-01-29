@@ -58,7 +58,7 @@ ADO_REGRESSION := $(CODE)/ado/regression_table.ado
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte persistence beliefs exhibits dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte hte-plot persistence beliefs intro-figs exhibits dirs clean-data clean-all help
 
 all: prescreen main followup prolific counts balance
 
@@ -74,8 +74,10 @@ help:
 	@echo "  balance-full - Generate balance tables by domain + omnibus test"
 	@echo "  analysis     - Run treatment effects regressions"
 	@echo "  hte          - Run heterogeneous treatment effects"
+	@echo "  hte-plot     - Generate HTE coefficient plot"
 	@echo "  persistence  - Run persistence of information analysis"
 	@echo "  beliefs      - Generate belief distribution figures"
+	@echo "  intro-figs   - Generate intro slide figures (vacc_trends)"
 	@echo "  exhibits     - Compile exhibits.pdf (all tables/figures)"
 	@echo "  all          - Run prescreen, main, followup, and prolific pipelines"
 	@echo "  dirs         - Create output subdirectories"
@@ -258,6 +260,16 @@ $(HTE_HIGH_PRIOR) $(HTE_BAD_EXP) $(HTE_HIGH_TRUST) $(HTE_HIGH_REL) &: $(MERGED_A
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/heterogeneous_treatment_effects.do && mv heterogeneous_treatment_effects.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
+# HTE COEFFICIENT PLOT
+#-------------------------------------------------------------------------------
+HTE_COEFPLOT := $(OUT_FIGURES)/hte_coefplot.png
+
+hte-plot: $(HTE_COEFPLOT)
+
+$(HTE_COEFPLOT): $(MERGED_ALL) $(CODE)/plot_hte.do $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/plot_hte.do && mv plot_hte.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
 # PERSISTENCE ANALYSIS
 #-------------------------------------------------------------------------------
 PERSIST_ATTRITION := $(OUT_TABLES)/persistence_attrition.tex
@@ -288,6 +300,18 @@ $(BELIEFS_BY_ARM): $(MERGED_PRE) $(CODE)/plot_beliefs_by_arm.do $(CODE)/_config.
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/plot_beliefs_by_arm.do && mv plot_beliefs_by_arm.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
+# INTRO FIGURES (vaccination trends)
+#-------------------------------------------------------------------------------
+VACC_TRENDS := $(OUT_FIGURES)/vacc_trends.png
+PEDS_UNVACC_DATA := $(RAW_DATA)/Vaccination_Coverage_and_Exemptions_among_Kindergartners_20260128.csv
+FLU_DOSES_DATA := $(RAW_DATA)/Weekly_Cumulative_Doses_(in_Millions)_of_Influenza_Vaccines_Distributed_by_Season,_United_States_20260128.csv
+
+intro-figs: $(VACC_TRENDS)
+
+$(VACC_TRENDS): $(PEDS_UNVACC_DATA) $(FLU_DOSES_DATA) $(CODE)/intro_figures.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/intro_figures.do && mv intro_figures.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
 # EXHIBITS DOCUMENT
 #-------------------------------------------------------------------------------
 EXHIBITS_TEX := $(OUTPUT)/exhibits.tex
@@ -295,7 +319,7 @@ EXHIBITS_PDF := $(OUTPUT)/exhibits.pdf
 
 exhibits: $(EXHIBITS_PDF)
 
-$(EXHIBITS_PDF): $(EXHIBITS_TEX) $(BALANCE_TEX) $(BALANCE_OMNI) $(TREATMENT_EFFECTS) $(PERSIST_ATTRITION) $(BELIEFS_POOLED) $(BELIEFS_BY_ARM)
+$(EXHIBITS_PDF): $(EXHIBITS_TEX) $(BALANCE_TEX) $(BALANCE_OMNI) $(TREATMENT_EFFECTS) $(PERSIST_ATTRITION) $(BELIEFS_POOLED) $(BELIEFS_BY_ARM) $(VACC_TRENDS)
 	cd $(OUTPUT) && pdflatex exhibits.tex && pdflatex exhibits.tex
 
 #-------------------------------------------------------------------------------

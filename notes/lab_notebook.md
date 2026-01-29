@@ -4,6 +4,45 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-01-28: HTE Coefficient Plot
+
+**Goal:** Create a 2×4 faceted coefficient plot visualizing heterogeneous treatment effects.
+
+### Changes Made
+
+**New file:** `code/plot_hte.do`
+- Generates `output/figures/hte_coefplot.png`
+- Uses `postfile` to collect regression coefficients from subgroup analyses
+- 2 rows (Delta, Vacc Intent) × 4 columns (Prior, Experience, Trust, Relevance)
+- 3 treatment arms per panel (Industry=blue, Academic=orange, Personal=green)
+- Circle markers for Low subgroup, square markers for High subgroup
+- 95% CIs shown as horizontal error bars
+- Legend in bottom-right panel
+
+**Makefile:**
+- Added `hte-plot` target
+- Added to `.PHONY` and help text
+
+**analyze.do:**
+- Added `do "code/plot_hte.do"` after HTE regressions
+
+### Usage
+```bash
+make hte-plot
+# or interactively:
+do "code/plot_hte.do"
+```
+
+### Slide styling (`slides/style.css`)
+
+Added CSS classes for slide formatting:
+- `.center-large`: Vertically centered large text for statement slides
+- `.hyp`: Hypothesis text styling (block display, indented, italic gray)
+
+Updated `qslides.qmd` to use these classes for the opening statement and research questions slides.
+
+---
+
 ## 2026-01-20: Stata Code Refactoring
 
 **Goal:** Reduce duplication and improve maintainability of Stata do-files.
