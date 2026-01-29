@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      Stata 18.0
+ /__    /   ____/   /   ____/      StataNow 19.5
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Wisconsin School of Business
-               University of Wisconsin - Madison
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/projects/vaccSideEffects/code/merge_prescreen_main.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/merge_prescreen_main.do 
 
 . /*===========================================================================
 > ===
@@ -80,28 +80,28 @@ Notes:
 . }
 
 . cd "$projdir"
-C:\Users\dwsacks\Projects\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
-  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -152,10 +152,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/merge_prescr
-> een_main.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/merge_prescreen_
+> main.log
   log type:  text
- opened on:  29 Jan 2026, 10:36:57
+ opened on:  29 Jan 2026, 12:36:31
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: merge_prescreen_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -209,8 +209,6 @@ end of do-file
 
 . 
 . * Rename missing indicators with pre_ prefix
-. rename vacc_intent_miss pre_vacc_intent_miss
-
 . rename had_prior_covid_vacc_miss pre_had_prior_covid_vacc_miss
 
 . rename had_prior_flu_vacc_miss pre_had_prior_flu_vacc_miss
@@ -227,8 +225,8 @@ end of do-file
 . tempfile prescreen
 
 . save `prescreen'
-file C:\Users\dwsacks\projects\vaccSideEffects\ST_12414_000001.tmp saved as
-    .dta format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St23412.000001 saved
+    as .dta format
 
 . 
 . di "Prescreen observations: " _N
@@ -380,12 +378,12 @@ file output/logs/main_only_observations.csv saved
 
 Contains data from derived/main_clean.dta
  Observations:         3,538                  
-    Variables:           183                  29 Jan 2026 10:36
+    Variables:           182                  29 Jan 2026 12:18
 Sorted by: prolific_pid
      Note: Dataset has changed since last saved.
 
 . di "Total variables: " r(k)
-Total variables: 183
+Total variables: 182
 
 . 
 . * Drop merge indicator
@@ -409,14 +407,14 @@ Main analysis sample: 3534
 . compress
   variable attn_check was long now int
   variable pre_duration_sec was long now int
+  variable in_pre was float now byte
+  variable main_sample was float now byte
   variable favorite_number was double now int
-  variable in_pre was double now byte
-  variable main_sample was double now byte
   variable pre_prolific_id_entered was str67 now str24
   variable source_news_text was str243 now str169
   debrief_about is strL now coalesced
   main_comments is strL now coalesced
-  (643,834 bytes saved)
+  (615,530 bytes saved)
 
 . save "derived/merged_main_pre.dta", replace
 file derived/merged_main_pre.dta saved

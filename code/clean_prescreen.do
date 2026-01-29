@@ -350,11 +350,6 @@ label var trust_strongly_agree "Trust govt: Strongly agree"
 * Create missing indicators and impute missing to base category
 * These are needed for regressions with main survey data
 
-* Vaccination intent
-gen vacc_intent_miss = missing(vacc_intent)
-label var vacc_intent_miss "vacc_intent missing"
-replace vacc_intent = 1 if missing(vacc_intent)
-
 * Vaccine experience variables
 gen had_prior_covid_vacc_miss = missing(had_prior_covid_vacc)
 label var had_prior_covid_vacc_miss "had_prior_covid_vacc missing"

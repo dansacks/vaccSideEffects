@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      Stata 18.0
+ /__    /   ____/   /   ____/      StataNow 19.5
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Wisconsin School of Business
-               University of Wisconsin - Madison
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/projects/vaccSideEffects/code/balance_table.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/balance_table.do 
 
 . /*===========================================================================
 > ===
@@ -83,28 +83,28 @@ Notes:
 . }
 
 . cd "$projdir"
-C:\Users\dwsacks\Projects\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
-  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -155,10 +155,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/balance_tabl
-> e.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/balance_table.lo
+> g
   log type:  text
- opened on:  29 Jan 2026, 10:36:58
+ opened on:  29 Jan 2026, 12:36:31
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: balance_table ===
 .     di "Log: output/logs/$scriptname.log"
@@ -204,6 +204,7 @@ Total merged observations: 3534
 . 
 . * Do not intend to vaccinate (from prescreen, vacc_intent == 1)
 . gen pre_no_intent = (pre_vacc_intent == 1) if ~missing(pre_vacc_intent)
+(9 missing values generated)
 
 . label var pre_no_intent "Do not intend to vaccinate"
 
@@ -334,14 +335,14 @@ _bt_est1_l~r |
 -------------+----------------------------------------------------------------
 _bt_est2_m~n |
        arm_n |
-1. Industry  |   .0116795   .0224956     0.52   0.604     -.032411      .05577
-2. Academic  |   .0177367   .0224559     0.79   0.430     -.026276    .0617493
-3. Personal  |   .0056497   .0225329     0.25   0.802     -.038514    .0498135
+1. Industry  |   .0109582   .0225717     0.49   0.627    -.0332814    .0551979
+2. Academic  |   .0185348   .0224939     0.82   0.410    -.0255524    .0626221
+3. Personal  |   .0068181   .0225613     0.30   0.762    -.0374013    .0510375
              |
-       _cons |   .6564972   .0159651    41.12   0.000     .6252062    .6877882
+       _cons |   .6553288   .0160051    40.94   0.000     .6239593    .6866983
 -------------+----------------------------------------------------------------
 _bt_est2_l~r |
-       _cons |  -1.501031   .0117767  -127.46   0.000    -1.524113   -1.477949
+       _cons |  -1.499769   .0117236  -127.93   0.000    -1.522747   -1.476791
 -------------+----------------------------------------------------------------
 _bt_est3_m~n |
        arm_n |
@@ -492,7 +493,7 @@ Balance Table: group(arm_n)
 Variable                        0        1        2        3   P-value
 -------------------------------------------------------------------------------
 Prior belief: SE likel~c    0.551    0.540    0.532    0.530    0.801
-Do not intend to vacci~e    0.656    0.668    0.674    0.662    0.874
+Do not intend to vacci~e    0.655    0.666    0.674    0.662    0.870
 Previously had flu vac~e    0.598    0.621    0.560    0.592    0.074
 Previously had COVID v~e    0.625    0.639    0.624    0.632    0.914
 Severe flu vaccine rea~n    0.108    0.093    0.089    0.105    0.703
@@ -507,7 +508,7 @@ Trust government            0.469    0.448    0.453    0.447    0.788
 Follow doctor advice        0.568    0.550    0.548    0.566    0.755
 College degree              0.533    0.504    0.494    0.519    0.361
 -------------------------------------------------------------------------------
-Joint test: chi2(45) =   41.567, p = 0.618
+Joint test: chi2(45) =   41.487, p = 0.622
 -------------------------------------------------------------------------------
 N                             885      883      881      885
 -------------------------------------------------------------------------------
