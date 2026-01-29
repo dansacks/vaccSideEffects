@@ -106,10 +106,10 @@ foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
 
     * Vaccine reaction panels need more bottom margin for angled labels
     if inlist("`cat'", "flu_vacc_reaction", "covid_vacc_reaction") {
-				local ylab 0(10)40
+				local ylab 0(10)30
     }
     else {
-				local ylabel 0(10)30
+				local ylabel 0(10)40
     }
 		local panel_margin graphregion(margin(b+5))
     collapse (mean) delta (semean) se=delta, by(`cat')
@@ -127,7 +127,7 @@ foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
         ylabel(`ylabel', labsize(medlarge))
         title("`title'", pos(11) size(large) span)
         xtitle("")
-        xsize(7) ysize(6) 
+        xsize(7) ysize(8) 
     ;
     # delimit cr
 
@@ -137,13 +137,13 @@ foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
 
 * Combine vaccine reaction plots
 graph combine flu_vacc_reaction covid_vacc_reaction, cols(2) iscale(1) ///
-	xsize(7) ysize(3)
-graph export "output/figures/delta_by_vacc_reaction.png", replace width(1750) height(750)
+	xsize(7) ysize(4)
+graph export "output/figures/delta_by_vacc_reaction.png", replace width(1750) height(1000)
 
 * Combine trust plots
 graph combine trust_govt follow_doctor, cols(2) iscale(1) ///
-	xsize(7) ysize(3) 
-graph export "output/figures/delta_by_trust.png", replace width(1750) height(750)
+	xsize(7) ysize(4) 
+graph export "output/figures/delta_by_trust.png", replace width(1750) height(1000)
 
 
 ** beliefs by trust in trial and relevance of trial
