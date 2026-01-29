@@ -1,0 +1,429 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do /Users/sacks/Projects/VaccSideEffects/code/intro_figures.do 
+
+. * intro_figures.do - Generate intro slide figures (vacc_trends.png)
+. * Combines pediatric vaccination and flu dose trends
+. clear all
+
+. global scriptname "intro_figures"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
+. local usr `c(username)'
+
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. cd "$projdir"
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for unselected responses
+. global UNSELECTED_VALUE  = -99
+
+. 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/intro_figures.lo
+> g
+  log type:  text
+ opened on:  28 Jan 2026, 11:26:23
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: intro_figures ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/intro_figures.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. *----------------------------------------------------------------------------
+> ---
+. * Panel A: Pediatric unvaccinated rates
+. *----------------------------------------------------------------------------
+> ---
+. local data "Vaccination_Coverage_and_Exemptions_among_Kindergartners_20260128
+> .csv"
+
+. 
+. import delimited using "raw_data/`data'", clear
+(encoding automatically selected: UTF-8)
+(11 vars, 8,166 obs)
+
+. 
+. gen is_state = inlist(geography, "Alabama", "Alaska", "Arizona", "Arkansas", 
+> "California") | ///
+>         inlist(geography, "Colorado", "Connecticut", "Delaware", "Florida", "
+> Georgia") | ///
+>         inlist(geography, "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa") |
+>  ///
+>         inlist(geography, "Kansas", "Kentucky", "Louisiana", "Maine", "Maryla
+> nd") | ///
+>         inlist(geography, "Massachusetts", "Michigan", "Minnesota", "Mississi
+> ppi", "Missouri") | ///
+>         inlist(geography, "Montana", "Nebraska", "Nevada", "New Hampshire", "
+> New Jersey") | ///
+>         inlist(geography, "New Mexico", "New York", "North Carolina", "North 
+> Dakota", "Ohio") | ///
+>         inlist(geography, "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island
+> ", "South Carolina") | ///
+>         inlist(geography, "South Dakota", "Tennessee", "Texas", "Utah", "Verm
+> ont") | ///
+>         inlist(geography, "Virginia", "Washington", "West Virginia", "Wiscons
+> in", "Wyoming")
+
+. 
+. 
+. destring estimate, gen(est_n) force
+estimate: contains nonnumeric characters; est_n generated as double
+(1412 missing values generated)
+
+. gen unvacc = 100 - est_n
+(1,412 missing values generated)
+
+. table schoolyear if strpos(vaccineexemption, "Polio") , ///
+>         stat(mean unvacc)
+
+-----------------------
+            |      Mean
+------------+----------
+School Year |          
+  2009-10   |  4.755556
+  2010-11   |         .
+  2011-12   |      4.95
+  2012-13   |  5.433333
+  2013-14   |  5.765306
+  2014-15   |  5.723077
+  2015-16   |  5.611321
+  2016-17   |     5.562
+  2017-18   |  5.480392
+  2018-19   |  5.688235
+  2019-20   |     5.464
+  2020-21   |  7.080769
+  2021-22   |  7.668519
+  2022-23   |  7.662963
+  2023-24   |  7.888889
+  2024-25   |  8.201852
+  Total     |  6.246265
+-----------------------
+
+. 
+. 
+. gen type = 1 if strpos(vaccineexemption, "DTP")
+(7,317 missing values generated)
+
+. replace type = 2 if strpos(vaccineexemption, "Hepatitis")
+(840 real changes made)
+
+. replace type = 3 if vaccineexemption == "MMR"
+(849 real changes made)
+
+. replace type = 4 if strpos(vaccineexemption, "MMR (PAC)")
+(427 real changes made)
+
+. replace type = 5 if strpos(vaccineexemption, "Polio")
+(849 real changes made)
+
+. 
+. * impute population size when missing
+. keep if is_state & ~missing(type)
+(4,615 observations deleted)
+
+. bysort geography schoolyear (populationsize) : ///
+>         assert populationsize == populationsize[1] if ~missing(populationsize
+> )
+
+. bysort geography schoolyear (populationsize) : replace populationsize = popul
+> ationsize[1]
+(340 real changes made)
+
+. 
+. keep if is_state & ~missing(type)
+(0 observations deleted)
+
+. keep geography schoolyear est_n type unvacc populationsize
+
+. reshape wide est_n unvacc, i(geography schoolyear) j(type)
+(j = 1 2 3 4 5)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations            3,551   ->   794         
+Number of variables                   6   ->   13          
+j variable (5 values)              type   ->   (dropped)
+xij variables:
+                                  est_n   ->   est_n1 est_n2 ... est_n5
+                                 unvacc   ->   unvacc1 unvacc2 ... unvacc5
+-----------------------------------------------------------------------------
+
+. 
+. rename unvacc1 dtp_unvacc
+
+. rename unvacc2 hepb_unvacc
+
+. gen mmr_unvacc = unvacc4
+(406 missing values generated)
+
+. rename unvacc5 polio_unvacc
+
+. collapse (mean) dtp_unvacc hepb_unvacc mmr_unvacc polio_unvacc ///
+>         [fw=populationsize],    by(schoolyear)
+
+. gen year = real(substr(schoolyear, 1,4))
+
+. 
+. gen l1 = "TDAP" if year == 2024
+(14 missing values generated)
+
+. gen l2 = "Hep-B" if year == 2024
+(14 missing values generated)
+
+. gen l3 = "MMR" if year == 2024
+(14 missing values generated)
+
+. gen l4 = "Polio" if year == 2024
+(14 missing values generated)
+
+. keep if year>=2014
+(4 observations deleted)
+
+. # delimit ;
+delimiter now ;
+. twoway
+>         (connected dtp_unvacc year, mlabel(l1) mlabpos(2) mlabsize(large))
+>         (connected mmr_unvacc year, mlabel(l2) mlabpos(3) mlabsize(large))
+>         (connected hepb_unvacc year, mlabel(l3) mlabpos(3) mlabsize(large))
+>         (connected polio_unvacc year, mlabel(l4) mlabpos(4) mlabsize(large)
+>                 color(gs5%90) mlabcolor(gs5%90))
+>         ,
+>         legend(off)
+>         title("Share of unvaccinated kindergartners", pos(11) span)
+>         xtitle("School year", size(large)) ytitle("")
+>         graphregion(margin(r+10))
+>         xlabel(,labsize(large)) ylabel(, labsize(large))
+>         xsize(7) ysize(4)
+>         ylabel(0(2)8)
+>         text(0 2014 "Source: data.cdc.gov", place(e))
+>         name(peds, replace)
+> ;
+
+. # delimit cr
+delimiter now cr
+. 
+. *----------------------------------------------------------------------------
+> ---
+. * Panel B: Flu vaccine doses by season
+. *----------------------------------------------------------------------------
+> ---
+. local flu_data "Weekly_Cumulative_Doses_(in_Millions)_of_Influenza_Vaccines_D
+> istributed_by_Season,_United_States_20260128.csv"
+
+. 
+. import delimited using "raw_data/`flu_data'", clear
+(encoding automatically selected: ISO-8859-1)
+(8 vars, 249 obs)
+
+. 
+. gen date = date(substr(start_date, 1, 11), "YMD")
+
+. format date %td
+
+. 
+. gen ns = real(substr(influenza_season, 1,4))
+
+. bysort influenza_season (date):  gen label = substr(influenza_season, 3,2) + 
+> ///
+>         "-" + substr(influenza_season,8,2) if _n==_N
+(241 missing values generated)
+
+. list influenza_season date label if ~missing(label)
+
+     +-------------------------------+
+     | influen~n        date   label |
+     |-------------------------------|
+ 32. | 2018-2019   03mar2019   18-19 |
+ 64. | 2019-2020   01mar2020   19-20 |
+ 96. | 2020-2021   28feb2021   20-21 |
+128. | 2021-2022   27feb2022   21-22 |
+160. | 2022-2023   26feb2023   22-23 |
+     |-------------------------------|
+193. | 2023-2024   03mar2024   23-24 |
+226. | 2024-2025   02mar2025   24-25 |
+249. | 2025-2026   28dec2025   25-26 |
+     +-------------------------------+
+
+. 
+. rename cumulative_flu_doses_distributed doses
+
+. 
+. # delimit ;
+delimiter now ;
+. twoway
+>         (connected doses week_sort_order if ns == 2024, mlabel(label) mlabpos
+> (3)
+>                 mlabsize(large) color(gs6%90) mlabcolor(gs6%90))
+>         (connected doses week_sort_order if ns == 2023, mlabel(label) mlabpos
+> (3)
+>                 mlabsize(large) color(gs7%85) mlabcolor(gs7%85))
+>         (connected doses week_sort_order if ns == 2022, mlabel(label) mlabpos
+> (3)
+>                 mlabsize(large) color(gs8%80) mlabcolor(gs8%80))
+>         (connected doses week_sort_order if ns == 2021, mlabel(label) mlabpos
+> (2)
+>                 mlabsize(large) color(gs9%75) mlabcolor(gs9%75))
+>         (connected doses week_sort_order if ns == 2020, mlabel(label) mlabpos
+> (2)
+>                 mlabsize(large) color(gs10%70) mlabcolor(gs10%70))
+>         (connected doses week_sort_order if ns == 2025, mlabel(label) mlabpos
+> (3)
+>                 mlabsize(large) color(stc2) mlabcolor(stc2))
+>         ,
+>         legend(off)
+>         xtitle("Week of flu season", size(large))
+>         ytitle("")
+>         title("Cumulative vaccine doses (millions), by season", span pos(11))
+>         xlabel(1 10 20 30 32, labsize(large))
+>         ylabel(, labsize(large))
+>         graphregion(margin(r+10))
+>         text(1 32 "Source: data.cdc.gov", place(w))
+>         xsize(7) ysize(4)
+>         name(flu, replace)
+> ;
+
+. # delimit cr
+delimiter now cr
+. 
+. *----------------------------------------------------------------------------
+> ---
+. * Combine panels
+. *----------------------------------------------------------------------------
+> ---
+. graph combine peds flu, rows(2) xsize(7) ysize(8)
+
+. graph export output/figures/vacc_trends.png, width(1750) height(2000) replace
+file output/figures/vacc_trends.png written in PNG format
+
+. 
+. capture log close
+
+. 
+end of do-file

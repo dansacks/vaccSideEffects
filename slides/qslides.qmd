@@ -22,7 +22,7 @@ format:
     css: style.css
 ---
 
-## Falling vaccination rates 
+## Vaccination rates are falling
 
 :::: {.columns}
 
@@ -39,43 +39,60 @@ format:
 
 ::::
 
-## Persuasion is an alternative to mandates 
-- Pro-vaccine scientific consensus built on clinical trials and more showing 
-  - Vaccines are effective
-  - Vaccines are [innocuous]{.alert}
+##
 
-- Communicating that information is potentially welfare improving 
+::: {.center-large}
+If vaccinations are so effective, and the science is so clear,
+why do we need mandates?
+
+Shouldn't information about clinical trials be enough to persuade people to vaccinate?
+
+[We ran an experiment to find out]{.fragment}
+:::
+
+## Persuasion is an alternative to mandates 
+Pro-vaccine scientific consensus built on clinical trials and more showing 
+
+- Vaccines are effective
+- Vaccines are [innocuous]{.alert}
+
+Communicating that information is potentially welfare improving 
 
 
 ::: {.fragment}
-- Communication reduces vaccine hesitance only when
-  1. Beliefs inconsistent with scientific evidence
-  2. Choices are sensitive to beliefs
-  3. Vaccine hesitant find evidence credible and relevant
+Communication reduces vaccine hesitance only when
+
+1. Beliefs inconsistent with scientific evidence
+2. Choices are sensitive to beliefs
+3. Vaccine hesitant find evidence credible and relevant
 ::: 
 
-## We experimentally provide information on flu vaccine [side effects]{.alert} 
-- Promising context : 
-  - Falling vaccination rates, matters for health 
-  - Excess pessimism about side effects
-  - Side effects matter for chocies 
+::: {.fragment}
+Our experiment: provide trial info on flu vaccine [side effects]{.alert} 
 
-- Uncertain whether information from trials affects personal beliefs
-  - Vaccine skepticism strongly associated with mistrust of institutions
-  - Trial population may not be personally relevant  
+- low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+- Unclear whether informoation from trials affects beliefs
+:::
+
 
 
 
 
 ## Research questions and hypotheses
-  1. Does information shift beliefs?
-    - Hypothesis: Yes, especially for people with more biased beliefs
 
-  2. Does information [source]{.alert} and [relevance]{.alert} matter?
-    - Hypothesis: Academic sources and similar trial populations matter most
+1. Does information from clinical trials about side effects shift personal beliefs?
+   [H1: As vaccine hesitant people's beliefs are generally more pessimistic than warranted by tials, this information will reduce expected side effects, especially for people with more biased beliefs]{.hyp}
 
-  3. Does information shift vaccine intentions and behaviors? 
-    - Hypothesis: Yes
+2. Does information [source]{.alert} and [relevance]{.alert} matter?
+   [H2.A: As vaccine hesitant people are often skeptical about institutions and pharmacy companies, beliefs will respond more to [academic]{.alert} than [industry]{.alert} trials]{.hyp}
+
+   [H2.B: As vaccine hesitant people believe they experience worse-than-average side effects, beliefs will respond more to trials with [relevant population]{.alert} trials]{.hyp}
+
+3. Does information shift vaccine intentions and behaviors?
+   [H3: As side effects are relevant for vaccinations, info will increase vaccinations]{.hyp}
+   
+   [We are underpowerd for this outcome and pre-registered it as secondary]{.hyp}
 
 
 
