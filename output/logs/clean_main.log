@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      StataNow 19.5
+ /__    /   ____/   /   ____/      Stata 18.0
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Daniel Sacks
-               
+  Licensed to: Wisconsin School of Business
+               University of Wisconsin - Madison
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do /Users/sacks/Projects/VaccSideEffects/code/clean_main.do 
+. do C:/Users/dwsacks/projects/vaccSideEffects/code/clean_main.do 
 
 . /*===========================================================================
 > ===
@@ -78,28 +78,28 @@ Notes:
 . }
 
 . cd "$projdir"
-/Users/sacks/Projects/VaccSideEffects
+C:\Users\dwsacks\Projects\VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
+  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
   [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
+  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
+  [6]  (OLDPLACE)  "c:\ado/"
+  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
+  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
   [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
-  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
+  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
+  [6]  (OLDPLACE)  "c:\ado/"
+  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -150,9 +150,10 @@ Notes:
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_main.log
+       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/clean_main.l
+> og
   log type:  text
- opened on:  27 Jan 2026, 13:08:48
+ opened on:  29 Jan 2026, 10:36:49
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -1337,30 +1338,30 @@ end_date        double  %tc..                 Survey end date/time
 duration_sec    long    %40.2f                Survey duration (seconds)
 progress        byte    %40.2f                Survey progress (%)
 consent         byte    %40.0f     yesno      Consent given
-final_sample    float   %9.0g      yesno      Final analysis sample (consent,
+final_sample    double  %10.0g     yesno      Final analysis sample (consent,
                                                 passed attn, non-missing
                                                 outcomes, first attempt
-incomplete      float   %9.0g      yesno      Incomplete response
-failed_attn     float   %9.0g      yesno      Failed attention check
-pid_mismatch    float   %9.0g      yesno      Prolific PID mismatch
+incomplete      double  %10.0g     yesno      Incomplete response
+failed_attn     double  %10.0g     yesno      Failed attention check
+pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
 duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
-first_attempt   float   %9.0g      yesno      First survey attempt for this PID
-is_preview      float   %9.0g      yesno      
+first_attempt   double  %10.0g     yesno      First survey attempt for this PID
+is_preview      double  %10.0g     yesno      
 attn_check      long    %10.0g                Attention check value (should be
                                                 4419)
-arm_n           float   %11.0g     arm_lbl    Treatment arm (numeric)
+arm_n           double  %11.0g     arm_lbl    Treatment arm (numeric)
 arm             str8    %9s                   Treatment arm (string)
-arm_control     float   %9.0g      yesno      Treatment: control arm
-arm_industry    float   %9.0g      yesno      Treatment: industry arm
-arm_academic    float   %9.0g      yesno      Treatment: academic arm
-arm_personal    float   %9.0g      yesno      Treatment: personal arm
+arm_control     double  %10.0g     yesno      Treatment: control arm
+arm_industry    double  %10.0g     yesno      Treatment: industry arm
+arm_academic    double  %10.0g     yesno      Treatment: academic arm
+arm_personal    double  %10.0g     yesno      Treatment: personal arm
 prior_self_pl~o byte    %40.0f     prior7_lbl
                                               Prior belief: SE likelihood
                                                 without vaccine (1-7)
 prior_self_vacc byte    %40.0f     prior7_lbl
                                               Prior belief: SE likelihood with
                                                 vaccine (1-7)
-post_trial      float   %9.0g                 Post-trial side effect estimate
+post_trial      double  %10.0g                Post-trial side effect estimate
                                                 (0-100)
 post_c_trial    double  %10.0g                Post-trial estimate: Control arm
 post_i_trial    double  %10.0g                Post-trial estimate: Industry arm
@@ -1370,7 +1371,7 @@ posterior_nov~c double  %10.0g                Posterior: SE probability without
                                                 vaccine (0-100)
 posterior_vacc  double  %10.0g                Posterior: SE probability with
                                                 vaccine (0-100)
-delta           float   %9.0g                 Posterior difference (vacc -
+delta           double  %10.0g                Posterior difference (vacc -
                                                 novacc)
 trust_trial     byte    %40.0f     scale10_lbl
                                               Trust in trial information (0-10)
@@ -1384,8 +1385,8 @@ relevant_acad~c byte    %40.0f     scale10_lbl
                                                 (0-10)
 vacc_intent     byte    %40.0f     vacc_intent_lbl
                                               Flu vaccine intentions
-maybe           float   %9.0g      yesno      Intends/already got vaccine
-link_click      float   %9.0g      yesno      Any link clicked
+maybe           double  %10.0g     yesno      Intends/already got vaccine
+link_click      double  %10.0g     yesno      Any link clicked
 link1_clicked   byte    %10.0g                Link 1 clicked
 link2_clicked   byte    %10.0g                Link 2 clicked
 link3_clicked   byte    %10.0g                Link 3 clicked
@@ -1403,57 +1404,57 @@ polviews        byte    %40.0f     polviews_lbl
                                               Political views
 debrief_about   strL    %%2                   Debrief: What survey was about
 comments        strL    %%2                   Final comments
-n_missing       float   %9.0g                 
-prior_placebo_1 float   %9.0g                 Prior placebo: Would definitely
+n_missing       double  %10.0g                
+prior_placebo_1 double  %10.0g                Prior placebo: Would definitely
                                                 not
-prior_placebo_2 float   %9.0g                 Prior placebo: Very unlikely
-prior_placebo_3 float   %9.0g                 Prior placebo: Somewhat unlikely
-prior_placebo_4 float   %9.0g                 Prior placebo: Neither
-prior_placebo_5 float   %9.0g                 Prior placebo: Somewhat likely
-prior_placebo_6 float   %9.0g                 Prior placebo: Very likely
-prior_placebo_7 float   %9.0g                 Prior placebo: Would definitely
-prior_vacc_1    float   %9.0g                 Prior vacc: Would definitely not
-prior_vacc_2    float   %9.0g                 Prior vacc: Very unlikely
-prior_vacc_3    float   %9.0g                 Prior vacc: Somewhat unlikely
-prior_vacc_4    float   %9.0g                 Prior vacc: Neither
-prior_vacc_5    float   %9.0g                 Prior vacc: Somewhat likely
-prior_vacc_6    float   %9.0g                 Prior vacc: Very likely
-prior_vacc_7    float   %9.0g                 Prior vacc: Would definitely
-age_miss        float   %9.0g                 age missing
-gender_miss     float   %9.0g                 gender missing
-education_miss  float   %9.0g                 education missing
-income_miss     float   %9.0g                 income missing
-race_miss       float   %9.0g                 race missing
-ethnicity_miss  float   %9.0g                 ethnicity missing
-polviews_miss   float   %9.0g                 polviews missing
-age_18_34       float   %9.0g                 Age 18--34
-age_35_49       float   %9.0g                 Age 35--49
-age_50_64       float   %9.0g                 Age 50--64
-age_65plus      float   %9.0g                 Age 65+
-female          float   %9.0g                 Female
-gender_other    float   %9.0g                 Gender: Other
-educ_hs_or_less float   %9.0g                 Education: HS or less
-educ_some_col~e float   %9.0g                 Education: Some college
-educ_college    float   %9.0g                 Education: 4-year degree
-educ_grad       float   %9.0g                 Education: Graduate degree
-income_lt25k    float   %9.0g                 Income: Under $25k
-income_25_50k   float   %9.0g                 Income: $25--50k
-income_50_75k   float   %9.0g                 Income: $50--75k
-income_75_100k  float   %9.0g                 Income: $75--100k
-income_100kplus float   %9.0g                 Income: Over $100k
-race_white      float   %9.0g                 White
-race_black      float   %9.0g                 Black
-race_asian      float   %9.0g                 Asian
-race_native     float   %9.0g                 American Indian/Alaska Native
-race_other      float   %9.0g                 Race: Other
-hispanic        float   %9.0g                 Hispanic
-polviews_very~l float   %9.0g                 Very liberal
-polviews_libe~l float   %9.0g                 Liberal
-polviews_slig~l float   %9.0g                 Slightly liberal
-polviews_mode~e float   %9.0g                 Moderate
-polviews_slig~v float   %9.0g                 Slightly conservative
-polviews_cons~e float   %9.0g                 Conservative
-polviews_very~v float   %9.0g                 Very conservative
+prior_placebo_2 double  %10.0g                Prior placebo: Very unlikely
+prior_placebo_3 double  %10.0g                Prior placebo: Somewhat unlikely
+prior_placebo_4 double  %10.0g                Prior placebo: Neither
+prior_placebo_5 double  %10.0g                Prior placebo: Somewhat likely
+prior_placebo_6 double  %10.0g                Prior placebo: Very likely
+prior_placebo_7 double  %10.0g                Prior placebo: Would definitely
+prior_vacc_1    double  %10.0g                Prior vacc: Would definitely not
+prior_vacc_2    double  %10.0g                Prior vacc: Very unlikely
+prior_vacc_3    double  %10.0g                Prior vacc: Somewhat unlikely
+prior_vacc_4    double  %10.0g                Prior vacc: Neither
+prior_vacc_5    double  %10.0g                Prior vacc: Somewhat likely
+prior_vacc_6    double  %10.0g                Prior vacc: Very likely
+prior_vacc_7    double  %10.0g                Prior vacc: Would definitely
+age_miss        double  %10.0g                age missing
+gender_miss     double  %10.0g                gender missing
+education_miss  double  %10.0g                education missing
+income_miss     double  %10.0g                income missing
+race_miss       double  %10.0g                race missing
+ethnicity_miss  double  %10.0g                ethnicity missing
+polviews_miss   double  %10.0g                polviews missing
+age_18_34       double  %10.0g                Age 18--34
+age_35_49       double  %10.0g                Age 35--49
+age_50_64       double  %10.0g                Age 50--64
+age_65plus      double  %10.0g                Age 65+
+female          double  %10.0g                Female
+gender_other    double  %10.0g                Gender: Other
+educ_hs_or_less double  %10.0g                Education: HS or less
+educ_some_col~e double  %10.0g                Education: Some college
+educ_college    double  %10.0g                Education: 4-year degree
+educ_grad       double  %10.0g                Education: Graduate degree
+income_lt25k    double  %10.0g                Income: Under $25k
+income_25_50k   double  %10.0g                Income: $25--50k
+income_50_75k   double  %10.0g                Income: $50--75k
+income_75_100k  double  %10.0g                Income: $75--100k
+income_100kplus double  %10.0g                Income: Over $100k
+race_white      double  %10.0g                White
+race_black      double  %10.0g                Black
+race_asian      double  %10.0g                Asian
+race_native     double  %10.0g                American Indian/Alaska Native
+race_other      double  %10.0g                Race: Other
+hispanic        double  %10.0g                Hispanic
+polviews_very~l double  %10.0g                Very liberal
+polviews_libe~l double  %10.0g                Liberal
+polviews_slig~l double  %10.0g                Slightly liberal
+polviews_mode~e double  %10.0g                Moderate
+polviews_slig~v double  %10.0g                Slightly conservative
+polviews_cons~e double  %10.0g                Conservative
+polviews_very~v double  %10.0g                Very conservative
 -------------------------------------------------------------------------------
 Sorted by: prolific_pid  start_date
      Note: Dataset has changed since last saved.
@@ -1535,70 +1536,70 @@ end of do-file
 . 
 . * Compress and save
 . compress
-  variable final_sample was float now byte
-  variable incomplete was float now byte
-  variable failed_attn was float now byte
-  variable pid_mismatch was float now byte
-  variable first_attempt was float now byte
-  variable is_preview was float now byte
-  variable arm_n was float now byte
-  variable arm_control was float now byte
-  variable arm_industry was float now byte
-  variable arm_academic was float now byte
-  variable arm_personal was float now byte
-  variable maybe was float now byte
-  variable link_click was float now byte
-  variable n_missing was float now byte
-  variable prior_placebo_1 was float now byte
-  variable prior_placebo_2 was float now byte
-  variable prior_placebo_3 was float now byte
-  variable prior_placebo_4 was float now byte
-  variable prior_placebo_5 was float now byte
-  variable prior_placebo_6 was float now byte
-  variable prior_placebo_7 was float now byte
-  variable prior_vacc_1 was float now byte
-  variable prior_vacc_2 was float now byte
-  variable prior_vacc_3 was float now byte
-  variable prior_vacc_4 was float now byte
-  variable prior_vacc_5 was float now byte
-  variable prior_vacc_6 was float now byte
-  variable prior_vacc_7 was float now byte
-  variable age_miss was float now byte
-  variable gender_miss was float now byte
-  variable education_miss was float now byte
-  variable income_miss was float now byte
-  variable race_miss was float now byte
-  variable ethnicity_miss was float now byte
-  variable polviews_miss was float now byte
-  variable age_18_34 was float now byte
-  variable age_35_49 was float now byte
-  variable age_50_64 was float now byte
-  variable age_65plus was float now byte
-  variable female was float now byte
-  variable gender_other was float now byte
-  variable educ_hs_or_less was float now byte
-  variable educ_some_college was float now byte
-  variable educ_college was float now byte
-  variable educ_grad was float now byte
-  variable income_lt25k was float now byte
-  variable income_25_50k was float now byte
-  variable income_50_75k was float now byte
-  variable income_75_100k was float now byte
-  variable income_100kplus was float now byte
-  variable race_white was float now byte
-  variable race_black was float now byte
-  variable race_asian was float now byte
-  variable race_native was float now byte
-  variable race_other was float now byte
-  variable hispanic was float now byte
-  variable polviews_very_liberal was float now byte
-  variable polviews_liberal was float now byte
-  variable polviews_slight_liberal was float now byte
-  variable polviews_moderate was float now byte
-  variable polviews_slight_conserv was float now byte
-  variable polviews_conservative was float now byte
-  variable polviews_very_conserv was float now byte
-  (691,362 bytes saved)
+  variable final_sample was double now byte
+  variable incomplete was double now byte
+  variable failed_attn was double now byte
+  variable pid_mismatch was double now byte
+  variable first_attempt was double now byte
+  variable is_preview was double now byte
+  variable arm_n was double now byte
+  variable arm_control was double now byte
+  variable arm_industry was double now byte
+  variable arm_academic was double now byte
+  variable arm_personal was double now byte
+  variable maybe was double now byte
+  variable link_click was double now byte
+  variable n_missing was double now byte
+  variable prior_placebo_1 was double now byte
+  variable prior_placebo_2 was double now byte
+  variable prior_placebo_3 was double now byte
+  variable prior_placebo_4 was double now byte
+  variable prior_placebo_5 was double now byte
+  variable prior_placebo_6 was double now byte
+  variable prior_placebo_7 was double now byte
+  variable prior_vacc_1 was double now byte
+  variable prior_vacc_2 was double now byte
+  variable prior_vacc_3 was double now byte
+  variable prior_vacc_4 was double now byte
+  variable prior_vacc_5 was double now byte
+  variable prior_vacc_6 was double now byte
+  variable prior_vacc_7 was double now byte
+  variable age_miss was double now byte
+  variable gender_miss was double now byte
+  variable education_miss was double now byte
+  variable income_miss was double now byte
+  variable race_miss was double now byte
+  variable ethnicity_miss was double now byte
+  variable polviews_miss was double now byte
+  variable age_18_34 was double now byte
+  variable age_35_49 was double now byte
+  variable age_50_64 was double now byte
+  variable age_65plus was double now byte
+  variable female was double now byte
+  variable gender_other was double now byte
+  variable educ_hs_or_less was double now byte
+  variable educ_some_college was double now byte
+  variable educ_college was double now byte
+  variable educ_grad was double now byte
+  variable income_lt25k was double now byte
+  variable income_25_50k was double now byte
+  variable income_50_75k was double now byte
+  variable income_75_100k was double now byte
+  variable income_100kplus was double now byte
+  variable race_white was double now byte
+  variable race_black was double now byte
+  variable race_asian was double now byte
+  variable race_native was double now byte
+  variable race_other was double now byte
+  variable hispanic was double now byte
+  variable polviews_very_liberal was double now byte
+  variable polviews_liberal was double now byte
+  variable polviews_slight_liberal was double now byte
+  variable polviews_moderate was double now byte
+  variable polviews_slight_conserv was double now byte
+  variable polviews_conservative was double now byte
+  variable polviews_very_conserv was double now byte
+  (1,613,178 bytes saved)
 
 . save "derived/main_clean.dta", replace
 file derived/main_clean.dta saved
