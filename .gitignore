@@ -41,6 +41,13 @@ tmpclaude-*
 /*.log
 .git
 
+# LaTeX artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.toc
+
 # Python
 __pycache__/
 *.pyc
