@@ -38,7 +38,6 @@ rename comments pre_comments
 rename vacc_intent pre_vacc_intent
 
 * Rename missing indicators with pre_ prefix
-rename vacc_intent_miss pre_vacc_intent_miss
 rename had_prior_covid_vacc_miss pre_had_prior_covid_vacc_miss
 rename had_prior_flu_vacc_miss pre_had_prior_flu_vacc_miss
 rename covid_vacc_reaction_miss pre_covid_vacc_reaction_miss

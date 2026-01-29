@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      Stata 18.0
+ /__    /   ____/   /   ____/      StataNow 19.5
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Wisconsin School of Business
-               University of Wisconsin - Madison
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/projects/vaccSideEffects/code/clean_followup.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/clean_followup.do 
 
 . /*===========================================================================
 > ===
@@ -79,28 +79,28 @@ Notes:
 . }
 
 . cd "$projdir"
-C:\Users\dwsacks\Projects\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
-  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -151,10 +151,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/clean_follow
-> up.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_followup.l
+> og
   log type:  text
- opened on:  29 Jan 2026, 10:36:52
+ opened on:  29 Jan 2026, 12:36:30
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_followup ===
 .     di "Log: output/logs/$scriptname.log"
@@ -1117,13 +1117,13 @@ end_date        double  %tc..                 Survey end date/time
 duration_sec    long    %40.2f                Survey duration (seconds)
 progress        byte    %40.2f                Survey progress (%)
 consent         byte    %40.0f     yesno      Consent given
-final_sample    double  %10.0g     yesno      Final analysis sample
-incomplete      double  %10.0g     yesno      Incomplete response
-failed_attn     double  %10.0g     yesno      Failed attention check
-pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
+final_sample    float   %9.0g      yesno      Final analysis sample
+incomplete      float   %9.0g      yesno      Incomplete response
+failed_attn     float   %9.0g      yesno      Failed attention check
+pid_mismatch    float   %9.0g      yesno      Prolific PID mismatch
 duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
-first_attempt   double  %10.0g     yesno      First survey attempt for this PID
-is_preview      double  %10.0g     yesno      Preview/test response
+first_attempt   float   %9.0g      yesno      First survey attempt for this PID
+is_preview      float   %9.0g      yesno      Preview/test response
 attn_check      int     %10.0g                Attention check value (should be
                                                 1163)
 med_pharmacy_~n byte    %40.0f     yesno      Gets medicine: Pharmacy chain
@@ -1161,8 +1161,8 @@ recall_study    byte    %40.0f     recall_lbl
                                                 study
 guess_placebo   double  %10.0g                Guessed placebo arm SE rate
 guess_vaccine   double  %10.0g                Guessed vaccine arm SE rate
-placebo_correct double  %10.0g     yesno      Placebo guess within 1% of 3%
-vaccine_correct double  %10.0g     yesno      Vaccine guess within 1% of 1.3%
+placebo_correct float   %9.0g      yesno      Placebo guess within 1% of 3%
+vaccine_correct float   %9.0g      yesno      Vaccine guess within 1% of 1.3%
 recall_manufa~r byte    %40.0f     recallinfo_lbl
                                               Recalls manufacturer/trial info
 recall_univer~y byte    %40.0f     recallinfo_lbl
@@ -1254,15 +1254,15 @@ end of do-file
 . 
 . * Compress and save
 . compress
-  variable final_sample was double now byte
-  variable incomplete was double now byte
-  variable failed_attn was double now byte
-  variable pid_mismatch was double now byte
-  variable first_attempt was double now byte
-  variable is_preview was double now byte
-  variable placebo_correct was double now byte
-  variable vaccine_correct was double now byte
-  (179,816 bytes saved)
+  variable final_sample was float now byte
+  variable incomplete was float now byte
+  variable failed_attn was float now byte
+  variable pid_mismatch was float now byte
+  variable first_attempt was float now byte
+  variable is_preview was float now byte
+  variable placebo_correct was float now byte
+  variable vaccine_correct was float now byte
+  (77,064 bytes saved)
 
 . save "derived/followup_clean.dta", replace
 file derived/followup_clean.dta saved

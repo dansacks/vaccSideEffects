@@ -7,10 +7,11 @@ prior_vaccines,2,970,12.221242
 prior_vaccines,3,991,12.485826
 prior_vaccines,4,5104,64.306413
 prior_vaccines,.,66,.8246907409721356
-vacc_intent,1,3071,38.37311
-vacc_intent,2,1520,18.992878
-vacc_intent,3,1141,14.257154
-vacc_intent,4,2271,28.376859
+vacc_intent,1,3005,37.860653
+vacc_intent,2,1520,19.150813
+vacc_intent,3,1141,14.375709
+vacc_intent,4,2271,28.612826
+vacc_intent,.,66,.8246907409721356
 had_prior_covid_vacc,0,1908,23.84106
 had_prior_covid_vacc,1,6095,76.15894
 had_prior_flu_vacc,0,1929,24.103461

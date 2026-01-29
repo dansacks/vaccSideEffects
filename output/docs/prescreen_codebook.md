@@ -250,10 +250,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 1 | No, do not intend  | 3,071 (38.37%) |
-| 2 | May or may not  | 1,520 (18.99%) |
-| 3 | Intend to get  | 1,141 (14.26%) |
-| 4 | Already got  | 2,271 (28.38%) |
+| 1 | No, do not intend  | 3,005 (37.86%) |
+| 2 | May or may not  | 1,520 (19.15%) |
+| 3 | Intend to get  | 1,141 (14.38%) |
+| 4 | Already got  | 2,271 (28.61%) |
 
 ### `had_prior_covid`
 - **Type:** Binary (derived)
