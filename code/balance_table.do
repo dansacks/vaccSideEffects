@@ -93,13 +93,36 @@ label var college "College degree"
     3. Generate balance table
 ------------------------------------------------------------------------------*/
 # delimit ;
-balance_table 
-	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid 
-	severe_flu_reaction severe_covid_reaction 
-	has_condition 
+balance_table
+	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid
+	severe_flu_reaction severe_covid_reaction
+	has_condition
 	age_18_34 age_35_49 race_white hispanic income_lt50k
-	trust_govt_high follow_doc_high college, 
+	trust_govt_high follow_doc_high college,
 	group(arm_n) saving(output/tables/balance_table.tex) jointtest
+	labels(Control Industry Academic Personal)
+;
+# delimit cr
+
+
+
+/*------------------------------------------------------------------------------
+    3. Generate balance tables for slides
+------------------------------------------------------------------------------*/
+# delimit ;
+balance_table
+	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid
+	severe_flu_reaction severe_covid_reaction
+	has_condition trust_govt_high follow_doc_high,
+	group(arm_n) saving(output/tables/balance_table_slides.tex) jointtest
+	labels(Control Industry Academic Personal)
+;
+
+balance_table
+	age_18_34 age_35_49 race_white hispanic income_lt50k
+	college,
+	group(arm_n) saving(output/tables/balance_table_slides_demo.tex) jointtest
+	labels(Control Industry Academic Personal)
 ;
 # delimit cr
 capture log close

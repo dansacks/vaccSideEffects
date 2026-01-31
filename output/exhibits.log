@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  27 JAN 2026 13:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  29 JAN 2026 12:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -291,16 +291,16 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 
 [9]
-<figures/delta_by_vacc_reaction.png, id=43, 1756.5625pt x 752.8125pt>
+<figures/delta_by_vacc_reaction.png, id=43, 1756.5625pt x 1003.75pt>
 File: figures/delta_by_vacc_reaction.png Graphic file (type png)
 <use figures/delta_by_vacc_reaction.png>
 Package pdftex.def Info: figures/delta_by_vacc_reaction.png  used on input line 382.
-(pdftex.def)             Requested size: 375.80544pt x 161.05893pt.
-<figures/delta_by_trust.png, id=44, 1756.5625pt x 752.8125pt>
+(pdftex.def)             Requested size: 375.80544pt x 214.74524pt.
+<figures/delta_by_trust.png, id=44, 1756.5625pt x 1003.75pt>
 File: figures/delta_by_trust.png Graphic file (type png)
 <use figures/delta_by_trust.png>
 Package pdftex.def Info: figures/delta_by_trust.png  used on input line 398.
-(pdftex.def)             Requested size: 375.80544pt x 161.05893pt.
+(pdftex.def)             Requested size: 375.80544pt x 214.74524pt.
 
 
 [10 <./figures/beliefs_pooled.png> <./figures/delta_by_vacc_reaction.png>]
@@ -309,18 +309,20 @@ File: figures/belief_cdf_by_arm.png Graphic file (type png)
 <use figures/belief_cdf_by_arm.png>
 Package pdftex.def Info: figures/belief_cdf_by_arm.png  used on input line 414.
 (pdftex.def)             Requested size: 469.75502pt x 268.42772pt.
- (./tables/het_high_prior.tex)
 
-[11 <./figures/delta_by_trust.png> <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
+
+[11 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex)
+
+[12 <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
 Overfull \hbox (4.61304pt too wide) in paragraph at lines 459--472
  [][] 
  []
 
 (./tables/het_high_trust.tex)
 
-[12] (./tables/het_high_relevance.tex)
+[13] (./tables/het_high_relevance.tex)
 
-[13] (./exhibits.aux)
+[14] (./exhibits.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -329,16 +331,16 @@ L3 programming layer <2025-01-18>
 Here is how much of TeX's memory you used:
  3990 strings out of 473190
  71533 string characters out of 5715801
- 479271 words of memory out of 5000000
+ 478271 words of memory out of 5000000
  27169 multiletter control sequences out of 15000+600000
  565946 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,9n,95p,773b,311s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on exhibits.pdf (13 pages, 495763 bytes).
+Output written on exhibits.pdf (14 pages, 502071 bytes).
 PDF statistics:
- 117 PDF objects out of 1000 (max. 8388607)
- 71 compressed objects within 1 object stream
+ 120 PDF objects out of 1000 (max. 8388607)
+ 73 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
