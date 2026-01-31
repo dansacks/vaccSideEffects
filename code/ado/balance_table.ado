@@ -3,7 +3,7 @@
 
 program define balance_table
     version 14.0
-    syntax varlist [if] [in], group(varname) [saving(string) jointtest]
+    syntax varlist [if] [in], group(varname) [saving(string) jointtest labels(string)]
 
     /*--------------------------------------------------------------------------
         1. Mark sample and validate inputs
@@ -165,11 +165,19 @@ program define balance_table
     di as text "Balance Table: group(`group')"
     di as text "{hline `maxwidth'}"
 
+    * Build group labels (use provided labels or default to "Arm N")
+    local col = 1
+    foreach g of local group_levels {
+        local lab`col' : word `col' of `labels'
+        if "`lab`col''" == "" local lab`col' "Arm `g'"
+        local ++col
+    }
+
     * Build and display header
     local header : di %-24s "Variable"
-    foreach g of local group_levels {
-        local g_fmt : di %9.0f `g'
-        local header = "`header'`g_fmt'"
+    forvalues col = 1/`n_groups' {
+        local col_fmt : di %9s "`lab`col''"
+        local header = "`header'`col_fmt'"
     }
     local header = "`header'   P-value"
     di as text "`header'"
@@ -251,9 +259,8 @@ program define balance_table
 
     * Joint test row (if computed)
     if `joint_p' != . {
-        local joint_chi2_fmt : di %5.3f `joint_chi2'
         local joint_p_fmt : di %5.3f `joint_p'
-        file write _bt_fout "Joint test & \multicolumn{`n_groups'}{c}{\$\chi^2(`joint_df')=`joint_chi2_fmt'\$} & `joint_p_fmt' \\" _n
+        file write _bt_fout "Joint test & \multicolumn{`n_groups'}{c}{} & `joint_p_fmt' \\" _n
     }
 
     * Sample size row (no trailing \\)
@@ -266,6 +273,75 @@ program define balance_table
     file close _bt_fout
 
     di as text "Saved: `saving'"
+
+    /*--------------------------------------------------------------------------
+        7. Write to .md file
+    --------------------------------------------------------------------------*/
+
+    * Derive .md path from .tex path
+    local md_saving = subinstr("`saving'", ".tex", ".md", .)
+
+    capture file close _bt_mdout
+    file open _bt_mdout using "`md_saving'", write replace
+
+    * Header row
+    local md_header = "| |"
+    local md_sep = "|---|"
+    local col = 1
+    forvalues col = 1/`n_groups' {
+        local md_header = "`md_header' `lab`col'' |"
+        local md_sep = "`md_sep'---:|"
+    }
+    local md_header = "`md_header' P-value |"
+    local md_sep = "`md_sep'---:|"
+    file write _bt_mdout "`md_header'" _n
+    file write _bt_mdout "`md_sep'" _n
+
+    * Data rows
+    local row = 1
+    foreach var of varlist `varlist' {
+        local varlabel : variable label `var'
+        if "`varlabel'" == "" local varlabel "`var'"
+
+        * Escape pipe characters for markdown
+        local varlabel_md = subinstr("`varlabel'", "|", "\|", .)
+
+        local md_line = "| `varlabel_md'"
+        forvalues col = 1/`n_groups' {
+            local val = means[`row', `col']
+            local val_fmt : di %5.3f `val'
+            local md_line = "`md_line' | `val_fmt'"
+        }
+        local pval = pvals[`row', 1]
+        local pval_fmt : di %5.3f `pval'
+        local md_line = "`md_line' | `pval_fmt' |"
+
+        file write _bt_mdout "`md_line'" _n
+        local ++row
+    }
+
+    * Joint test row (if computed)
+    if `joint_p' != . {
+        local joint_p_fmt : di %5.3f `joint_p'
+        local md_line = "| Joint test"
+        forvalues col = 1/`n_groups' {
+            local md_line = "`md_line' |"
+        }
+        local md_line = "`md_line' | `joint_p_fmt' |"
+        file write _bt_mdout "`md_line'" _n
+    }
+
+    * Sample size row
+    local md_nline = "| N"
+    foreach g of local group_levels {
+        local md_nline = "`md_nline' | `n_`g''"
+    }
+    local md_nline = "`md_nline' | |"
+    file write _bt_mdout "`md_nline'" _n
+
+    file close _bt_mdout
+
+    di as text "Saved: `md_saving'"
 
     * Clean up matrices
     matrix drop means pvals
