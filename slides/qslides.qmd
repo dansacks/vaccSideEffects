@@ -3,24 +3,23 @@ title: "Can scientific information address vaccine hesitancy?"
 subtitle: "Experimental evidence from the flu vaccine"
 author:
   - name: Daniel W. Sacks
-    affiliation: |
-      Department of Risk and Insurance
-      Wisconsin School of Business
-      University of Wisconsin--Madison
+    affiliations:
+      - name: "University of Wisconsin--Madison"
+        department: "Department of Risk and Insurance"
   - name: Brigham Walker
-    affiliation: |
-      Department of Health Policy and Management
-      Tulane School of Public Health
-      and Tropical Medicine
-      Tulane University
+    affiliations:
+      - name: "Tulane University"
+        department: "Department of Health Policy and Management"
 format:
   clean-revealjs:
-    slide-number: true
+    slide-number: false
     width: 1600
     height: 900
     embed-resources: true
     css: style.css
+    include-after-body: section-footer.html
 ---
+
 
 ## Vaccination rates are falling
 
@@ -39,16 +38,19 @@ format:
 
 ::::
 
-##
+## Do falling vaccination rates call for mandates?
 
-::: {.center-large}
-If vaccinations are so effective, and the science is so clear,
-why do we need mandates?
+View 1: Right to refuse treatment outweights health consequences
 
-Shouldn't information about clinical trials be enough to persuade people to vaccinate?
+- No mandate
 
-[We ran an experiment to find out]{.fragment}
-:::
+View 2: Health consequences are large, positive, and rooted in science
+
+- Mandate?
+
+[Hypothesis: Communicating science of vaccines should persuade people to vaccinate]{.fragment}
+
+[This paper: experimental on communicating clinical trial results for flu vacc]{.fragment}
 
 ## Testing persuasive communication is valuable 
 Communicating safety and efficacy of trials is potentially welfare improving 
@@ -59,7 +61,7 @@ Communication reduces vaccine hesitancy only under certain conditions
 
 ::: {.incremental}
 
-1. Beliefs inconsistent with scientific evidence; internality present
+1. Beliefs inconsistent with scientific evidence + matters for choice; internality present
 2. Vaccine hesitant find evidence credible and relevant $\leftarrow$ Far from obviously true! 
 
 ::: 
@@ -112,34 +114,39 @@ Elicit beliefs about personal side effect risk and vaccine intentions, actual va
 
 ## Preliminary study results 
 
-1. Can side effect information from scientific studies shift [beliefs about personal risk]{.alert}?
-  - Yes, by 3 percentage points on a base of 15
-  - Implied learning rate of 20\% smaller effect here than in other contexts 
+Side effect information from scientific studies shifts [beliefs about personal risk]{.alert}
+
+  - by 3 percentage points on a base of 15 (vs. 0-1 in clinical trials)
+
+Belief responses don't clearly move with [source]{.alert} and [study population]{.alert}?
+
+  - Industry and academic arms similar have similar treatment effects; personal arm null
+
+Information shifts vaccine intentions, noisy effect on actual vaccination
+
+  - Academic and personal arms only  
 
 :::{.fragment}
+Results are highly heterogeneous by political views [(not preregistered)]{.alert}
 
-2. Do belief responses vary with [source]{.alert} and [study population]{.alert}?
-  - Yes, in surprising way: industry and academic arms similar; personal arm null
-:::
-
-:::{.fragment}
-3. Does information shift vaccine [intention]{.alert} and [take-up]{.alert}?
-
-  - Yes, in surprising way: academic and personal moved intentions a lot; industry did not
-  - Effects on take-up are positive but noisy
-:::
+  - Liberals' beliefs and vaccine intententions respond strongly, conservatives null/negative
+  - Politics predict whether people find trials + uni reserach trustworthy + relevant
+::: 
 
 ## What is new here?
 Literature on vaccine hesitancy and beliefs
 
-- One strand finds it is not helpful to correct false beliefs 
-- Another shows vaccine hesitancy correlated with pessimistic side effect beliefs
-- Contribution: Side effect infomation can move side effect beliefs 
+- Vaccine hesitancy highly correalted with trust in institutions
+- Unhelpful to correct false beliefs (flu, pediatric)
+- Flu vaccine hesitancy correlated with pessimistic side effect beliefs
+- Identity of messenger can matter (racial concordance, political concordance)
+- [Contribution:]{.alert} Message content matters: side effect infomation moves beliefs
+- [Contribution:]{.alert} Mistrust in institutions matters because it impedes learning 
 
 Literature on information provision experiments 
 
 - Simple information provisions shift beliefs and behaviors 
-- Contribution: Simple information provision can move beliefs even with skeptical audience 
+- [Contribution]{.alert}: Simple information provision with skeptical audience more challenging
 
 # Experiment Design
 
@@ -153,7 +160,7 @@ Literature on information provision experiments
 [Main wave]{.alert} 3,500 vaccine hesitant participants, 1-7 days later
 
 - Randomize information provision, measure priors, posteriors, vaccine intentions 
-- Ask about trustworthiness and relevance of information
+- Ask about trustworthiness and relevance of information, politics, demographics
 
 [Follow-up wave]{.alert} 3,000 participants, 2-4 weeks later
 
@@ -233,7 +240,7 @@ Before information provision, elicit priors for $y_i(0)$ and $y_i(1)$ using [lik
 
 ::::
 
-## Info provision: Academic-Personal info arm 
+## Info provision: Personal info arm 
 
 :::: {.columns}
 
@@ -251,88 +258,91 @@ Before information provision, elicit priors for $y_i(0)$ and $y_i(1)$ using [lik
 
 ![](trial_info.png){width="100%"}
 
-## Key measures
+## Specification
+### All prespecified 
+
+$$y = b_0 + b_1 \cdot Industry  + b_2\cdot Academic + b_3\cdot Personal + Controls $$
 
 :::: {.columns}
 
 ::: {.column width="50%"}
 Outcomes
 
-- $\Delta_{self}$ Side effect delta (pre-specified primary)
-- Side effect experienced in treatment arm of clinical trial
+- $\Delta_{self}$ Side effect delta (primary)
+- Side effect experienced in trial
 - Intend to vaccinate
 - Clicked on a link
 - Indicated vaccination in follow-up survey
 :::
 
 ::: {.column width="50%" .fragment}
-Controls (pre-specified, power-improving)
 
-- Covariate 1
-- Covariate 2
+Controls (power-improving)
+
+- Prior beliefs
+- Base vacc intent + experiences
+- Demographics
+- Trust in government 
+- Chronic condition indicators
 :::
+
 
 ::::
 
-# Results: Beliefs and Their Correlates
+## Experiment balance
+
+:::{.stretch-table}
+{{< include ../output/tables/balance_table_slides.md >}}
+:::
+
+
+## Experiment balance (demographics)
+
+:::{.stretch-table}
+{{< include ../output/tables/balance_table_slides_demo.md >}}
+:::
+
+# Results
 
 ## CDF of Posterior Believed Side Effect Rate
 
 ![](../output/figures/beliefs_pooled.png){fig-align="center" width="95%"}
 
-## Side effect beliefs $\Delta_{self}$ have high face validity 
+## Side effect beliefs $\Delta_{self}$ have high face validity because they correlate with trust and experience
 
 ![](../output/figures/delta_by_trust.png){fig-align="center" width="95%"}
 
-## Side effect beliefs $\Delta_{self}$ have high face validity  
+## Side effect beliefs $\Delta_{self}$ have high face validity because they correlate with trust and experience
 
 ![](../output/figures/delta_by_vacc_reaction.png){fig-align="center" width="95%"}
 
-## Side effect beliefs $\Delta_{self}$  and perceived of trial quality
-![](../output/figures/delta_by_trial_views.png){fig-align="center"}
+## Side effect beliefs $\Delta_{self}$ correlated with political views
+![](../output/figures/polviews_dist.png){fig-align="center"}
 
 
-# Results: Treatment Effects
-
-## The Provided Information Was Salient
-
-first column of table, showing info moved beliefs about trial outcomes
-
-## Belief CDFs by Treatment Arm
-
-![](../output/figures/belief_cdf_by_arm.png){fig-align="center" width="95%"}
 
 
-## Treatment Effects blah
+## Treatment Effects: Beliefs, intentions, and actions 
 
-{{< include ../output/tables/treatment_effects.md >}}
-
-Notes: Robust standard errors in parentheses. Controls included but not shown.
-
-## learning rates benchmarks
-xyzw 
-
-## Treatment Effects
-
-::: {.table-stack}
+::: {.table-stack .stretch-table}
 
 ::: {.show-1-col}
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
-::: {.show-2-cols .fragment .fade-in}
+::: {.show-2-cols .fragment}
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
-::: {.show-3-cols .fragment .fade-in}
+::: {.show-3-cols .fragment}
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
-::: {.show-4-cols .fragment .fade-in}
+::: {.show-4-cols .fragment}
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
-::: {.show-5-cols .fragment .fade-in}
+::: {.show-5-cols .fragment}
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
@@ -340,50 +350,96 @@ xyzw
 
 Notes: Robust standard errors in parentheses. Controls included but not shown. 
 
-## Effects by priors belief
 
-{{< include ../output/tables/het_high_prior.md >}}
+## Treatment Effects: beliefs, intentions, and actions 
+
+::: {.stretch-table}
+
+{{< include ../output/tables/treatment_effects.md >}}
+
+:::
+
+Notes: Robust standard errors in parentheses. Controls included but not shown. 
+
+::: {.row-callout .fragment .fade-in-then-out style="top: 270px; left: 0px; width: 1550px; height: 105px;"}                                                                                                                                    
+:::                  
+
+::: {.row-callout .fragment .fade-in-then-out  style="top: 163px; left: 0px; width: 1550px; height: 105px;"}                                                                                                                                    
+:::         
+
+::: {.row-callout .fragment .fade-in-then-out  style="top: 376px; left: 0px; width: 1550px; height: 105px;"}                                                                                                                                    
+:::         
+
+## Heterogeneous respones by political views explain these puzzling effects
+### Caution: not pre-specified
+
+{{< include ../output/tables/het_polviews.md >}}
 
 Notes: Robust standard errors in parentheses. Controls included but not shown.
 
-## Effects by [prior experiences]{.alert}
 
-{{< include ../output/tables/het_bad_experience.md >}}
+::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 375px; width: 575px; height: 490px;"}               
+:::    
 
-Notes: Robust standard errors in parentheses. Controls included but not shown.
+::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 950px; width: 490px; height: 490px;"}               
+:::    
 
-## Effects by [trust in trial]{.alert}
 
-{{< include ../output/tables/het_high_trust.md >}}
+## Politics matter  because they correlate with determinants of belief updating
+### Caution: not pre-specified
 
-Notes: Robust standard errors in parentheses. Controls included but not shown.
+View of trial
 
-## Effects by [trial relevance]{.alert}
+- Did you find it trustworthy? (0-10 scale)
+- Did ou find relevant? (0-10 scale)
 
-{{< include ../output/tables/het_high_relevance.md >}}
+Views of university-provided information
 
-Notes: Robust standard errors in parentheses. Controls included but not shown.
+- Do you obtain health care info from university research or researchers? 
+- Do you consider it it reliable?
 
-## Heterogeneous effects point to real learning rather than experimenter demand
-- Effects are larger when learning is more plausible
-  - ... because priors are higher (direct measure or via prior experience)
-  - ... because people trust trial more  (despite [lower]{.alert} control mean)
-  - ... because people find trial more  relevant (despite [lower]{.alert} control mean)
 
-- Suggests experimenter demand does not drive belief effects
-  - Experimenter demand likely implies low level for $\Delta_{self}$
-  - Hard to see how it could generate [heterogeneous]{.alert} effects
+## Politics matter  because they correlate with determinants of belief updating
+### Caution: not pre-specified
 
-## Persistence of Learning
+![](../output/figures/trust_by_polviews.png){fig-align="center"}
 
-## Take-aways and open questions
 
-An extremely uncreative, unslick presentation of scientific information made vaccine hesitant people somewhat more optimistic about vaccines
+## Politics matter  because they correlate with determinants of belief updating
+### Caution: not pre-specified
 
-Some evidence that the information shifted intentions
+![](../output/figures/uni_by_polviews.png){fig-align="center"}
 
-Moving vaccinations likely requires bigger belief updating 
+## Expressive responding and experimenter demand are unlikely to explain these results
 
-- Possibly a bigger information intervention would be more effective
-- Possibly some people are too skeptical of industry+academia to shift their beliefs
-- Possibly other dimensions of information are more important 
+Expressive responding: eople are using the survey to express their vaccine preferences
+
+Experimenter demand: participants tell us what they think we want to hear
+
+Very difficult to explain pattern of treatment effects thusly
+
+- Participants don't know which treatment arm they're in
+- Control-vs-industry: no differential signal of experiment intent, but shows treatment effect
+- Little priming: Political views after beliefs
+
+# Conclusions
+
+## Conclusions and future work
+
+An extremely uncreative, unslick presentation of scientific information made vaccine hesitant people update their [beliefs]{.alert} in a pro-vaccine direction 
+
+When belief updating happens, scientific information shifts [intentions]{.alert}
+
+- Political views key moderator of belief updating, via perceived study informativeness
+
+Effect on [vaccinations]{.alert} statistically imprecise; noisy null
+
+::: {.fragment}
+Moving vaccinations rather than just intentions likely requires bigger belief updating 
+
+- Better presentation and communication of trials?
+- Bigger information intervention (effectiveness + side effects)?
+- Trusted, relevant source?
+- Possibly other dimensions of information are more important?
+
+:::
