@@ -4,6 +4,33 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-01-31: Appendix slides with HTE tables and navigation
+
+**Goal:** Add an appendix section to slides with navigable HTE tables and a new HTE split by university info reliability.
+
+### Changes Made
+
+**`code/heterogeneous_treatment_effects.do`:**
+- Added `reliable_uni` split: `reliable_university == 3` (Yes reliable) vs not
+- Added to foreach loop, labels (row="Uni reliable", 0="No", 1="Yes")
+- Generates `het_reliable_uni.tex` and `het_reliable_uni.md`
+
+**`slides/qslides.qmd`:**
+- Added slide IDs to treatment effects (`#te-slide`) and HTE polviews (`#het-polviews-slide`) slides
+- Added "Appendix →" navigation buttons on those slides
+- Added appendix section with TOC slide linking back to main slides
+- Appendix includes: CDF by arm, HTE by prior, experience, trust, relevance, uni reliability
+- Each appendix slide has "← Appendix" back button
+
+**`slides/style.css`:**
+- Added `.button` class for navigation links (gray background, small font, rounded)
+
+### Next Steps
+- Run `heterogeneous_treatment_effects.do` to generate `het_reliable_uni.md`
+- Render slides with `quarto render slides/qslides.qmd`
+
+---
+
 ## 2026-01-28: HTE Coefficient Plot
 
 **Goal:** Create a 2×4 faceted coefficient plot visualizing heterogeneous treatment effects.

@@ -258,8 +258,8 @@ Before information provision, elicit priors for $y_i(0)$ and $y_i(1)$ using [lik
 
 ![](trial_info.png){width="100%"}
 
-## Specification
-### All prespecified 
+## Specification {#spec-slide}
+### All prespecified
 
 $$y = b_0 + b_1 \cdot Industry  + b_2\cdot Academic + b_3\cdot Personal + Controls $$
 
@@ -282,25 +282,14 @@ Controls (power-improving)
 - Prior beliefs
 - Base vacc intent + experiences
 - Demographics
-- Trust in government 
+- Trust in government
 - Chronic condition indicators
 :::
 
 
 ::::
 
-## Experiment balance
-
-:::{.stretch-table}
-{{< include ../output/tables/balance_table_slides.md >}}
-:::
-
-
-## Experiment balance (demographics)
-
-:::{.stretch-table}
-{{< include ../output/tables/balance_table_slides_demo.md >}}
-:::
+[Appendix →](#appendix-toc-slide){.button}
 
 # Results
 
@@ -348,10 +337,9 @@ Controls (power-improving)
 
 :::
 
-Notes: Robust standard errors in parentheses. Controls included but not shown. 
+Notes: Robust standard errors in parentheses. Controls included but not shown. [Appendix →](#appendix-toc-slide){.button}
 
-
-## Treatment Effects: beliefs, intentions, and actions 
+## Treatment Effects: Beliefs, intentions, and actions {#te-slide}
 
 ::: {.stretch-table}
 
@@ -359,30 +347,33 @@ Notes: Robust standard errors in parentheses. Controls included but not shown.
 
 :::
 
-Notes: Robust standard errors in parentheses. Controls included but not shown. 
+Notes: Robust standard errors in parentheses. Controls included but not shown. [Appendix →](#appendix-toc-slide){.button}
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 270px; left: 0px; width: 1550px; height: 105px;"}                                                                                                                                    
-:::                  
+::: {.row-callout .fragment .fade-in-then-out style="top: 270px; left: 0px; width: 1550px; height: 105px;"}
+:::
 
-::: {.row-callout .fragment .fade-in-then-out  style="top: 163px; left: 0px; width: 1550px; height: 105px;"}                                                                                                                                    
-:::         
+::: {.row-callout .fragment .fade-in-then-out  style="top: 163px; left: 0px; width: 1550px; height: 105px;"}
+:::
 
-::: {.row-callout .fragment .fade-in-then-out  style="top: 376px; left: 0px; width: 1550px; height: 105px;"}                                                                                                                                    
-:::         
+::: {.row-callout .fragment .fade-in-then-out  style="top: 376px; left: 0px; width: 1550px; height: 105px;"}
+:::
 
-## Heterogeneous respones by political views explain these puzzling effects
+
+## Heterogeneous respones by political views explain these puzzling effects {#het-polviews-slide}
 ### Caution: not pre-specified
 
 {{< include ../output/tables/het_polviews.md >}}
 
-Notes: Robust standard errors in parentheses. Controls included but not shown.
+Notes: Robust standard errors in parentheses. Controls included but not shown. [Appendix →](#appendix-toc-slide){.button}
 
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 375px; width: 575px; height: 490px;"}               
-:::    
+::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 375px; width: 575px; height: 490px;"}
+:::
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 950px; width: 490px; height: 490px;"}               
-:::    
+::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 950px; width: 490px; height: 490px;"}
+:::
+
+
 
 
 ## Politics matter  because they correlate with determinants of belief updating
@@ -412,7 +403,7 @@ Views of university-provided information
 
 ## Expressive responding and experimenter demand are unlikely to explain these results
 
-Expressive responding: eople are using the survey to express their vaccine preferences
+Expressive responding: people are using the survey to express their vaccine preferences
 
 Experimenter demand: participants tell us what they think we want to hear
 
@@ -421,6 +412,11 @@ Very difficult to explain pattern of treatment effects thusly
 - Participants don't know which treatment arm they're in
 - Control-vs-industry: no differential signal of experiment intent, but shows treatment effect
 - Little priming: Political views after beliefs
+
+More evidence: repoted $\Delta_{self}$ inconsistent with expressive answering
+
+- Correlated with believed trial SE rate, own flu + covid vaccine experiencs 
+- Correlations similar by political view
 
 # Conclusions
 
@@ -435,7 +431,7 @@ When belief updating happens, scientific information shifts [intentions]{.alert}
 Effect on [vaccinations]{.alert} statistically imprecise; noisy null
 
 ::: {.fragment}
-Moving vaccinations rather than just intentions likely requires bigger belief updating 
+Getting detectable effect on vaccinations likely requires bigger belief updating 
 
 - Better presentation and communication of trials?
 - Bigger information intervention (effectiveness + side effects)?
@@ -443,3 +439,72 @@ Moving vaccinations rather than just intentions likely requires bigger belief up
 - Possibly other dimensions of information are more important?
 
 :::
+
+# Appendix {#appendix-toc}
+
+## Appendix {#appendix-toc-slide}
+
+[← Specification](#spec-slide){.button}
+[← Treatment Effects](#te-slide){.button}
+[← HTE by Politics](#het-polviews-slide){.button}
+
+- [Experiment balance](#appendix-balance)
+- [Experiment balance (demographics)](#appendix-balance-demo)
+- [CDF of beliefs by treatment arm](#appendix-cdf)
+- [HTE: Prior beliefs](#appendix-prior)
+- [HTE: Prior experience](#appendix-experience)
+- [HTE: Trust](#appendix-trust)
+- [HTE: Relevance](#appendix-relevance)
+- [HTE: University info reliable](#appendix-uni)
+
+## Experiment balance {#appendix-balance}
+
+:::{.stretch-table}
+{{< include ../output/tables/balance_table_slides.md >}}
+:::
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## Experiment balance (demographics) {#appendix-balance-demo}
+
+:::{.stretch-table}
+{{< include ../output/tables/balance_table_slides_demo.md >}}
+:::
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## CDF of beliefs by treatment arm {#appendix-cdf}
+
+![](../output/figures/belief_cdf_by_arm.png){fig-align="center"}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## HTE: Prior beliefs {#appendix-prior}
+
+{{< include ../output/tables/het_high_prior.md >}}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## HTE: Prior experience {#appendix-experience}
+
+{{< include ../output/tables/het_bad_experience.md >}}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## HTE: Trust {#appendix-trust}
+
+{{< include ../output/tables/het_high_trust.md >}}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## HTE: Relevance {#appendix-relevance}
+
+{{< include ../output/tables/het_high_relevance.md >}}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## HTE: University info reliable {#appendix-uni}
+
+{{< include ../output/tables/het_reliable_uni.md >}}
+
+[← Appendix](#appendix-toc-slide){.button}

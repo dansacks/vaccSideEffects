@@ -135,6 +135,17 @@
   line-height: 1.4;
 }
 
+/* Navigation button styling */
+.reveal .button {
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  background-color: #2a6496;
+  border-radius: 4px;
+  font-size: 0.5em;
+  text-decoration: none;
+  color: #fff;
+}
+
 /* Hypothesis text styling */
 .hyp {
   display: block;
