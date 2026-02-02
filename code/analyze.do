@@ -5,7 +5,7 @@ do "code/balance_table.do"
 do "code/balance_tables_full.do"
 do "code/treatment_effects.do"
 do "code/heterogeneous_treatment_effects"
-
+do "code/te_by_polviews"
 do "code/validate_polviews_delta"
 
 do "code/explore_persistence.do"

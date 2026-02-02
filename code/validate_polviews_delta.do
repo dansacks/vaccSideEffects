@@ -33,7 +33,7 @@ use "derived/merged_all.dta", clear
 keep if main_sample==1
 
 
-label var post_trial "Objective SE belief"
+label var post_trial "SE (trial)"
 
 label var covid_react_none "No reaction to COVID vacc"
 label var covid_react_mild "Mild reaction to COVID vacc"
