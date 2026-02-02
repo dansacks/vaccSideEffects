@@ -306,6 +306,7 @@ Controls (power-improving)
 ![](../output/figures/delta_by_vacc_reaction.png){fig-align="center" width="95%"}
 
 ## Side effect beliefs $\Delta_{self}$ correlated with political views
+
 ![](../output/figures/polviews_dist.png){fig-align="center"}
 
 
@@ -401,7 +402,7 @@ Views of university-provided information
 
 ![](../output/figures/uni_by_polviews.png){fig-align="center"}
 
-## Expressive responding and experimenter demand are unlikely to explain these results
+## Expressive responding and experimenter demand are unlikely to explain these results {#expressive-slide}
 
 Expressive responding: people are using the survey to express their vaccine preferences
 
@@ -413,10 +414,11 @@ Very difficult to explain pattern of treatment effects thusly
 - Control-vs-industry: no differential signal of experiment intent, but shows treatment effect
 - Little priming: Political views after beliefs
 
-More evidence: repoted $\Delta_{self}$ inconsistent with expressive answering
+More evidence: reported $\Delta_{self}$ inconsistent with expressive answering [Appendix →](#appendix-toc-slide){.button}
 
 - Correlated with believed trial SE rate, own flu + covid vaccine experiencs 
 - Correlations similar by political view
+
 
 # Conclusions
 
@@ -447,15 +449,31 @@ Getting detectable effect on vaccinations likely requires bigger belief updating
 [← Specification](#spec-slide){.button}
 [← Treatment Effects](#te-slide){.button}
 [← HTE by Politics](#het-polviews-slide){.button}
+[← Expressive answering](#expressive-slide){.button}
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+More on validity 
 
 - [Experiment balance](#appendix-balance)
 - [Experiment balance (demographics)](#appendix-balance-demo)
 - [CDF of beliefs by treatment arm](#appendix-cdf)
+- [Correlates of $\Delta$ by polviews](#appendix-delta-pols)
+:::
+
+::: {.column width=50%}
+More HTEs
+
 - [HTE: Prior beliefs](#appendix-prior)
 - [HTE: Prior experience](#appendix-experience)
 - [HTE: Trust](#appendix-trust)
 - [HTE: Relevance](#appendix-relevance)
 - [HTE: University info reliable](#appendix-uni)
+:::
+
+::::
 
 ## Experiment balance {#appendix-balance}
 
@@ -507,4 +525,14 @@ Getting detectable effect on vaccinations likely requires bigger belief updating
 
 {{< include ../output/tables/het_reliable_uni.md >}}
 
+[← Appendix](#appendix-toc-slide){.button}
+
+
+## Correlates of $\Delta$ by political views  {#appendix-delta-pols}
+
+::: {style="font-size: 0.75em;"}
+{{< include ../output/tables/delta_pols_validate.md >}}
+:::
+
+Notes: Robust standard errors in parentheses. "Conservative" includes moderate.
 [← Appendix](#appendix-toc-slide){.button}

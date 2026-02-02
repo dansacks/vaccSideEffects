@@ -1,0 +1,9 @@
+| | Arm 0 | Arm 1 | Arm 2 | Arm 3 | P-value |
+|---|---:|---:|---:|---:|---:|
+| Trust govt: Strongly disagree | 0.122 | 0.134 | 0.123 | 0.128 | 0.876 |
+| Trust govt: Somewhat disagree | 0.176 | 0.188 | 0.190 | 0.153 | 0.131 |
+| Trust govt: Neither | 0.233 | 0.230 | 0.235 | 0.272 | 0.139 |
+| Trust govt: Somewhat agree | 0.357 | 0.343 | 0.344 | 0.349 | 0.924 |
+| Trust govt: Strongly agree | 0.112 | 0.105 | 0.109 | 0.098 | 0.806 |
+| Joint test | | | | | 0.565 |
+| N | 885 | 885 | 882 | 886 | |

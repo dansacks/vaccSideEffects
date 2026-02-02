@@ -1,0 +1,13 @@
+| | Arm 0 | Arm 1 | Arm 2 | Arm 3 | P-value |
+|---|---:|---:|---:|---:|---:|
+| Intent: No, do not intend (vs. may or may not) | 0.655 | 0.666 | 0.674 | 0.662 | 0.870 |
+| Had prior COVID vaccine | 0.625 | 0.639 | 0.624 | 0.632 | 0.914 |
+| Had prior flu vaccine | 0.598 | 0.621 | 0.560 | 0.592 | 0.074 |
+| COVID reaction: None/don't remember | 0.416 | 0.399 | 0.416 | 0.438 | 0.616 |
+| COVID reaction: Mild | 0.414 | 0.457 | 0.449 | 0.394 | 0.104 |
+| COVID reaction: Severe | 0.170 | 0.144 | 0.135 | 0.168 | 0.256 |
+| Flu reaction: None/don't remember | 0.546 | 0.511 | 0.489 | 0.525 | 0.310 |
+| Flu reaction: Mild | 0.346 | 0.396 | 0.422 | 0.370 | 0.072 |
+| Flu reaction: Severe | 0.108 | 0.093 | 0.089 | 0.105 | 0.703 |
+| Joint test | | | | | 0.319 |
+| N | 885 | 885 | 882 | 886 | |
