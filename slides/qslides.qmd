@@ -118,13 +118,12 @@ Side effect information from scientific studies shifts [beliefs about personal r
 
   - by 3 percentage points on a base of 15 (vs. 0-1 in clinical trials)
 
-Belief responses don't clearly move with [source]{.alert} and [study population]{.alert}
+Belief responses don't clearly move with [source]{.alert}
 
   - Industry and academic arms similar have similar treatment effects; personal arm null
+  - Inconsistent results for intervention emphasizing [study population]{.alert}
 
 Information shifts vaccine [intentions]{.alert}, noisy effect on actual vaccination
-
-  - Academic and personal arms only  
 
 :::{.fragment}
 Results are highly heterogeneous by political views [(not preregistered)]{.alert}
@@ -140,13 +139,13 @@ Literature on vaccine hesitancy and beliefs
 - Flu vaccine hesitancy correlated with pessimistic side effect beliefs
 - Unhelpful to correct false beliefs (flu, pediatric)
 - Identity of messenger can matter (racial concordance, political concordance)
-- [Contribution:]{.alert} Message content matters: side effect infomation moves beliefs
+- [Contribution:]{.alert} Message content matters: side effect infomation relevant
 - [Contribution:]{.alert} Mistrust in institutions matters because it impedes learning 
 
 Literature on information provision experiments 
 
 - Simple information provisions shift beliefs and behaviors 
-- [Contribution]{.alert}: Simple information provision with skeptical audience more challenging
+- [Contribution]{.alert}: Skeptical audience makes info provision challenging
 
 # Experiment Design
 
@@ -170,9 +169,11 @@ Literature on information provision experiments
 ## Eliciting side effect beliefs 
 ### Conceptualization 
 
-"Side effect" is causal effect of vaccine on severe adverse event rate
+"Side effect" is causal effect of vaccine on short-run, severe adverse event rate
 
-"Severe" corresponds to grade 3, disruptive to your day - real cost, not just noticeable 
+- Short-run: lasting a few days
+- "Severe": grade 3, disruptive to your day - real cost, not just noticeable
+
 
 Two requirements for us
 
@@ -268,7 +269,7 @@ $$y = b_0 + b_1 \cdot Industry  + b_2\cdot Academic + b_3\cdot Personal + Contro
 ::: {.column width="50%"}
 Outcomes
 
-- $\tilde{\Delta}_{self}$ Side effect delta (primary)
+- $\tilde{\Delta}_{self}$ Side effect belief (primary)
 - Side effect experienced in trial
 - Intend to vaccinate
 - Clicked on a link
@@ -371,7 +372,7 @@ Puzzling: Inconsistent pattern of belief and intention responses
   - Personal arm does not change side effect beliefs but does increase intentions
 
 
-## Puzzle is largely explained by of heterogeneous respones by political {#het-polviews-slide}
+##  Partial resolution: political views {#het-polviews-slide}
 ### Caution: not pre-specified
 
 {{< include ../output/tables/het_polviews.md >}}
@@ -379,10 +380,10 @@ Puzzling: Inconsistent pattern of belief and intention responses
 Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
 
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 375px; width: 575px; height: 490px;"}
+::: {.row-callout .fragment .fade-in-then-out style="top: 155px; left: 375px; width: 575px; height: 640px;"}
 :::
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 950px; width: 575px; height: 490px;"}
+::: {.row-callout .fragment .fade-in-then-out style="top: 155px; left: 950px; width: 575px; height: 640px;"}
 :::
 
 
@@ -401,6 +402,7 @@ Views of university-provided information
 - Do you obtain health care info from university research or researchers? 
 - Do you consider it it reliable?
 
+ [Appendix →](#appendix-toc-slide){.button}
 
 ## Politics matter  because they correlate with determinants of belief updating
 ### Caution: not pre-specified

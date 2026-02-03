@@ -86,13 +86,12 @@ Side effect information from scientific studies shifts [beliefs about personal r
 
   - by 3 percentage points on a base of 15 (vs. 0-1 in clinical trials)
 
-Belief responses don't clearly move with [source]{.alert} and [study population]{.alert}
+Belief responses don't clearly move with [source]{.alert}
 
   - Industry and academic arms similar have similar treatment effects; personal arm null
+  - Inconsistent results for intervention emphasizing [study population]{.alert}
 
 Information shifts vaccine [intentions]{.alert}, noisy effect on actual vaccination
-
-  - Academic and personal arms only  
 
 :::{.fragment}
 Results are highly heterogeneous by political views [(not preregistered)]{.alert}
