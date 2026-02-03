@@ -1,5 +1,5 @@
 .reveal {
-  font-size: 40px;
+  font-size: 42px;
 }
 
 .reveal h1 {
@@ -40,6 +40,12 @@
   table-layout: fixed;
 }
 
+/* Consistent spacing between table container and following notes */
+.reveal .stretch-table + p,
+.reveal .table-stack + p {
+  margin-top: 0.3em;
+}
+
 .reveal .stretch-table table th:first-child,
 .reveal .stretch-table table td:first-child {
   width: 40%;
@@ -48,7 +54,7 @@
 /* Stack tables on top of each other for fragment transitions */
 .table-stack {
   position: relative;
-  min-height: 505px;
+  min-height: 557px;
 }
 
                                                                                                                                                                                                                      
@@ -144,6 +150,14 @@
   font-size: 0.5em;
   text-decoration: none;
   color: #fff;
+}
+
+/* Tighter spacing between coefficient and standard error rows */
+.reveal table tbody tr:has(> td:first-child:empty) td {
+  padding-top: 0;
+}
+.reveal table tbody tr:has(> td:first-child:empty) + tr:not(:has(> td:first-child:empty)) td {
+  padding-top: 0.6em;
 }
 
 /* Hypothesis text styling */

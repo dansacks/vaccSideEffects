@@ -1,0 +1,107 @@
+---
+title: "Font Size Test"
+format:
+  clean-revealjs:
+    slide-number: false
+    width: 1600
+    height: 900
+    css: style.css
+---
+
+## An experiment in flu vaccine side effect information {style="font-size: 80%"}
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **-20%** (font-size: 80%)
+
+## An experiment in flu vaccine side effect information {style="font-size: 90%"}
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **-10%** (font-size: 90%)
+
+## An experiment in flu vaccine side effect information {style="font-size: 95%"}
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **-5%** (font-size: 95%)
+
+## An experiment in flu vaccine side effect information
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **baseline** (font-size: 100%)
+
+## An experiment in flu vaccine side effect information {style="font-size: 105%"}
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **+5%** (font-size: 105%)
+
+## An experiment in flu vaccine side effect information {style="font-size: 110%"}
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **+10%** (font-size: 110%)
+
+## An experiment in flu vaccine side effect information {style="font-size: 120%"}
+
+Why flu vaccine side effects?
+
+- Low and falling flu vaccination rates, important for health
+- Excess pessimism about side effects, side effects matter
+
+Research questions:
+
+1. Can side effect information from scientific studies shift beliefs about personal risk?
+2. Do responses vary with source and study population?
+
+This slide is at **+20%** (font-size: 120%)

@@ -1,6 +1,6 @@
 |                      | Delta, conservative | Delta, liberal | Delta, conservative | Delta, liberal |
 | -------------------- | :----------: | :----------: | :----------: | :----------: |
-| Objective SE belief  |        0.476 |        0.437 |        0.431 |        0.392 |
+| SE (trial)           |        0.476 |        0.437 |        0.431 |        0.392 |
 |                      |      (0.036) |      (0.050) |      (0.036) |      (0.048) |
 | No reaction to flu vacc |              |              |       -5.786 |       -5.339 |
 |                      |              |              |      (1.143) |      (1.242) |

@@ -70,7 +70,7 @@ Communication reduces vaccine hesitancy only under certain conditions
 If communication fails, either
 
 - It is not persuasive; does not move [beliefs]{.alert}
-- There is a hole in the scientific record; we aren't measuring some salient cost or benefit
+- There is a hole in the scientific record; missing some salient cost or benefit
 
 ::: 
 
@@ -94,9 +94,9 @@ Research questions:
 
 ## Study overview
 
-Recruit of 3500 flu vaccine hesitant Amercians on prolific, to Qualtrics survey experiment
+Recruit 3500 flu vaccine hesitant Amercians on prolific, to survey experiment
 
-Explain clinical trials and report placebo group side effect rate in clinicial trial. Randomize
+Explain clinical trials and report placebo group side effect rate. Randomize
 
 1. Control: No info about vaccine group side effect rate
 2. Industry: Info about vaccine group side effect rate in [manufacturer clinical trial]{.alert}
@@ -130,7 +130,7 @@ Information shifts vaccine [intentions]{.alert}, noisy effect on actual vaccinat
 Results are highly heterogeneous by political views [(not preregistered)]{.alert}
 
   - Liberals' beliefs and vaccine intentions respond strongly, conservatives null/negative
-  - Politics predict whether people find trials + uni research trustworthy + relevant
+  - Politics predict whether people find trials + university research trustworthy + relevant
 ::: 
 
 ## What is new here?
@@ -155,7 +155,7 @@ Literature on information provision experiments
 [Screening wave]{.alert} Recruit 8,000, screen for vaccine hesitancy, late November
 
 - Don't intend to vaccinate against flu; may or may not vaccinate against flu
-- Also measure vaccine information sources and experience with flu and COVID vaccines
+- Also measure vaccine info sources and experience with flu and COVID vaccines
 
 [Main wave]{.alert} 3,500 vaccine hesitant participants, 1-7 days later
 
@@ -177,7 +177,7 @@ Literature on information provision experiments
 Two requirements for us
 
 1. Person specific: participant's expected effect, not population or trial average effect
-2. Causal contrast, not level of symptom: $\Delta_{self,i} = y_i(1)-y_i(0)$
+2. Causal contrast, not level of symptom: $\tilde{\Delta}_{self,i} = \tilde{y}_i(1)-\tilde{y}_i(0)$
 
 
 ## Eliciting side effect beliefs 
@@ -190,10 +190,10 @@ We get causal contrast by eliciting both potential outcomes. To elicit $\tilde{y
 > Thinking about yourself, how likely do you think you would be to experience a severe adverse event, such as headache, muscle ache, tiredness, joint pain, fever, chills, or general discomfort, in the following few days? 
 >*(As a reminder, severe means bad enough to disrupty your daily activity)*
 
-Elicit $\tilde{y}_i(1)$ analogously.  Subjective side effect rate $\Delta_{self,i} = y_{i}(1)-y_{i}(0)$.
+Elicit $\tilde{y}_i(1)$ analogously.  Subjective side effect rate $\tilde{\Delta}_{self,i} = \tilde{y}_{i}(1)-\tilde{y}_{i}(0)$.
 
 :::{.fragment}
-Before information provision, elicit [priors]{.alert} for $y_i(0)$ and $y_i(1)$ using [likert scale]{.alert}
+Before information provision, elicit [priors]{.alert} for $\tilde{y}_i(0)$ and $\tilde{y}_i(1)$ using [likert scale]{.alert}
 :::
 
 
@@ -268,7 +268,7 @@ $$y = b_0 + b_1 \cdot Industry  + b_2\cdot Academic + b_3\cdot Personal + Contro
 ::: {.column width="50%"}
 Outcomes
 
-- $\Delta_{self}$ Side effect delta (primary)
+- $\tilde{\Delta}_{self}$ Side effect delta (primary)
 - Side effect experienced in trial
 - Intend to vaccinate
 - Clicked on a link
@@ -312,7 +312,7 @@ Controls (power-improving)
 
 
 
-## Treatment Effects: Beliefs, intentions, and actions 
+## Info effects: Beliefs, intentions, and actions 
 
 ::: {.table-stack .stretch-table}
 
@@ -338,9 +338,9 @@ Controls (power-improving)
 
 :::
 
-Notes: Robust standard errors in parentheses. Controls included but not shown. [Appendix →](#appendix-toc-slide){.button}
+Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
 
-## Treatment Effects: Beliefs, intentions, and actions {#te-slide}
+## Info effects: Beliefs, intentions, and actions {#te-slide}
 
 ::: {.stretch-table}
 
@@ -348,15 +348,15 @@ Notes: Robust standard errors in parentheses. Controls included but not shown. [
 
 :::
 
-Notes: Robust standard errors in parentheses. Controls included but not shown. [Appendix →](#appendix-toc-slide){.button}
+Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 270px; left: 0px; width: 1550px; height: 105px;"}
+::: {.row-callout .fragment .fade-in-then-out  style="top: 284px; left: 0px; width: 1575px; height: 112px;"}
 :::
 
-::: {.row-callout .fragment .fade-in-then-out  style="top: 163px; left: 0px; width: 1550px; height: 105px;"}
+::: {.row-callout .fragment .fade-in-then-out  style="top: 170px; left: 0px; width: 1575px; height: 112px;"}
 :::
 
-::: {.row-callout .fragment .fade-in-then-out  style="top: 376px; left: 0px; width: 1550px; height: 105px;"}
+::: {.row-callout .fragment .fade-in-then-out  style="top: 398px; left: 0px; width: 1575px; height: 112px;"}
 :::
 
 ## Summarizing: Results are promising but puzzling
@@ -371,12 +371,12 @@ Puzzling: Inconsistent pattern of belief and intention responses
   - Personal arm does not change side effect beliefs but does increase intentions
 
 
-## Heterogeneous respones by political views explain these puzzling effects {#het-polviews-slide}
+## Puzzle is largely explained by of heterogeneous respones by political {#het-polviews-slide}
 ### Caution: not pre-specified
 
 {{< include ../output/tables/het_polviews.md >}}
 
-Notes: Robust standard errors in parentheses. Controls included but not shown. [Appendix →](#appendix-toc-slide){.button}
+Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
 
 
 ::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 375px; width: 575px; height: 490px;"}
@@ -415,14 +415,13 @@ Views of university-provided information
 
 ## Expressive responding and experimenter demand are unlikely to explain these results {#expressive-slide}
 
-Expressive responding: people are using the survey to express their vaccine preferences
+People expressing their vaccine [preferences]{.alert}, or saying what they think we want to hear
 
-Experimenter demand: participants tell us what they think we want to hear
 
 Very difficult to explain pattern of treatment effects thusly
 
 - Participants don't know which treatment arm they're in
-- Control-vs-industry: no differential signal of experiment intent, but shows treatment effect
+- Control-vs-industry: same  signal of experiment intent, different $\tilde{\Delta}_{self}$
 - Little priming: Political views after beliefs
 
 More evidence: reported $\Delta_{self}$ inconsistent with expressive answering [Appendix →](#appendix-toc-slide){.button}
