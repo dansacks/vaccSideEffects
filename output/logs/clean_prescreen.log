@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      StataNow 19.5
+ /__    /   ____/   /   ____/      Stata 18.0
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Daniel Sacks
-               
+  Licensed to: Wisconsin School of Business
+               University of Wisconsin - Madison
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do /Users/sacks/Projects/VaccSideEffects/code/clean_prescreen.do 
+. do C:/Users/dwsacks/projects/vaccSideEffects/code/clean_prescreen.do 
 
 . /*===========================================================================
 > ===
@@ -79,28 +79,28 @@ Notes:
 . }
 
 . cd "$projdir"
-/Users/sacks/Projects/VaccSideEffects
+C:\Users\dwsacks\Projects\VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
+  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
   [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
+  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
+  [6]  (OLDPLACE)  "c:\ado/"
+  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "/Applications/StataNow/ado/base/"
-  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
+  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
   [3]              "."
-  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
-  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
-  [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
-  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
+  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
+  [6]  (OLDPLACE)  "c:\ado/"
+  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -151,10 +151,10 @@ Notes:
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_prescreen.
-> log
+       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/clean_prescr
+> een.log
   log type:  text
- opened on:  29 Jan 2026, 12:36:28
+ opened on:   3 Feb 2026, 09:03:26
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prescreen ===
 .     di "Log: output/logs/$scriptname.log"
@@ -1270,27 +1270,27 @@ end_date        double  %tc..                 Survey end date/time
 duration_sec    long    %40.2f                Survey duration (seconds)
 progress        byte    %40.2f                Survey progress (%)
 consent         byte    %40.0f     yesno      Consent given
-final_sample    float   %9.0g      yesno      Final analysis sample (consent,
+final_sample    double  %10.0g     yesno      Final analysis sample (consent,
                                                 passed attention, first
                                                 attempt)
-incomplete      float   %9.0g      yesno      Incomplete response
-failed_attn     float   %9.0g      yesno      Failed attention check
-pid_mismatch    float   %9.0g      yesno      Prolific PID mismatch
+incomplete      double  %10.0g     yesno      Incomplete response
+failed_attn     double  %10.0g     yesno      Failed attention check
+pid_mismatch    double  %10.0g     yesno      Prolific PID mismatch
 duplicate_pid   byte    %12.0g     yesno      Duplicate Prolific PID
-first_attempt   float   %9.0g      yesno      First survey attempt for this PID
+first_attempt   double  %10.0g     yesno      First survey attempt for this PID
 favorite_number double  %10.0g                Favorite number (attention check)
-is_preview      float   %9.0g      yesno      
+is_preview      double  %10.0g     yesno      
 flu_vacc_last~r byte    %40.0f     fluvax_lastyear_lbl
                                               Got flu vaccine last year
 prior_vaccines  byte    %40.0f     prior_vax_lbl
                                               Prior vaccine history
 vacc_intent     byte    %40.0f     flu_intent_lbl
                                               Flu vaccine intent this season
-had_prior_cov~c float   %9.0g      yesno      Had prior COVID vaccine
-had_prior_flu~c float   %9.0g      yesno      Had prior flu vaccine
-covid_vacc_re~n float   %22.0g     reaction_lbl
+had_prior_cov~c double  %10.0g     yesno      Had prior COVID vaccine
+had_prior_flu~c double  %10.0g     yesno      Had prior flu vaccine
+covid_vacc_re~n double  %22.0g     reaction_lbl
                                               COVID vaccine reaction
-flu_vacc_reac~n float   %22.0g     reaction_lbl
+flu_vacc_reac~n double  %22.0g     reaction_lbl
                                               Flu vaccine reaction
 cond_asthma     byte    %40.0f     yesno      Has asthma
 cond_lung       byte    %40.0f     yesno      Has lung disease
@@ -1299,13 +1299,13 @@ cond_diabetes   byte    %40.0f     yesno      Has diabetes
 cond_kidney     byte    %40.0f     yesno      Has kidney disease
 cond_rather_n~y byte    %40.0f     yesno      Health conditions: rather not say
 cond_none       byte    %40.0f     yesno      No health conditions
-cond_asthma_m~s float   %9.0g                 cond_asthma missing
-cond_lung_miss  float   %9.0g                 cond_lung missing
-cond_heart_miss float   %9.0g                 cond_heart missing
-cond_diabetes~s float   %9.0g                 cond_diabetes missing
-cond_kidney_m~s float   %9.0g                 cond_kidney missing
-cond_rather_n~s float   %9.0g                 cond_rather_not_say missing
-cond_none_miss  float   %9.0g                 cond_none missing
+cond_asthma_m~s double  %10.0g                cond_asthma missing
+cond_lung_miss  double  %10.0g                cond_lung missing
+cond_heart_miss double  %10.0g                cond_heart missing
+cond_diabetes~s double  %10.0g                cond_diabetes missing
+cond_kidney_m~s double  %10.0g                cond_kidney missing
+cond_rather_n~s double  %10.0g                cond_rather_not_say missing
+cond_none_miss  double  %10.0g                cond_none missing
 has_insurance   byte    %40.0f     insurance_lbl
                                               Has health insurance
 trust_govt      byte    %40.0f     agree5     Trust government info about flu
@@ -1318,12 +1318,12 @@ info_source_m~n byte    %40.0f     source_main_lbl
 source_sm_text  str409  %409s                 Social media source (text)
 source_podcas~t str262  %262s                 Podcast source (text)
 source_news_t~t str243  %243s                 News source (text)
-source_doctor   float   %9.0g      yesno      Main source: Doctor
-source_sm       float   %9.0g      yesno      Main source: Social media
-source_podcasts float   %9.0g      yesno      Main source: Podcasts
-source_cdc      float   %9.0g      yesno      Main source: CDC
-source_news     float   %9.0g      yesno      Main source: News
-source_none     float   %9.0g      yesno      Main source: None of the above
+source_doctor   double  %10.0g     yesno      Main source: Doctor
+source_sm       double  %10.0g     yesno      Main source: Social media
+source_podcasts double  %10.0g     yesno      Main source: Podcasts
+source_cdc      double  %10.0g     yesno      Main source: CDC
+source_news     double  %10.0g     yesno      Main source: News
+source_none     double  %10.0g     yesno      Main source: None of the above
 info_doctor     byte    %40.0f     freq4_nodoc
                                               Get info from doctor
 info_sm         byte    %40.0f     freq4      Get info from social media
@@ -1344,25 +1344,25 @@ reliable_news   byte    %40.0f     reliable3
 reliable_univ~y byte    %40.0f     reliable3
                                               Find university research reliable
 comments        str2000 %2000s                Final comments
-trust_govt_miss float   %9.0g                 trust_govt missing
-intent_no       float   %9.0g                 Intent: No, do not intend (vs.
+trust_govt_miss double  %10.0g                trust_govt missing
+intent_no       double  %10.0g                Intent: No, do not intend (vs.
                                                 may or may not)
-covid_react_n~e float   %9.0g                 COVID reaction: None/don't
+covid_react_n~e double  %10.0g                COVID reaction: None/don't
                                                 remember
-covid_react_m~d float   %9.0g                 COVID reaction: Mild
-covid_react_s~e float   %9.0g                 COVID reaction: Severe
-flu_react_none  float   %9.0g                 Flu reaction: None/don't remember
-flu_react_mild  float   %9.0g                 Flu reaction: Mild
-flu_react_sev~e float   %9.0g                 Flu reaction: Severe
-trust_st~sagree float   %9.0g                 Trust govt: Strongly disagree
-trust_so~sagree float   %9.0g                 Trust govt: Somewhat disagree
-trust_neither   float   %9.0g                 Trust govt: Neither
-trust_so~_agree float   %9.0g                 Trust govt: Somewhat agree
-trust_st~_agree float   %9.0g                 Trust govt: Strongly agree
-had_prior_cov~s float   %9.0g                 had_prior_covid_vacc missing
-had_prior_flu~s float   %9.0g                 had_prior_flu_vacc missing
-covid_vacc_re~s float   %9.0g                 covid_vacc_reaction missing
-flu_vacc_reac~s float   %9.0g                 flu_vacc_reaction missing
+covid_react_m~d double  %10.0g                COVID reaction: Mild
+covid_react_s~e double  %10.0g                COVID reaction: Severe
+flu_react_none  double  %10.0g                Flu reaction: None/don't remember
+flu_react_mild  double  %10.0g                Flu reaction: Mild
+flu_react_sev~e double  %10.0g                Flu reaction: Severe
+trust_st~sagree double  %10.0g                Trust govt: Strongly disagree
+trust_so~sagree double  %10.0g                Trust govt: Somewhat disagree
+trust_neither   double  %10.0g                Trust govt: Neither
+trust_so~_agree double  %10.0g                Trust govt: Somewhat agree
+trust_st~_agree double  %10.0g                Trust govt: Strongly agree
+had_prior_cov~s double  %10.0g                had_prior_covid_vacc missing
+had_prior_flu~s double  %10.0g                had_prior_flu_vacc missing
+covid_vacc_re~s double  %10.0g                covid_vacc_reaction missing
+flu_vacc_reac~s double  %10.0g                flu_vacc_reaction missing
 -------------------------------------------------------------------------------
 Sorted by: prolific_pid  start_date
      Note: Dataset has changed since last saved.
@@ -1445,47 +1445,47 @@ end of do-file
 . 
 . * Compress and save
 . compress
-  variable final_sample was float now byte
-  variable incomplete was float now byte
-  variable failed_attn was float now byte
-  variable pid_mismatch was float now byte
-  variable first_attempt was float now byte
-  variable is_preview was float now byte
-  variable had_prior_covid_vacc was float now byte
-  variable had_prior_flu_vacc was float now byte
-  variable covid_vacc_reaction was float now byte
-  variable flu_vacc_reaction was float now byte
-  variable cond_asthma_miss was float now byte
-  variable cond_lung_miss was float now byte
-  variable cond_heart_miss was float now byte
-  variable cond_diabetes_miss was float now byte
-  variable cond_kidney_miss was float now byte
-  variable cond_rather_not_say_miss was float now byte
-  variable cond_none_miss was float now byte
-  variable source_doctor was float now byte
-  variable source_sm was float now byte
-  variable source_podcasts was float now byte
-  variable source_cdc was float now byte
-  variable source_news was float now byte
-  variable source_none was float now byte
-  variable trust_govt_miss was float now byte
-  variable intent_no was float now byte
-  variable covid_react_none was float now byte
-  variable covid_react_mild was float now byte
-  variable covid_react_severe was float now byte
-  variable flu_react_none was float now byte
-  variable flu_react_mild was float now byte
-  variable flu_react_severe was float now byte
-  variable trust_strongly_disagree was float now byte
-  variable trust_somewhat_disagree was float now byte
-  variable trust_neither was float now byte
-  variable trust_somewhat_agree was float now byte
-  variable trust_strongly_agree was float now byte
-  variable had_prior_covid_vacc_miss was float now byte
-  variable had_prior_flu_vacc_miss was float now byte
-  variable covid_vacc_reaction_miss was float now byte
-  variable flu_vacc_reaction_miss was float now byte
-  (983,760 bytes saved)
+  variable final_sample was double now byte
+  variable incomplete was double now byte
+  variable failed_attn was double now byte
+  variable pid_mismatch was double now byte
+  variable first_attempt was double now byte
+  variable is_preview was double now byte
+  variable had_prior_covid_vacc was double now byte
+  variable had_prior_flu_vacc was double now byte
+  variable covid_vacc_reaction was double now byte
+  variable flu_vacc_reaction was double now byte
+  variable cond_asthma_miss was double now byte
+  variable cond_lung_miss was double now byte
+  variable cond_heart_miss was double now byte
+  variable cond_diabetes_miss was double now byte
+  variable cond_kidney_miss was double now byte
+  variable cond_rather_not_say_miss was double now byte
+  variable cond_none_miss was double now byte
+  variable source_doctor was double now byte
+  variable source_sm was double now byte
+  variable source_podcasts was double now byte
+  variable source_cdc was double now byte
+  variable source_news was double now byte
+  variable source_none was double now byte
+  variable trust_govt_miss was double now byte
+  variable intent_no was double now byte
+  variable covid_react_none was double now byte
+  variable covid_react_mild was double now byte
+  variable covid_react_severe was double now byte
+  variable flu_react_none was double now byte
+  variable flu_react_mild was double now byte
+  variable flu_react_severe was double now byte
+  variable trust_strongly_disagree was double now byte
+  variable trust_somewhat_disagree was double now byte
+  variable trust_neither was double now byte
+  variable trust_somewhat_agree was double now byte
+  variable trust_strongly_agree was double now byte
+  variable had_prior_covid_vacc_miss was double now byte
+  variable had_prior_flu_vacc_miss was double now byte
+  variable covid_vacc_reaction_miss was double now byte
+  variable flu_vacc_reaction_miss was double now byte
+  (2,295,440 bytes saved)
 
 . save "derived/prescreen_clean.dta", replace
 file derived/prescreen_clean.dta saved

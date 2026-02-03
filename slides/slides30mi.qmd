@@ -108,13 +108,13 @@ Literature on vaccine hesitancy and beliefs
 - Flu vaccine hesitancy correlated with pessimistic side effect beliefs
 - Unhelpful to correct false beliefs (flu, pediatric)
 - Identity of messenger can matter (racial concordance, political concordance)
-- [Contribution:]{.alert} Message content matters: side effect infomation moves beliefs
+- [Contribution:]{.alert} Message content matters: side effect infomation relevant
 - [Contribution:]{.alert} Mistrust in institutions matters because it impedes learning 
 
 Literature on information provision experiments 
 
 - Simple information provisions shift beliefs and behaviors 
-- [Contribution]{.alert}: Simple information provision with skeptical audience more challenging
+- [Contribution]{.alert}: Skeptical audience makes info provision challenging
 
 # Experiment Design
 
@@ -138,14 +138,16 @@ Literature on information provision experiments
 ## Eliciting side effect beliefs 
 ### Conceptualization 
 
-"Side effect" is causal effect of vaccine on severe adverse event rate
+"Side effect" is causal effect of vaccine on short-run, severe adverse event rate
 
-"Severe" corresponds to grade 3, disruptive to your day - real cost, not just noticeable 
+- Short-run: lasting a few days 
+- "Severe": grade 3, disruptive to your day - real cost, not just noticeable 
+
 
 Two requirements for us
 
 1. Person specific: participant's expected effect, not population or trial average effect
-2. Causal contrast, not level of symptom: $\tilde{Delta}_{self,i} = \tilde{y}_i(1)-\tilde{y}_i(0)$
+2. Causal contrast, not level of symptom: $\tilde{\Delta}_{self,i} = \tilde{y}_i(1)-\tilde{y}_i(0)$
 
 
 ## Eliciting side effect beliefs 
@@ -336,7 +338,7 @@ Puzzling: Inconsistent pattern of belief and intention responses
   - Personal arm does not change side effect beliefs but does increase intentions
 
 
-## Puzzle is largely explained by of heterogeneous respones by political {#het-polviews-slide}
+##  Partial resolution: political views {#het-polviews-slide}
 ### Caution: not pre-specified
 
 {{< include ../output/tables/het_polviews.md >}}
@@ -344,10 +346,10 @@ Puzzling: Inconsistent pattern of belief and intention responses
 Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
 
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 375px; width: 575px; height: 490px;"}
+::: {.row-callout .fragment .fade-in-then-out style="top: 155px; left: 375px; width: 575px; height: 640px;"}
 :::
 
-::: {.row-callout .fragment .fade-in-then-out style="top: 305px; left: 950px; width: 575px; height: 490px;"}
+::: {.row-callout .fragment .fade-in-then-out style="top: 155px; left: 950px; width: 575px; height: 640px;"}
 :::
 
 
