@@ -50,29 +50,16 @@ View 2: Health consequences are large, positive, and rooted in science
 
 [Hypothesis: Communicating science of vaccines should [persuade]{.alert} people to vaccinate]{.fragment}
 
-[This paper: online experiment communicating clinical trial results for flu vacc]{.fragment}
-
-## Testing persuasive communication is valuable 
-Communicating safety and efficacy of trials is potentially welfare improving 
-
-- Addresses [internality]{.alert}, not externality 
-
-Communication reduces vaccine hesitancy only under certain conditions
-
-::: {.incremental}
-
-1. Beliefs inconsistent with scientific evidence + matters for choice; internality present
-2. Vaccine hesitant find evidence credible and relevant $\leftarrow$ Far from obviously true! 
-
-::: 
-
 ::: {.fragment}
-If communication fails, either
 
-- It is not persuasive; does not move [beliefs]{.alert}
-- There is a hole in the scientific record; missing some salient cost or benefit
+This paper: online experiment communicating clinical trial results for flu vacc
 
-::: 
+- Study population: people not necessarily intending to take flu vaccine
+- Communication: potentially welfare improving [internality]{.alert} correction
+- Helpful if beliefs are incorrect, relevant for choice, moveable
+
+:::
+
 
 ## An experiment on flu vaccine side effect info
 
@@ -92,25 +79,6 @@ Research questions:
 
 :::
 
-## Study overview
-
-Recruit 3500 flu vaccine hesitant Amercians on prolific, to survey experiment
-
-Explain clinical trials and report placebo group side effect rate. Randomize
-
-1. Control: No info about vaccine group side effect rate
-2. Industry: Info about vaccine group side effect rate in [manufacturer clinical trial]{.alert}
-3. Academic: Info about vaccine group side effect rate in [academic study]{.alert}
-4. Personal: As academic, but explain participants are [vaccine hesitant prolific users]{.alert}
-
-[The information provision is extremely uncreative and unslick.]{.fragment}
-
-:::{.fragment}
-Elicit beliefs about personal side effect risk and vaccine intentions, actual vaccination
-
-- Personal risk belief is pre-specified primary outcome 
-
-:::
 
 ## Preliminary study results 
 
@@ -135,17 +103,14 @@ Results are highly heterogeneous by political views [(not preregistered)]{.alert
 ## What is new here?
 Literature on vaccine hesitancy and beliefs
 
-- Vaccine hesitancy highly correlated with trust in institutions
-- Flu vaccine hesitancy correlated with pessimistic side effect beliefs
-- Unhelpful to correct false beliefs (flu, pediatric)
-- Identity of messenger can matter (racial concordance, political concordance)
-- [Contribution:]{.alert} Message content matters: side effect infomation relevant
-- [Contribution:]{.alert} Mistrust in institutions matters because it impedes learning 
+- Vaccine hesitancy highly correlated with mistrust in institutions, pessimistic side effect beliefs. Messages correcting false beliefs (flu, pediatric) unhelpful but no work on side effect beliefs. Identity of messenger can matter (racial concordance, political concordance)
+- [Contributions:]{.alert} Message content matters: side effect infomation relevant. Mistrust in institutions matters because it impedes learning 
 
 Literature on information provision experiments 
 
 - Simple information provisions shift beliefs and behaviors 
 - [Contribution]{.alert}: Skeptical audience makes info provision challenging
+
 
 # Experiment Design
 
