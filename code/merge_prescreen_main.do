@@ -22,8 +22,6 @@ use "derived/prescreen_clean.dta" if final_sample , clear
 
 
 * Rename conflicting variables with pre_ prefix
-rename response_id pre_response_id
-rename prolific_id_entered pre_prolific_id_entered
 rename start_date pre_start_date
 rename end_date pre_end_date
 rename duration_sec pre_duration_sec
@@ -33,7 +31,7 @@ rename final_sample pre_final_sample
 rename incomplete pre_incomplete
 rename failed_attn pre_failed_attn
 rename pid_mismatch pre_pid_mismatch
-rename duplicate_pid pre_duplicate_pid
+rename duplicate_study_id pre_duplicate_study_id
 rename comments pre_comments
 rename vacc_intent pre_vacc_intent
 
@@ -60,8 +58,6 @@ use "derived/main_clean.dta" if final_sample, clear
 
 
 * Rename conflicting variables with main_ prefix
-rename response_id main_response_id
-rename prolific_id_entered main_prolific_id_entered
 rename start_date main_start_date
 rename end_date main_end_date
 rename duration_sec main_duration_sec
@@ -71,7 +67,7 @@ rename final_sample main_final_sample
 rename incomplete main_incomplete
 rename failed_attn main_failed_attn
 rename pid_mismatch main_pid_mismatch
-rename duplicate_pid main_duplicate_pid
+rename duplicate_study_id main_duplicate_study_id
 rename comments main_comments
 
 * Rename vacc_intentions to distinguish from prescreen's flu_vax_intent
@@ -88,8 +84,8 @@ di "Main observations: " _N
     3. Merge datasets
 ------------------------------------------------------------------------------*/
 
-* Merge prescreen into main (1:1 on prolific_pid)
-merge 1:1 prolific_pid using `prescreen', update keep(1 3 4 5)
+* Merge prescreen into main (1:1 on study_id)
+merge 1:1 study_id using `prescreen', update keep(1 3 4 5)
 assert _merge <= 3 
 
 * Create merge indicator
@@ -105,20 +101,6 @@ count if _merge == 2
 di "In prescreen only (not in main): " r(N)
 count if _merge == 3
 di "In both: " r(N)
-
-* List observations in main only (should be none - investigate if any exist)
-count if _merge == 1
-if r(N) > 0 {
-    di ""
-    di "=== WARNING: " r(N) " observations in main but not prescreen ==="
-    di "Exporting to output/logs/main_only_observations.csv"
-    preserve
-    keep if _merge == 1
-    keep prolific_pid main_response_id main_start_date main_consent arm_n
-    export delimited using "output/logs/main_only_observations.csv", replace
-    restore
-}
-
 
 
 /*------------------------------------------------------------------------------

@@ -160,6 +160,21 @@
   padding-top: 0.6em;
 }
 
+/* Graphviz/dot diagrams: stretch to full slide width, compact vertical spacing */
+.reveal .quarto-figure img,
+.reveal .quarto-figure svg {
+  max-width: 100%;
+}
+.reveal .cell[data-reveal] {
+  margin-bottom: 0;
+}
+.reveal .cell[data-reveal] .quarto-figure {
+  margin-bottom: 0;
+}
+.reveal .cell[data-reveal] figure {
+  margin-bottom: 0;
+}
+
 /* Hypothesis text styling */
 .hyp {
   display: block;

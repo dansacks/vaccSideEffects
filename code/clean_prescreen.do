@@ -16,7 +16,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-import spss using "raw_data/vacc_se_prescreen_full_January+9,+2026_19.47.sav", clear
+use "raw_data/vacc_se_prescreen_full_January+9,+2026_19.47", clear
 
 * Verify we have data
 assert _N > 0
@@ -25,7 +25,7 @@ di "Loaded " _N " observations"
 /*------------------------------------------------------------------------------
     2. Drop unused metadata variables
 ------------------------------------------------------------------------------*/
-drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
+drop ExternalReference
 
 /*------------------------------------------------------------------------------
     3. Rename variables to clean names
@@ -35,7 +35,6 @@ drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
 do "code/include/_rename_qualtrics_metadata.do"
 
 * Rename prescreen-specific variables from SPSS names
-rename Q42 prolific_id_entered
 rename Favorite_Number favorite_number
 rename Vaccine_History flu_vacc_lastyear
 rename Other_Vaccines prior_vaccines
@@ -84,10 +83,6 @@ rename Reliability__News reliable_news
 rename Reliability reliable_university
 
 rename Final_Comments comments
-rename PROLIFIC_PID prolific_pid
-
-* Drop session/study IDs
-drop SESSION_ID STUDY_ID
 
 
 /*------------------------------------------------------------------------------
@@ -114,8 +109,9 @@ tab consent, m nolabel
 recode consent (4=1) ($PREF_NOT_SAY 5=0)
 label values consent yesno
 
-* --- Flu vaccine last year (SPSS: 1=Yes, 2=No) ---
-recode flu_vacc_lastyear (1=1) (2=0)
+* --- Flu vaccine last year (SPSS: 1=No, 2=Yes) ---
+tab flu_vacc_lastyear
+recode flu_vacc_lastyear (1=0) (2=1)
 label values flu_vacc_lastyear fluvax_lastyear_lbl
 
 * --- Prior vaccines (SPSS: 1=Both, 2=Flu only, 3=COVID only, 4=Neither) ---
@@ -260,8 +256,7 @@ label var duration_sec "Survey duration (seconds)"
 label var progress "Survey progress (%)"
 label var response_id "Qualtrics response ID"
 label var consent "Consent given"
-label var prolific_id_entered "Prolific ID (entered)"
-label var prolific_pid "Prolific ID (from URL)"
+label var study_id "Cross-wave identifier"
 label var favorite_number "Favorite number (attention check)"
 label var flu_vacc_lastyear "Got flu vaccine last year"
 label var prior_vaccines "Prior vaccine history"
@@ -297,7 +292,8 @@ label var cond_kidney "Has kidney disease"
 label var cond_rather_not_say "Health conditions: rather not say"
 
 * Label all yes/no variables
-foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
+foreach var of varlist final_sample incomplete failed_attn pid_mismatch ///
+	duplicate_study_id first_attempt is_preview ///
     had_prior_covid had_prior_flu cond_* source_doctor source_sm source_podcasts source_cdc source_news source_none {
     label values `var' yesno
 }
@@ -379,12 +375,13 @@ foreach v of varlist cond_asthma cond_lung cond_heart cond_diabetes cond_kidney 
 ------------------------------------------------------------------------------*/
 
 * Drop temporary variables
-drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _userlang
+drop _status _finished _recordeddate _distchannel _userlang response_id
 
 * Order variables logically
-order response_id prolific_pid prolific_id_entered ///
+order study_id ///
       start_date end_date duration_sec progress ///
-      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt ///
+      consent final_sample incomplete failed_attn pid_mismatch duplicate_study_id ///
+			first_attempt ///
       favorite_number is_preview ///
       flu_vacc_lastyear prior_vaccines vacc_intent ///
       had_prior_covid_vacc had_prior_flu_vacc covid_vacc_reaction flu_vacc_reaction ///

@@ -28,11 +28,9 @@ program define clean_prolific
     di "=== Cleaning: `infile' ==="
 
     * Import CSV
-    import delimited using "`infile'", clear varnames(1) stringcols(_all)
+    use "`infile'", clear 
 
     * Rename key variables
-    rename submissionid prolific_submission_id
-    rename participantid prolific_pid
     rename status prolific_status
     rename startedat prolific_started
     rename completedat prolific_completed
@@ -87,7 +85,7 @@ program define clean_prolific
     label var prolific_unemployed "Unemployed (Prolific)"
 
     * Keep only relevant variables
-    keep prolific_pid prolific_submission_id prolific_status ///
+    keep study_id prolific_status ///
          prolific_started prolific_completed prolific_duration prolific_approvals ///
          prolific_age prolific_sex prolific_female prolific_male ///
          prolific_ethnicity prolific_ethnicity_n ///
@@ -97,8 +95,7 @@ program define clean_prolific
          prolific_not_working prolific_unemployed
 
     * Label core variables
-    label var prolific_pid "Prolific participant ID"
-    label var prolific_submission_id "Prolific submission ID"
+    label var study_id "Cross-wave participant ID"
     label var prolific_status "Prolific submission status"
     label var prolific_started "Prolific start time"
     label var prolific_completed "Prolific completion time"
@@ -114,9 +111,6 @@ program define clean_prolific
     label var prolific_student "Student status (Prolific)"
     label var prolific_employment "Employment status (Prolific)"
 
-    * Check for duplicates
-    duplicates report prolific_pid
-
     * Compress and save
     compress
     save "`outfile'", replace
@@ -131,22 +125,22 @@ end
 
 * Prescreen (long string filename)
 clean_prolific ///
-    "raw_data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
+    "raw_data/prolific_demographic_export_692494f77a877e57e000eb60" ///
     "derived/prolific_demographics_prescreen.dta"
 
 * Main
 clean_prolific ///
-    "raw_data/prolific_demographic_export_main.csv" ///
+    "raw_data/prolific_demographic_export_main" ///
     "derived/prolific_demographics_main.dta"
 
 * Main morepay
 clean_prolific ///
-    "raw_data/prolific_demographic_export_main_morepay.csv" ///
+    "raw_data/prolific_demographic_export_main_morepay" ///
     "derived/prolific_demographics_main_morepay.dta"
 
 * Followup
 clean_prolific ///
-    "raw_data/prolific_demographic_export_followup.csv" ///
+    "raw_data/prolific_demographic_export_followup" ///
     "derived/prolific_demographics_followup.dta"
 
 /*------------------------------------------------------------------------------

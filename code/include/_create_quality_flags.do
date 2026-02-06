@@ -33,15 +33,11 @@ gen failed_attn = (${attn_check_var} != $attn_check_val) if !mi(${attn_check_var
 replace failed_attn = 1 if mi(${attn_check_var})
 label var failed_attn "Failed attention check"
 
-* PID mismatch
-gen pid_mismatch = (prolific_pid != prolific_id_entered)
-label var pid_mismatch "Prolific PID mismatch"
-
 * Flag first attempt per PID (sort by start_date, keep first)
-bysort prolific_pid (start_date): gen first_attempt = (_n == 1)
+bysort study_id (start_date): gen first_attempt = (_n == 1)
 label var first_attempt "First survey attempt for this PID"
 
 * Duplicate PID (for reference/reporting only)
-duplicates tag prolific_pid, gen(duplicate_pid)
-replace duplicate_pid = (duplicate_pid > 0)
-label var duplicate_pid "Duplicate Prolific PID"
+duplicates tag study_id, gen(duplicate_study_id)
+replace duplicate_study_id = (duplicate_study_id > 0)
+label var duplicate_study_id "Duplicate study id"

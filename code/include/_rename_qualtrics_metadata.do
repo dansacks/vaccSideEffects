@@ -15,9 +15,6 @@ rename EndDate end_date
 rename Duration__in_seconds_ duration_sec
 rename Finished _finished
 rename ResponseId response_id
-rename IPAddress _ipaddress
-rename LocationLatitude _lat
-rename LocationLongitude _long
 rename Status _status
 rename RecordedDate _recordeddate
 rename DistributionChannel _distchannel

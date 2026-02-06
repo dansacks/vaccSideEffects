@@ -1,9 +1,9 @@
 # Fdb version 4
-["pdflatex"] 1769397941.84188 "/Users/sacks/Projects/VaccSideEffects/slides/slides.tex" "slides.pdf" "slides" 1769397942.95344 0
+["pdflatex"] 1770307358.52128 "/Users/sacks/Projects/VaccSideEffects/slides/slides.tex" "slides.pdf" "slides" 1770307359.68259 0
   "../output/figures/belief_cdf_by_arm.png" 1769372620.4955 154724 5638fcb2fc06900a37b1dba859a4ffd4 ""
-  "../output/figures/beliefs_pooled.png" 1769373543.75315 144097 4e8e340e8389a6e175bfbc8011b474ff ""
-  "../output/figures/delta_by_trust.png" 1769373545.87123 103775 f82e96ceccf9ecef322c4ae1343f0bb9 ""
-  "../output/figures/delta_by_vacc_reaction.png" 1769373545.19008 80426 a466d0c7d7a46957e71eb11fe37fcfd1 ""
+  "../output/figures/beliefs_pooled.png" 1770307356.50672 114597 1917bf568941512395fd430d304ff4b8 ""
+  "../output/figures/delta_by_trust.png" 1770307358.71679 81702 8f4c112a20c76bd55cce234fd3247067 ""
+  "../output/figures/delta_by_vacc_reaction.png" 1770307357.9567 91833 32c66b1d77bc230967d3e351fb2eed78 ""
   "/Users/sacks/Projects/VaccSideEffects/slides/slides.tex" 1769397941.63664 6326 9d6c95faa3a215e199a32456b7bedb39 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/lato/a_cl4kdn.enc" 1561498483 2908 33404fff2a7b8e169974e96af0be5333 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -221,9 +221,9 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1769023361 5467155 19efa205003f9ecad95fbbaa6ff24da1 ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741450574 3345740 46b66fdb0378f7bf5921b5eabf1762b8 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "slides.aux" 1769397942.89447 4352 a0591fd3684f8bdc24a119aaf48672cd "pdflatex"
-  "slides.nav" 1769397942.89553 2784 60304618229869d6bc19d5f945c9a0a6 "pdflatex"
-  "slides.out" 1769397942.89518 678 ef27a63d5a0b28caea83c9b7c1c3f742 "pdflatex"
+  "slides.aux" 1770307359.62967 4352 a0591fd3684f8bdc24a119aaf48672cd "pdflatex"
+  "slides.nav" 1770307359.63031 2784 60304618229869d6bc19d5f945c9a0a6 "pdflatex"
+  "slides.out" 1770307359.63017 678 ef27a63d5a0b28caea83c9b7c1c3f742 "pdflatex"
   "slides.tex" 1769397941.63664 6326 9d6c95faa3a215e199a32456b7bedb39 ""
   (generated)
   "slides.aux"

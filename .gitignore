@@ -3,6 +3,7 @@ data/
 figures/
 images/
 derived/
+raw_data 
 
 # Non-code project materials
 design_materials/
@@ -31,7 +32,6 @@ procurement/
 !slides/academic.png 
 !slides/personal.png 
 !slides/trial_info.png 
-
 
 # System/editor
 .DS_Store

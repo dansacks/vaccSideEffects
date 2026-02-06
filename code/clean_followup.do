@@ -1,3 +1,4 @@
+
 /*==============================================================================
     Clean Follow-up Survey Data
 
@@ -16,7 +17,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-import spss using "raw_data/flu_vacc_se_followup_January+9,+2026_19.43.sav", clear
+use "raw_data/flu_vacc_se_followup_January+9,+2026_19.43", clear
 
 * Verify we have data
 assert _N > 0
@@ -25,7 +26,7 @@ di "Loaded " _N " observations"
 /*------------------------------------------------------------------------------
     2. Drop unused metadata variables
 ------------------------------------------------------------------------------*/
-drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
+drop ExternalReference
 
 /*------------------------------------------------------------------------------
     3. Rename variables to clean names
@@ -36,9 +37,7 @@ do "code/include/_rename_qualtrics_metadata.do"
 
 * Rename followup-specific variables from SPSS names
 rename Survey_Information consent
-rename prolific_pid prolific_id_entered
 rename Attention attn_check
-rename _v1 prolific_pid
 
 * Pharmacy factors and shopping
 rename factors pharmacy_factor
@@ -105,6 +104,7 @@ do "code/include/_define_value_labels.do"
 ------------------------------------------------------------------------------*/
 
 * --- Consent (SPSS codes: 1=Yes, 2=No, $PREF_NOT_SAY=missing) ---
+tab consent
 tab consent, m nolabel
 recode consent (1=1) (2 $UNSELECTED_VALUE=0)
 label values consent yesno
@@ -211,8 +211,7 @@ label var duration_sec "Survey duration (seconds)"
 label var progress "Survey progress (%)"
 label var response_id "Qualtrics response ID"
 label var consent "Consent given"
-label var prolific_id_entered "Prolific ID (entered)"
-label var prolific_pid "Prolific ID (from URL)"
+label var study_id "Cross-wave participant id"
 label var attn_check "Attention check value (should be $ATTN_CHECK_FOLLOWUP)"
 label var pharmacy_factor "Most important factor for pharmacy choice"
 label var price_compare "Compared prices at pharmacies"
@@ -248,7 +247,8 @@ label var flu_why_cost "Flu why not: Cost concern"
 label var flu_why_none "Flu why not: None relevant"
 
 * Label all yes/no variables
-foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
+foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_study_id ///
+		first_attempt is_preview ///
     med_pharmacy_chain med_grocery med_independent med_mail_order med_online med_provider med_other med_none ///
     flu_why_already flu_why_side_effects flu_why_bad_flu flu_why_needles flu_why_time flu_why_location flu_why_cost flu_why_none ///
     got_glp1 got_flu_vacc got_covid_vacc placebo_correct vaccine_correct {
@@ -260,12 +260,13 @@ foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicat
 ------------------------------------------------------------------------------*/
 
 * Drop temporary variables
-drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _userlang
+drop  _status _finished _recordeddate _distchannel _userlang
 
 * Order variables logically
-order response_id prolific_pid prolific_id_entered ///
+order study_id ///
       start_date end_date duration_sec progress ///
-      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
+      consent final_sample incomplete failed_attn pid_mismatch duplicate_study_id ///
+			pid first_attempt is_preview ///
       attn_check ///
       med_pharmacy_chain med_grocery med_independent med_mail_order med_online med_provider med_other med_none ///
       pharmacy_factor price_compare use_coupons ///

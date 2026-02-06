@@ -16,7 +16,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-import spss using "raw_data/flu_survey_main_January+9,+2026_08.08.sav", clear
+use "raw_data/flu_survey_main_January+9,+2026_08.08", clear
 
 * Verify we have data
 assert _N > 0
@@ -25,7 +25,7 @@ di "Loaded " _N " observations"
 /*------------------------------------------------------------------------------
     2. Drop unused metadata variables
 ------------------------------------------------------------------------------*/
-drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
+drop ExternalReference
 
 /*------------------------------------------------------------------------------
     3. Rename variables to clean names
@@ -35,9 +35,7 @@ drop RecipientLastName RecipientFirstName RecipientEmail ExternalReference
 do "code/include/_rename_qualtrics_metadata.do"
 
 * Rename main survey-specific variables
-rename Q52 prolific_id_entered
 rename Q2 attn_check
-rename PROLIFIC_PID prolific_pid
 
 /*------------------------------------------------------------------------------
     4. Create preview flag from Status
@@ -219,10 +217,8 @@ label var start_date "Survey start date/time"
 label var end_date "Survey end date/time"
 label var duration_sec "Survey duration (seconds)"
 label var progress "Survey progress (%)"
-label var response_id "Qualtrics response ID"
 label var consent "Consent given"
-label var prolific_id_entered "Prolific ID (entered)"
-label var prolific_pid "Prolific ID (from URL)"
+label var study_id "Cross wave id"
 label var attn_check "Attention check value (should be $ATTN_CHECK_MAIN)"
 label var prior_self_placebo "Prior belief: SE likelihood without vaccine (1-7)"
 label var prior_self_vacc "Prior belief: SE likelihood with vaccine (1-7)"
@@ -250,7 +246,7 @@ label var link3_clicked "Link 3 clicked"
 label var link4_clicked "Link 4 clicked"
 
 * Label all yes/no variables
-foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
+foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_study_id first_attempt is_preview ///
     arm_control arm_industry arm_academic arm_personal maybe link_click {
     label values `var' yesno
 }
@@ -377,16 +373,17 @@ label var polviews_very_conserv "Very conservative"
     13. Drop unnecessary variables and reorder
 ------------------------------------------------------------------------------*/
 
-* Drop temporary variables
-drop _ipaddress _lat _long _status _finished _recordeddate _distchannel _userlang
+* Drop temporary variables and unused vars
+drop _finished _recordeddate _distchannel _userlang
 drop FL_17_DO_CONTROLARM FL_17_DO_INDUSTRYARM FL_17_DO_ACADEMICARM FL_17_DO_PERSONALARM
-
+drop response_id 
 * Note: Progress already renamed to progress by _rename_qualtrics_metadata.do
 
 * Order variables logically
-order response_id prolific_pid prolific_id_entered ///
+order study_id ///
       start_date end_date duration_sec progress ///
-      consent final_sample incomplete failed_attn pid_mismatch duplicate_pid first_attempt is_preview ///
+      consent final_sample incomplete failed_attn pid_mismatch duplicate_study_id ///
+			first_attempt is_preview ///
       attn_check ///
       arm_n arm arm_control arm_industry arm_academic arm_personal ///
       prior_self_placebo prior_self_vacc  ///

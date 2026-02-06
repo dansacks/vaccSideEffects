@@ -20,7 +20,7 @@ count if failed_attn == 1
 di "Failed attention check: " r(N)
 count if pid_mismatch == 1
 di "PID mismatch: " r(N)
-count if duplicate_pid == 1
-di "Duplicate PIDs: " r(N)
+count if duplicate_study_id == 1
+di "Duplicate IDs: " r(N)
 count if is_preview == 1
 di "Preview responses: " r(N)

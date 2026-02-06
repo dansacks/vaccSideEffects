@@ -48,37 +48,72 @@ View 2: Health consequences are large, positive, and rooted in science
 
 - Mandate?
 
-[Hypothesis: Communicating science of vaccines should [persuade]{.alert} people to vaccinate]{.fragment}
+:::{.fragment}
+Hypothesis: Communicating science of vaccines can [persuade]{.alert} people to vaccinate
+
+- Information provision potentially welfare improving by correcting [internality]{.alert}
+
+I am hoping to pursuing this hypothesis in a series of experiments
+
+- End goal: effective, scaleable information provision treatments 
+- Today: First step of the causal chain 
+:::
+
+## From communication to vaccination 
+
+```{dot}
+//| fig-align: center
+//| fig-width: 15
+//| fig-height: 1
+digraph timeline {
+  rankdir=LR
+  bgcolor=transparent
+  graph [pad="0", nodesep="1.5", ranksep="0.5"]
+  node [shape=ellipse, style=filled, fillcolor="#e8e8e8", color="#333333", fontcolor="#333333", fontname="Roboto", fontsize=14, height=0.4, margin="0.12,0.04"]
+  edge [color="#333333", penwidth=1.5, arrowsize=0.8]
+
+  A [label="Information"]
+  B [label="Understanding"]
+  C [label="Beliefs"]
+  D [label="Actions"]
+
+  A -> B -> C -> D
+}
+```
 
 ::: {.fragment}
 
-This paper: online experiment communicating clinical trial results for flu vacc
+Strength of causal links are not clear, even for  moving beliefs 
+
+- Vaccine hesitant people less likely to trust government or doctor
+- May heavily weigh own or peer experience, or other information source
+
+:::
+
+::: {.fragment}
+
+This paper: online experiment,  flu vaccine, short-run side effect info provision
 
 - Study population: people not necessarily intending to take flu vaccine
-- Communication: potentially welfare improving [internality]{.alert} correction
-- Helpful if beliefs are incorrect, relevant for choice, moveable
+- Powered for [beliefs]{.alert}, not actions (prespecified)
+- Actual vaccination effects (hopefully) to come
 
 :::
 
 
-## An experiment on flu vaccine side effect info
 
-Why flu vaccine side effects? 
+## Why the flu vaccine? Why side effects?
 
-- Low and falling flu vaccination rates, important for health
-- Excess pessimism about side effects, side effects matter
-- Unclear whether information from trials affects beliefs
+Why flu vaccine?
 
-Research questions:
+- Substantial health costs: 28,000 deaths, 35-40 million cases, 35-45% vaccination rate
+- Many people, regular decision: feasible to study 
 
-::: {.incremental}
+Why side effect information provision? 
 
-1. Can side effect information from scientific studies shift beliefs about [personal risk]{.alert}?
-2. Do responses vary with [source]{.alert} and [study population]{.alert}?
-3. Does information shift vaccine [intention]{.alert} and [take-up]{.alert}?
-
-:::
-
+- Side effect perceptions matter for choices
+- Vaccine hesitant hold biased beliefs relative to clinical trials 
+- Effectiveness and flu risk also natural targets, but beliefs here less biased
 
 ## Preliminary study results 
 
@@ -91,13 +126,15 @@ Belief responses don't clearly move with [source]{.alert}
   - Industry and academic arms similar have similar treatment effects; personal arm null
   - Inconsistent results for intervention emphasizing [study population]{.alert}
 
+::: {.fragment}
 Information shifts vaccine [intentions]{.alert}, noisy effect on actual vaccination
+:::
 
 :::{.fragment}
-Results are highly heterogeneous by political views [(not preregistered)]{.alert}
+Results are highly heterogeneous [(not preregistered)]{.alert}
 
-  - Liberals' beliefs and vaccine intentions respond strongly, conservatives null/negative
-  - Politics predict whether people find trials + university research trustworthy + relevant
+  - Belief responses bigger for people with worse priors, no previous flu vacc
+  - Political views strongly predict belief responses and intention responses 
 ::: 
 
 ## What is new here?
@@ -129,40 +166,6 @@ Literature on information provision experiments
 
 - Obfuscate intentions then measure whether vaccinated this season
 - Also measure recall of wave 2 (not discussed today)
-
-## Eliciting side effect beliefs 
-### Conceptualization 
-
-"Side effect" is causal effect of vaccine on short-run, severe adverse event rate
-
-- Short-run: lasting a few days 
-- "Severe": grade 3, disruptive to your day - real cost, not just noticeable 
-
-
-Two requirements for us
-
-1. Person specific: participant's expected effect, not population or trial average effect
-2. Causal contrast, not level of symptom: $\tilde{\Delta}_{self,i} = \tilde{y}_i(1)-\tilde{y}_i(0)$
-
-
-## Eliciting side effect beliefs 
-### Operationalizaiton  
-
-We get causal contrast by eliciting both potential outcomes. To elicit $\tilde{y}_{i}(0)$:
-
-> For this question, please imagine, regardless of your actual vaccination status, that you **DO NOT** get the flu vaccine tomorrow or in the following few days.
->
-> Thinking about yourself, how likely do you think you would be to experience a severe adverse event, such as headache, muscle ache, tiredness, joint pain, fever, chills, or general discomfort, in the following few days? 
->*(As a reminder, severe means bad enough to disrupty your daily activity)*
-
-Elicit $\tilde{y}_i(1)$ analogously.  Subjective side effect rate 
-$\tilde{\Delta}_{self,i} = \tilde{y}_{i}(1)-\tilde{y}_{i}(0)$.
-
-:::{.fragment}
-Before information provision, elicit [priors]{.alert} for $\tilde{y}_i(0)$ and $\tilde{y}_i(1)$ using [likert scale]{.alert}
-:::
-
-
 
 ## Info provision: Control arm 
 
@@ -221,8 +224,45 @@ Before information provision, elicit [priors]{.alert} for $\tilde{y}_i(0)$ and $
 ::::
 
 ## Incentivized elicitation of trial outcome
-
+### Did people understand the implicaitons of info provision for the trial population?
 ![](trial_info.png){width="100%"}
+
+
+
+## Eliciting side effect beliefs 
+### Conceptualization 
+
+"Side effect" is causal effect of vaccine on short-run, severe adverse event rate
+
+- Short-run: lasting a few days 
+- "Severe": grade 3, disruptive to your day - real cost, not just noticeable 
+
+
+Two requirements for us
+
+1. Person specific: participant's expected effect, not population or trial average effect
+2. Causal contrast, not level of symptom: $\tilde{\Delta}_{self,i} = \tilde{y}_i(1)-\tilde{y}_i(0)$
+
+
+
+## Eliciting side effect beliefs 
+### Operationalizaiton  
+
+We get causal contrast by eliciting both potential outcomes. To elicit $\tilde{y}_{i}(0)$:
+
+> For this question, please imagine, regardless of your actual vaccination status, that you **DO NOT** get the flu vaccine tomorrow or in the following few days.
+>
+> Thinking about yourself, how likely do you think you would be to experience a severe adverse event, such as headache, muscle ache, tiredness, joint pain, fever, chills, or general discomfort, in the following few days? 
+>*(As a reminder, severe means bad enough to disrupty your daily activity)*
+
+Elicit $\tilde{y}_i(1)$ analogously.  Subjective side effect rate 
+$\tilde{\Delta}_{self,i} = \tilde{y}_{i}(1)-\tilde{y}_{i}(0)$.
+
+:::{.fragment}
+Before information provision, elicit [priors]{.alert} for $\tilde{y}_i(0)$ and $\tilde{y}_i(1)$ using [likert scale]{.alert}
+:::
+
+
 
 ## Specification {#spec-slide}
 ### All prespecified
@@ -236,7 +276,7 @@ Outcomes
 
 - $\tilde{\Delta}_{self}$ Side effect belief (primary)
 - Side effect experienced in trial
-- Intend to vaccinate
+- Intention: May or yes vaccinate
 - Clicked on a link
 - Indicated vaccination in follow-up survey
 :::
@@ -259,7 +299,9 @@ Controls (power-improving)
 
 # Results
 
-## Personal beliefs are likely biased but have high face validity
+
+
+## Side effect beliefs of vaccine hesitant are biased but have high face validity {#belief-slide}
 
 Mean believed side effect rates is +13 percentage points (median: +3)
 
@@ -271,10 +313,30 @@ Correlated with trust in doctors, willingness to follow gov vacc recommendations
 
 Also correlated with politics (all biased, worse for moderate/conservative)
 
+[Appendix →](#appendix-toc-slide){.button}
+
+
+## Vaccine hesitant's beliefs might be hard to move
+
+![](../output/figures/use_info1.png ){width="100%"}{.center}
 
 
 
-## Info effects: Beliefs, intentions, and actions 
+## Vaccine hesitant's beliefs might be hard to move  
+
+![](../output/figures/use_info2.png ){width="100%}{.center}
+
+
+## Vaccine hesitant's beliefs might be hard to move  
+
+![](../output/figures/use_info3.png ){width="100%"}{.center}
+
+
+## Vaccine hesitant's beliefs might be hard to move 
+![](../output/figures/reliable_info.png ){width="100%"}{.center}
+
+
+## Industry and academic study info moves beliefs {#te-slide}
 
 ::: {.table-stack .stretch-table}
 
@@ -286,7 +348,29 @@ Also correlated with politics (all biased, worse for moderate/conservative)
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
-::: {.show-3-cols .fragment}
+:::
+
+Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
+
+
+## Heterogeneous effects consistent with belief updating rather than experimenter demand  {#hte-slide}
+### Caution: not preregistered
+
+Effects are larger for people with ...
+
+- Diffuse priors: [no prior vaccine experience]{.alert} rather than mild experience
+- Worse priors: Prior belief indicates [side effect likely]{.alert}
+- Trust in institutions:  [says university info reliable]{.alert} 
+
+Effects also larger for people who say they found industry info trustworthy and reliable
+
+[Details →](#appendix-toc-slide){.button}
+
+## Effect of information on intentions and actions
+
+::: {.table-stack .stretch-table}
+
+::: {.show-3-cols}
 {{< include ../output/tables/treatment_effects.md >}}
 :::
 
@@ -302,7 +386,7 @@ Also correlated with politics (all biased, worse for moderate/conservative)
 
 Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →](#appendix-toc-slide){.button}
 
-## Info effects: Beliefs, intentions, and actions {#te-slide}
+## Effect of information on intentions and actions {#te-slide2}
 
 ::: {.stretch-table}
 
@@ -333,7 +417,7 @@ Puzzling: Inconsistent pattern of belief and intention responses
   - Personal arm does not change side effect beliefs but does increase intentions
 
 
-##  Partial resolution: political views {#het-polviews-slide}
+##  Partial resolution: Political views {#het-polviews-slide}
 ### Caution: not pre-specified
 
 {{< include ../output/tables/het_polviews.md >}}
@@ -409,7 +493,9 @@ Getting detectable effect on vaccinations likely requires bigger belief updating
 ## Appendix {#appendix-toc-slide}
 
 [← Specification](#spec-slide){.button}
+[← Beliefs](#belief-slide){.button}
 [← Treatment Effects](#te-slide){.button}
+[← HTEs](#hte-slide){.button}
 [← HTE by Politics](#het-polviews-slide){.button}
 [← Expressive answering](#expressive-slide){.button}
 
@@ -421,6 +507,7 @@ More on validity
 
 - [Experiment balance](#appendix-balance)
 - [Experiment balance (demographics)](#appendix-balance-demo)
+- [Belief correlates](#appendix-belief-correlates)
 - [CDF of beliefs by treatment arm](#appendix-cdf)
 - [Trust in trial by polviews](#appendix-pv-trial)
 - [Trust in university by polviews](#appendix-pv-uni)
@@ -483,17 +570,17 @@ More HTEs
 
 ## HTE: Prior experience {#appendix-experience}
 
-{{< include ../output/tables/het_bad_experience.md >}}
+{{< include ../output/tables/het_flu_vacc_reaction.md >}}
 
 [← Appendix](#appendix-toc-slide){.button}
 
-## HTE: Trust {#appendix-trust}
+## HTE: Trust trial info {#appendix-trust}
 
 {{< include ../output/tables/het_high_trust.md >}}
 
 [← Appendix](#appendix-toc-slide){.button}
 
-## HTE: Relevance {#appendix-relevance}
+## HTE: Found trial relevant {#appendix-relevance}
 
 {{< include ../output/tables/het_high_relevance.md >}}
 
@@ -513,4 +600,23 @@ More HTEs
 :::
 
 Notes: Robust standard errors in parentheses. "Conservative" includes moderate.
+[← Appendix](#appendix-toc-slide){.button}
+
+
+## Side effect beliefs $\Delta_{self}$ have high face validity because they correlate with trust and experience {#appendix-belief-correlates}
+
+![](../output/figures/delta_by_trust.png){fig-align="center" width="95%"}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## Side effect beliefs $\Delta_{self}$ have high face validity because they correlate with trust and experience
+
+![](../output/figures/delta_by_vacc_reaction.png){fig-align="center" width="95%"}
+
+[← Appendix](#appendix-toc-slide){.button}
+
+## Side effect beliefs $\Delta_{self}$ and political views
+
+![](../output/figures/polviews_dist.png){fig-align="center"}
+
 [← Appendix](#appendix-toc-slide){.button}

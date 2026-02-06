@@ -26,7 +26,7 @@ use "derived/merged_main_pre", clear
 assert main_final_sample 
 
 
-merge 1:1 prolific_pid using `followup', update assert(1 2 3) keep(1 3)
+merge 1:1 study_id using `followup', update assert(1 2 3) keep(1 3)
 
 tab _merge
 gen in_followup = _merge == 3

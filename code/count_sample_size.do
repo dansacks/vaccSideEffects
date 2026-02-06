@@ -54,15 +54,15 @@ keep if vacc_intent <= 2
 local n_hesitant = _N
 file write fout "Prescreen,Hesitant (final prescreen sample),`=_N'" _n
 
-* Save prescreen final sample PIDs for linking
+* Save prescreen final sample IDs for linking
 preserve
-keep prolific_pid
+keep study_id
 tempfile prescreen_final
 save `prescreen_final'
 restore
 
 * Count matches to demographics
-merge m:1 prolific_pid using "derived/prolific_demographics_prescreen.dta", keep(1 3) keepusing(prolific_pid)
+merge m:1 study_id using "derived/prolific_demographics_prescreen.dta", keep(1 3) keepusing(study_id)
 count if _merge == 3
 local n_demog = r(N)
 file write fout "Prescreen,Matches to demographics,`n_demog'" _n
@@ -97,7 +97,7 @@ file write fout "Main,Started (non-preview),`=_N'" _n
 local n_started = _N
 
 * Merge with prescreen final sample
-merge m:1 prolific_pid using `prescreen_final', keep(1 3)
+merge m:1 study_id using `prescreen_final', keep(1 3)
 keep if _merge == 3
 drop _merge
 local n_linked = _N
@@ -128,7 +128,7 @@ file write fout "Main,First attempt only (final main sample),`=_N'" _n
 
 * Save main final sample PIDs for linking
 preserve
-keep prolific_pid
+keep study_id
 tempfile main_final
 save `main_final'
 restore
@@ -137,13 +137,13 @@ restore
 preserve
 use "derived/prolific_demographics_main.dta", clear
 append using "derived/prolific_demographics_main_morepay.dta"
-duplicates drop prolific_pid, force
+duplicates drop study_id, force
 tempfile main_demog_combined
 save `main_demog_combined'
 restore
 
 * Count matches to demographics
-merge m:1 prolific_pid using `main_demog_combined', keep(1 3) keepusing(prolific_pid)
+merge m:1 study_id using `main_demog_combined', keep(1 3) keepusing(study_id)
 count if _merge == 3
 local n_demog = r(N)
 file write fout "Main,Matches to demographics,`n_demog'" _n
@@ -178,7 +178,7 @@ file write fout "Followup,Started (non-preview),`=_N'" _n
 local n_started = _N
 
 * Merge with main final sample
-merge m:1 prolific_pid using `main_final', keep(1 3)
+merge m:1 study_id using `main_final', keep(1 3)
 keep if _merge == 3
 drop _merge
 local n_linked = _N
@@ -197,7 +197,7 @@ local n_first = _N
 file write fout "Followup,First attempt only (final followup sample),`=_N'" _n
 
 * Count matches to demographics
-merge m:1 prolific_pid using "derived/prolific_demographics_followup.dta", keep(1 3) keepusing(prolific_pid)
+merge m:1 study_id using "derived/prolific_demographics_followup.dta", keep(1 3) keepusing(study_id)
 count if _merge == 3
 local n_demog = r(N)
 file write fout "Followup,Matches to demographics,`n_demog'" _n
