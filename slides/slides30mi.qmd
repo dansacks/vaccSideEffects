@@ -53,7 +53,7 @@ Hypothesis: Communicating science of vaccines can [persuade]{.alert} people to v
 
 - Information provision potentially welfare improving by correcting [internality]{.alert}
 
-I am hoping to pursuing this hypothesis in a series of experiments
+I am hoping to pursue this hypothesis in a series of experiments
 
 - End goal: effective, scaleable information provision treatments 
 - Today: First step of the causal chain 
