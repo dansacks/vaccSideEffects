@@ -178,9 +178,9 @@ gen delta = posterior_vacc - posterior_novacc
 label var delta "Posterior difference (vacc - novacc)"
 
 * Maybe: binary indicator for vaccine intention (intend to or already got)
-gen maybe = inlist(vacc_intentions, 3, 4) if !mi(vacc_intentions)
-label var maybe "Intends/already got vaccine"
-label values maybe yesno
+gen main_intent = inlist(vacc_intentions, 3, 4) if !mi(vacc_intentions) & vacc_intentions ~= -99 
+label var main_intent "Intends/already got vaccine"
+label values main_intent yesno
 
 * Link click: any link clicked
 gen link_click = (link1_clicked == 1 | link2_clicked == 1 | link3_clicked == 1 | link4_clicked == 1)

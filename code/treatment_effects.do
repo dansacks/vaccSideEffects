@@ -55,7 +55,7 @@ local keyvars arm_industry arm_academic arm_personal
 
 eststo clear
 
-foreach y in post_trial delta main_maybe link_click vacc_post {
+foreach y in post_trial delta main_intends link_click vacc_post {
     regress `y' `keyvars' $controls, robust
     sum `y' if arm_control==1
     estadd scalar cm = r(mean)

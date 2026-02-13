@@ -70,14 +70,6 @@ rename pid_mismatch main_pid_mismatch
 rename duplicate_study_id main_duplicate_study_id
 rename comments main_comments
 
-* Rename vacc_intentions to distinguish from prescreen's flu_vax_intent
-rename vacc_intent main_vacc_intent
-label var main_vacc_intent "Main survey: flu vaccine intentions"
-
-* Update maybe variable name for clarity
-rename maybe main_maybe
-label var main_maybe "Main survey: intends/already got vaccine"
-
 di "Main observations: " _N
 
 /*------------------------------------------------------------------------------
