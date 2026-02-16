@@ -115,7 +115,7 @@ Why side effect information provision?
 - Vaccine hesitant hold biased beliefs relative to clinical trials 
 - Effectiveness and flu risk also natural targets, but beliefs here less biased
 
-## Preliminary study results 
+## Preliminary study results
 
 Side effect information from scientific studies shifts [beliefs about personal risk]{.alert}
 
@@ -134,7 +134,7 @@ Information shifts vaccine [intentions]{.alert}, noisy effect on actual vaccinat
 Results are highly heterogeneous [(not preregistered)]{.alert}
 
   - Belief responses bigger for people with worse priors, no previous flu vacc
-  - Political views strongly predict belief responses and intention responses 
+  - Political views strongly predict belief responses and intention responses
 ::: 
 
 ## What is new here?
