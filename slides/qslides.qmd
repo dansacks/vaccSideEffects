@@ -348,25 +348,23 @@ Controls (power-improving)
 
 
 
+## Vaccine hesitant's beliefs might be hard to move
+
+![](../output/figures/use_info1.png ){width="90%"}{.center}
+
 
 ## Vaccine hesitant's beliefs might be hard to move
 
-![](../output/figures/use_info1.png ){width="100%"}{.center}
-
-
-
-## Vaccine hesitant's beliefs might be hard to move  
-
-![](../output/figures/use_info2.png ){width="100%}{.center}
+![](../output/figures/use_info2.png ){width="90%"}{.center}
 
 
 ## Vaccine hesitant's beliefs might be hard to move  
 
-![](../output/figures/use_info3.png ){width="100%"}{.center}
+![](../output/figures/use_info3.png ){width="90%"}{.center}
 
 
 ## Vaccine hesitant's beliefs might be hard to move 
-![](../output/figures/reliable_info.png ){width="100%"}{.center}
+![](../output/figures/reliable_info.png ){width="90%"}{.center}
 
 
 ## Industry and academic study info moves beliefs {#te-slide}
