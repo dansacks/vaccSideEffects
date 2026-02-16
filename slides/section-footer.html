@@ -1,0 +1,39 @@
+<style>
+#section-footer {
+  position: fixed;
+  bottom: 1em;
+  right: 1.5em;
+  font-size: 1em;
+  color: #666;
+  z-index: 100;
+}
+</style>
+<div id="section-footer"></div>
+<script>
+function updateSectionFooter(slide) {
+  var footer = document.getElementById('section-footer');
+  if (!slide) return;
+  var section = slide.closest('.stack') || slide;
+  var h1 = section.querySelector('h1');
+  if (h1 && h1.textContent.trim()) {
+    footer.textContent = h1.textContent.trim();
+    return;
+  }
+  var prev = section.previousElementSibling;
+  while (prev) {
+    var prevH1 = prev.querySelector('h1');
+    if (prevH1 && prevH1.textContent.trim()) {
+      footer.textContent = prevH1.textContent.trim();
+      return;
+    }
+    prev = prev.previousElementSibling;
+  }
+  footer.textContent = 'Introduction';
+}
+Reveal.on('slidechanged', function (event) {
+  updateSectionFooter(event.currentSlide);
+});
+Reveal.on('ready', function (event) {
+  updateSectionFooter(event.currentSlide);
+});
+</script>

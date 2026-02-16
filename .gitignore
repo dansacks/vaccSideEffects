@@ -31,7 +31,8 @@ procurement/
 !slides/industry.png 
 !slides/academic.png 
 !slides/personal.png 
-!slides/trial_info.png 
+!slides/trial_info.png
+!slides/section-footer.html
 
 # System/editor
 .DS_Store
