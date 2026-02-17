@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      Stata 18.0
+ /__    /   ____/   /   ____/      StataNow 19.5
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Wisconsin School of Business
-               University of Wisconsin - Madison
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/projects/vaccSideEffects/code/summary_stats_prescreen.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/summary_stats_prescreen.do 
 
 . /*===========================================================================
 > ===
@@ -84,28 +84,28 @@ Notes:
 . }
 
 . cd "$projdir"
-C:\Users\dwsacks\Projects\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
-  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -156,10 +156,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/summary_stat
-> s_prescreen.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/summary_stats_pr
+> escreen.log
   log type:  text
- opened on:   3 Feb 2026, 09:03:28
+ opened on:  16 Feb 2026, 20:51:49
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: summary_stats_prescreen ===
 .     di "Log: output/logs/$scriptname.log"
@@ -295,8 +295,8 @@ delimiter now cr
     vaccine |
   last year |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-      0. No |      3,455       43.53       43.53
-     1. Yes |      4,482       56.47      100.00
+      0. No |      4,482       56.47       56.47
+     1. Yes |      3,455       43.53      100.00
 ------------+-----------------------------------
       Total |      7,937      100.00
 
@@ -648,38 +648,15 @@ Get info from |
 ------------+-----------------------------------
       Total |      8,003      100.00
 
-   Prolific |
-        PID |
-   mismatch |      Freq.     Percent        Cum.
+pid_mismatc |
+          h |      Freq.     Percent        Cum.
 ------------+-----------------------------------
       0. No |      7,997       99.93       99.93
      1. Yes |          6        0.07      100.00
 ------------+-----------------------------------
       Total |      8,003      100.00
+variable duplicate_pid not found
+r(111);
 
-  Duplicate |
-   Prolific |
-        PID |      Freq.     Percent        Cum.
-------------+-----------------------------------
-      0. No |      7,961       99.48       99.48
-     1. Yes |         42        0.52      100.00
-------------+-----------------------------------
-      Total |      8,003      100.00
-
-      First |
-     survey |
-attempt for |
-   this PID |      Freq.     Percent        Cum.
-------------+-----------------------------------
-     1. Yes |      8,003      100.00      100.00
-------------+-----------------------------------
-      Total |      8,003      100.00
-
-. 
-. 
-. file close catcsv
-
-. capture log close 
-
-. 
 end of do-file
+r(111);

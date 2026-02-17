@@ -171,10 +171,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 - **Description:** 1 if progress < 100 or finished != "True"
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | Complete  | 7,933 (99.13%) |
-| 1 | Incomplete  | 70 (0.87%) |
+| Code | Label |
+|------|-------|
+| 0 | Complete  |
+| 1 | Incomplete  |
 
 ### `failed_attn`
 - **Type:** Binary
@@ -193,10 +193,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 - **Description:** 1 if prolific_pid != prolific_id_entered
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | Match  | 7,997 (99.93%) |
-| 1 | Mismatch  | 6 (0.07%) |
+| Code | Label |
+|------|-------|
+| 0 | Match  |
+| 1 | Mismatch  |
 
 ### `duplicate_pid`
 - **Type:** Binary
@@ -204,10 +204,10 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 - **Description:** 1 if prolific_pid appears more than once in the dataset
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | Unique  | 7,961 (99.48%) |
-| 1 | Duplicate  | 42 (0.52%) |
+| Code | Label |
+|------|-------|
+| 0 | Unique  |
+| 1 | Duplicate  |
 
 ### `favorite_number`
 - **Type:** Numeric
@@ -226,8 +226,8 @@ This codebook documents all variables in the cleaned prescreen survey dataset. V
 
 | Code | Label | N (%) |
 |------|-------|-------|
-| 0 | No  | 3,455 (43.53%) |
-| 1 | Yes  | 4,482 (56.47%) |
+| 0 | No  | 4,482 (56.47%) |
+| 1 | Yes  | 3,455 (43.53%) |
 
 ### `prior_vaccines`
 - **Type:** Categorical
@@ -578,8 +578,8 @@ All binary indicators: 0 = No, 1 = Yes
 | Code | Label | N (%) |
 |------|-------|-------|
 | 1 | Not reliable  | 137 (2.98%) |
-| 2 | Somewhat reliable  | 1,969 (42.81%) |
-| 3 | Yes, reliable  | 2,493 (54.21%) |
+| 2 | Somewhat reliable  | - |
+| 3 | Yes, reliable  | - |
 
 ### `reliable_news`
 - **Type:** Categorical
@@ -587,11 +587,11 @@ All binary indicators: 0 = No, 1 = Yes
 - **Question:** "When you obtain health care information from news organizations, do you find it reliable?"
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Not reliable  | 147 (5.08%) |
-| 2 | Somewhat reliable  | 2,153 (74.45%) |
-| 3 | Yes, reliable  | 592 (20.47%) |
+| Code | Label |
+|------|-------|
+| 1 | Not reliable  |
+| 2 | Somewhat reliable  |
+| 3 | Yes, reliable  |
 
 ### `reliable_university`
 - **Type:** Categorical
@@ -599,11 +599,11 @@ All binary indicators: 0 = No, 1 = Yes
 - **Question:** "Do you consider health care information from university research or researchers reliable?"
 - **Values:**
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Not reliable  | 414 (5.25%) |
-| 2 | Somewhat reliable  | 3,960 (50.23%) |
-| 3 | Yes, reliable  | 3,510 (44.52%) |
+| Code | Label |
+|------|-------|
+| 1 | Not reliable  |
+| 2 | Somewhat reliable  |
+| 3 | Yes, reliable  |
 
 ---
 

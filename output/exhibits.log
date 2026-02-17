@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  5 FEB 2026 13:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  16 FEB 2026 20:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -388,79 +388,16 @@ Package pdftex.def Info: figures/belief_cdf_by_arm.png  used on input line 414.
 (pdftex.def)             Requested size: 469.75502pt x 268.42772pt.
 
 
-[11 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex
-./tables/het_high_prior.tex:9: Missing $ inserted.
-<inserted text> 
-                $
-l.9 Prior & Low & High \\ _
-                           n
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-)
-/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex:442: Missing $ inserted.
-<inserted text> 
-                $
-l.442 \bottomrule
-                 
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-
+[11 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex)
 
 [12 <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
 Overfull \hbox (4.61304pt too wide) in paragraph at lines 459--472
  [][] 
  []
 
-(./tables/het_high_trust.tex
-./tables/het_high_trust.tex:9: Missing $ inserted.
-<inserted text> 
-                $
-l.9 Trust & Low & High \\ _
-                           n
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
+(./tables/het_high_trust.tex)
 
-)
-/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex:488: Missing $ inserted.
-<inserted text> 
-                $
-l.488 \bottomrule
-                 
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-
-
-[13] (./tables/het_high_relevance.tex
-./tables/het_high_relevance.tex:9: Missing $ inserted.
-<inserted text> 
-                $
-l.9 Relevance & Low & High \\ _
-                               n
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-)
-/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex:511: Missing $ inserted.
-<inserted text> 
-                $
-l.511 \bottomrule
-                 
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-
+[13] (./tables/het_high_relevance.tex)
 
 [14] (./exhibits.aux)
  ***********
@@ -478,16 +415,16 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 Here is how much of TeX's memory you used:
  3983 strings out of 473190
  71412 string characters out of 5715801
- 474832 words of memory out of 5000000
+ 478832 words of memory out of 5000000
  27167 multiletter control sequences out of 15000+600000
  565919 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,9n,95p,773b,346s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on exhibits.pdf (14 pages, 513749 bytes).
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
+Output written on exhibits.pdf (14 pages, 506113 bytes).
 PDF statistics:
- 124 PDF objects out of 1000 (max. 8388607)
- 75 compressed objects within 1 object stream
+ 119 PDF objects out of 1000 (max. 8388607)
+ 72 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
