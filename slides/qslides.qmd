@@ -38,7 +38,7 @@ format:
 
 ::::
 
-## Reasons for falling vaccination rates
+## Responding to falling vaccination rates
 
 View 1: Right to refuse treatment outweights health consequences
 
@@ -135,7 +135,7 @@ Side effect information from scientific studies shifts [beliefs about personal r
 
 Belief responses don't clearly move with [source]{.alert}
 
-  - Industry and academic arms similar have similar treatment effects; personal arm null
+  - Industry and academic arms similar have similar treatment effects
   - Inconsistent results for intervention emphasizing [study population]{.alert}
 
 ::: {.fragment}
@@ -500,7 +500,6 @@ Very difficult to explain pattern of treatment effects thusly
 
 - Participants don't know which treatment arm they're in
 - Control-vs-industry: same  signal of experiment intent, different $\tilde{\Delta}_{self}$
-- Little priming: Political views after beliefs
 
 More evidence: reported $\Delta_{self}$ inconsistent with expressive answering [Appendix →](#appendix-toc-slide){.button}
 
