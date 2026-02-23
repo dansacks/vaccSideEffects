@@ -38,15 +38,15 @@ format:
 
 ::::
 
-## Disputed implications of falling vaccination rates
+## Reasons for falling vaccination rates
 
 View 1: Right to refuse treatment outweights health consequences
 
-- No mandate
+- Fears about adverse events outweigh perceived benefits 
 
 View 2: Health consequences are large, positive, and rooted in science
 
-- Mandate?
+- Perceptions are not correct 
 
 :::{.fragment}
 Hypothesis: Communicating science of vaccines can [persuade]{.alert} people to vaccinate
@@ -173,21 +173,32 @@ Experiments find:
 
 ## Experiment overivew
 
+::: {.fragment}
+
 [Screening wave]{.alert} Recruit 8,000 via prolific, screen for hesitancy, late November
 
 - Don't intend to vaccinate against flu; may or may not vaccinate against flu
 - Also measure vaccine info sources and experience with flu and COVID vaccines
+
+:::
+
+::: {.fragment}
 
 [Main wave]{.alert} 3,500 vaccine hesitant participants, 1-7 days later
 
 - Randomize information provision, measure priors, posteriors, vaccine intentions 
 - Ask about trustworthiness and relevance of information, politics, demographics
 
+:::
+
+::: {.fragment}
+
 [Follow-up wave]{.alert} 3,000 participants, 2-4 weeks later
 
 - Obfuscate intentions then measure whether vaccinated this season
 - Also measure recall of wave 2 (not discussed today)
 
+:::
 
 ## Info provision: Control arm 
 
@@ -389,7 +400,7 @@ Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →]
 
 Effects are larger for people with ...
 
-- Diffuse priors: [no prior vaccine experience]{.alert} rather than mild experience
+- Diffuse priors: [no prior vaccine experience]{.alert} rather than no reaction
 - Worse priors: Prior belief indicates [side effect likely]{.alert}
 - Trust in institutions:  [says university info reliable]{.alert} 
 
@@ -476,7 +487,7 @@ View of trial
 Views of university-provided information
 
 - Do you obtain health care info from university research or researchers? 
-- Do you consider it it reliable?
+- Do you consider that information reliable?
 
  [Appendix →](#appendix-toc-slide){.button}
  

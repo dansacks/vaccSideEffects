@@ -99,10 +99,10 @@ label values flu_vacc_reaction covid_vacc_reaction rxn_alt
 
 foreach cat in  trust_govt follow_doctor flu_vacc_reaction covid_vacc_reaction {
     preserve
-    if "`cat'" == "flu_vacc_reaction" local title "Flu vaccine reaction"
-    if "`cat'" == "covid_vacc_reaction" local title "Covid vaccine reaction"
-    if "`cat'" == "trust_govt" local title "Trust gov on vaccines"
-    if "`cat'" == "follow_doctor" local title "Follow doc on vaccines"
+    if "`cat'" == "flu_vacc_reaction" local title "{&Delta} by flu vaccine reaction"
+    if "`cat'" == "covid_vacc_reaction" local title "{&Delta} by COVID vaccine reaction"
+    if "`cat'" == "trust_govt" local title "{&Delta} by trust gov on vaccines"
+    if "`cat'" == "follow_doctor" local title "{&Delta} by follow doc on vaccines"
 
     * Vaccine reaction panels need more bottom margin for angled labels
     if inlist("`cat'", "flu_vacc_reaction", "covid_vacc_reaction") {
