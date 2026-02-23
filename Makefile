@@ -20,11 +20,7 @@
 #===============================================================================
 
 # Configuration - OS detection and auto-detect project directory
-test:
-	HOSTNAME := $(shell HOSTNAME)
-	@echo "Hostname is: [$(HOSTNAME)]"
-
-HOSTNAME := $(shell HOSTNAME)
+HOSTNAME := $(shell hostname)
 UNAME_S := $(shell uname -s)
 PROJDIR := $(CURDIR)
 ifeq ($(UNAME_S),Darwin)
@@ -92,7 +88,7 @@ dirs:
 # PRESCREEN PIPELINE
 #-------------------------------------------------------------------------------
 # Prescreen imports from SPSS in raw_data directory
-PRESCREEN_SPSS := $(RAW_DATA)/vacc_se_prescreen_full_January+9,+2026_19.47.sav
+PRESCREEN_SPSS := $(RAW_DATA)/vacc_se_prescreen_full_January+9,+2026_19.47.dta
 PRESCREEN_CLEAN := $(DERIVED)/prescreen_clean.dta
 PRESCREEN_STATS_CONT := $(OUT_TABLES)/stats_continuous.csv
 PRESCREEN_STATS_CAT := $(OUT_TABLES)/stats_categorical.csv
@@ -121,7 +117,7 @@ $(PRESCREEN_CODEBOOK): $(PRESCREEN_STATS_CONT) $(PRESCREEN_STATS_CAT) $(PRESCREE
 # MAIN STUDY PIPELINE
 #-------------------------------------------------------------------------------
 # Main imports from SPSS in raw_data directory
-MAIN_SPSS := $(RAW_DATA)/flu_survey_main_January+9,+2026_08.08.sav
+MAIN_SPSS := $(RAW_DATA)/flu_survey_main_January+9,+2026_08.08.dta
 MAIN_CLEAN := $(DERIVED)/main_clean.dta
 MAIN_STATS_CONT := $(OUT_TABLES)/stats_main_continuous.csv
 MAIN_STATS_CAT := $(OUT_TABLES)/stats_main_categorical.csv
@@ -194,7 +190,7 @@ $(BALANCE_PRIOR) $(BALANCE_VACC) $(BALANCE_DEMO) $(BALANCE_TRUST_FULL) $(BALANCE
 # FOLLOWUP PIPELINE
 #-------------------------------------------------------------------------------
 # Followup imports from SPSS in raw_data directory
-FOLLOWUP_SPSS := $(RAW_DATA)/flu_vacc_se_followup_January+9,+2026_19.43.sav
+FOLLOWUP_SPSS := $(RAW_DATA)/flu_vacc_se_followup_January+9,+2026_19.43.dta
 FOLLOWUP_CLEAN := $(DERIVED)/followup_clean.dta
 FOLLOWUP_STATS_CONT := $(OUT_TABLES)/stats_followup_continuous.csv
 FOLLOWUP_STATS_CAT := $(OUT_TABLES)/stats_followup_categorical.csv
@@ -218,10 +214,10 @@ $(FOLLOWUP_CODEBOOK): $(FOLLOWUP_STATS_CONT) $(FOLLOWUP_STATS_CAT) $(FOLLOWUP_CO
 #-------------------------------------------------------------------------------
 # PROLIFIC DEMOGRAPHICS
 #-------------------------------------------------------------------------------
-PROLIFIC_PRE_CSV := $(RAW_DATA)/prolific_demographic_export_692494f77a877e57e000eb60.csv
-PROLIFIC_MAIN_CSV := $(RAW_DATA)/prolific_demographic_export_main.csv
-PROLIFIC_MAIN_MP_CSV := $(RAW_DATA)/prolific_demographic_export_main_morepay.csv
-PROLIFIC_FU_CSV := $(RAW_DATA)/prolific_demographic_export_followup.csv
+PROLIFIC_PRE_CSV := $(RAW_DATA)/prolific_demographic_export_692494f77a877e57e000eb60.dta
+PROLIFIC_MAIN_CSV := $(RAW_DATA)/prolific_demographic_export_main.dta
+PROLIFIC_MAIN_MP_CSV := $(RAW_DATA)/prolific_demographic_export_main_morepay.dta
+PROLIFIC_FU_CSV := $(RAW_DATA)/prolific_demographic_export_followup.dta
 
 PROLIFIC_PRE := $(DERIVED)/prolific_demographics_prescreen.dta
 PROLIFIC_MAIN := $(DERIVED)/prolific_demographics_main.dta

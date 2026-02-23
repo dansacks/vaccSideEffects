@@ -59,10 +59,10 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Type:** Binary
 - **Label:** Consent given
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | - |
-| 1 | Yes | 3,078 (100.00%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `final_sample`
 - **Type:** Binary
@@ -78,47 +78,47 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Type:** Binary
 - **Label:** Incomplete response
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 3,042 (98.83%) |
-| 1 | Yes | 36 (1.17%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `failed_attn`
 - **Type:** Binary
 - **Label:** Failed attention check
 - **Description:** 1 if attn_check != 1163
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 3,078 (100.00%) |
-| 1 | Yes | - |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `pid_mismatch`
 - **Type:** Binary
 - **Label:** Prolific PID mismatch
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 3,054 (99.22%) |
-| 1 | Yes | 24 (0.78%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `duplicate_pid`
 - **Type:** Binary
 - **Label:** Duplicate Prolific PID
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 3,062 (99.48%) |
-| 1 | Yes | 16 (0.52%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `is_preview`
 - **Type:** Binary
 - **Label:** Preview/test response
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 3,078 (100.00%) |
-| 1 | Yes | - |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `attn_check`
 - **Type:** Numeric
@@ -138,74 +138,74 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Label:** Gets medicine: Pharmacy chain
 - **Description:** Selected "Pharmacy chain (CVS, Walgreens, Rite Aid, etc.)"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 944 (31.00%) |
-| 1 | Yes | 2,101 (69.00%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_grocery`
 - **Type:** Binary
 - **Label:** Gets medicine: Grocery/superstore
 - **Description:** Selected "Grocery store pharmacy or retail superstore pharmacy"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 1,837 (60.33%) |
-| 1 | Yes | 1,208 (39.67%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_independent`
 - **Type:** Binary
 - **Label:** Gets medicine: Independent pharmacy
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,648 (86.96%) |
-| 1 | Yes | 397 (13.04%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_mail_order`
 - **Type:** Binary
 - **Label:** Gets medicine: Mail-order
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,766 (90.84%) |
-| 1 | Yes | 279 (9.16%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_online`
 - **Type:** Binary
 - **Label:** Gets medicine: Online pharmacy
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,817 (92.51%) |
-| 1 | Yes | 228 (7.49%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_provider`
 - **Type:** Binary
 - **Label:** Gets medicine: Healthcare provider
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,333 (76.62%) |
-| 1 | Yes | 712 (23.38%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_other`
 - **Type:** Binary
 - **Label:** Gets medicine: Somewhere else
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 3,029 (99.47%) |
-| 1 | Yes | 16 (0.53%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `med_none`
 - **Type:** Binary
 - **Label:** Gets medicine: Does not purchase
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,934 (96.35%) |
-| 1 | Yes | 111 (3.65%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `pharmacy_chain`
 - **Type:** String (multi-select)
@@ -224,35 +224,35 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Label:** Most important factor for pharmacy choice
 - **Question:** "When choosing a pharmacy, which of the following is most important to you?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Price | 928 (31.68%) |
-| 2 | Convenience | 1,578 (53.88%) |
-| 3 | Quality/reputation | 341 (11.64%) |
-| 4 | Pharmacist access | 54 (1.84%) |
-| 5 | None important | 28 (0.96%) |
+| Code | Label |
+|------|-------|
+| 1 | Price |
+| 2 | Convenience |
+| 3 | Quality/reputation |
+| 4 | Pharmacist access |
+| 5 | None important |
 
 ### `price_compare`
 - **Type:** Categorical
 - **Label:** Compared prices at pharmacies
 - **Question:** "In the past month, did you compare prices at different pharmacies?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Yes, at least once | 623 (20.53%) |
-| 2 | No | 1,698 (55.95%) |
-| 3 | Did not shop for medicines | 714 (23.53%) |
+| Code | Label |
+|------|-------|
+| 1 | Yes, at least once |
+| 2 | No |
+| 3 | Did not shop for medicines |
 
 ### `use_coupons`
 - **Type:** Categorical
 - **Label:** Used coupons/deals like GoodRx
 - **Question:** "In the past month, did you use coupons or discount programs like GoodRx?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Yes, at least once | 607 (20.00%) |
-| 2 | No | 1,736 (57.20%) |
-| 3 | Did not shop for medicines | 692 (22.80%) |
+| Code | Label |
+|------|-------|
+| 1 | Yes, at least once |
+| 2 | No |
+| 3 | Did not shop for medicines |
 
 ---
 
@@ -264,10 +264,10 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Question:** "In the past month, did you get a prescription for a GLP-1 medication?"
 - **Coding:** 0=No, 1=Yes, missing=Prefer not to answer
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,827 (93.64%) |
-| 1 | Yes | 192 (6.36%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `got_flu_vacc`
 - **Type:** Binary
@@ -275,10 +275,10 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Question:** "In the past month, did you get the flu vaccine?"
 - **Coding:** 0=No, 1=Yes, missing=Prefer not to answer
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,836 (94.03%) |
-| 1 | Yes | 180 (5.97%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `got_covid_vacc`
 - **Type:** Binary
@@ -286,10 +286,10 @@ This codebook documents all variables in the cleaned follow-up survey dataset. T
 - **Question:** "In the past month, did you get the COVID vaccine?"
 - **Coding:** 0=No, 1=Yes, missing=Prefer not to answer
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,968 (98.34%) |
-| 1 | Yes | 50 (1.66%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ---
 
@@ -310,75 +310,75 @@ These variables are parsed from the multi-select question asked of those who did
 - **Label:** Flu why not: Already got earlier
 - **Description:** Already got flu shot earlier this season
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,737 (96.65%) |
-| 1 | Yes | 95 (3.35%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_side_effects`
 - **Type:** Binary
 - **Label:** Flu why not: Worried about side effects
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 1,668 (58.90%) |
-| 1 | Yes | 1,164 (41.10%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_bad_flu`
 - **Type:** Binary
 - **Label:** Flu why not: Worried about bad flu
 - **Description:** Worried about getting a bad case of the flu from the vaccine
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,509 (88.59%) |
-| 1 | Yes | 323 (11.41%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_needles`
 - **Type:** Binary
 - **Label:** Flu why not: Don't like needles
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,370 (83.69%) |
-| 1 | Yes | 462 (16.31%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_time`
 - **Type:** Binary
 - **Label:** Flu why not: Time concern
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,657 (93.82%) |
-| 1 | Yes | 175 (6.18%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_location`
 - **Type:** Binary
 - **Label:** Flu why not: Location concern
 - **Description:** No convenient location
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,728 (96.33%) |
-| 1 | Yes | 104 (3.67%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_cost`
 - **Type:** Binary
 - **Label:** Flu why not: Cost concern
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,636 (93.08%) |
-| 1 | Yes | 196 (6.92%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `flu_why_none`
 - **Type:** Binary
 - **Label:** Flu why not: None relevant
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 1,727 (60.98%) |
-| 1 | Yes | 1,105 (39.02%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ---
 
@@ -389,11 +389,11 @@ These variables are parsed from the multi-select question asked of those who did
 - **Label:** Recalls participating in main study
 - **Question:** "Do you remember participating in a study about flu vaccines about a month ago?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Yes | 764 (25.24%) |
-| 2 | No | 483 (15.96%) |
-| 3 | Don't remember | 1,780 (58.80%) |
+| Code | Label |
+|------|-------|
+| 1 | Yes |
+| 2 | No |
+| 3 | Don't remember |
 
 ### `guess_placebo`
 - **Type:** Numeric (continuous)
@@ -430,65 +430,65 @@ These variables are parsed from the multi-select question asked of those who did
 - **Label:** Placebo guess within 1% of 3%
 - **Description:** 1 if guess_placebo is between 2% and 4%
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,429 (78.91%) |
-| 1 | Yes | 649 (21.09%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `vaccine_correct`
 - **Type:** Binary
 - **Label:** Vaccine guess within 1% of 1.3%
 - **Description:** 1 if guess_vaccine is between 0.3% and 2.3%
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 0 | No | 2,702 (87.78%) |
-| 1 | Yes | 376 (12.22%) |
+| Code | Label |
+|------|-------|
+| 0 | No |
+| 1 | Yes |
 
 ### `recall_manufacturer`
 - **Type:** Categorical
 - **Label:** Recalls manufacturer/trial info
 - **Question:** "Did the study tell you about trial results from a vaccine manufacturer?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Yes | 973 (38.38%) |
-| 2 | No | 648 (25.56%) |
-| 3 | Don't remember study | 914 (36.06%) |
+| Code | Label |
+|------|-------|
+| 1 | Yes |
+| 2 | No |
+| 3 | Don't remember study |
 
 ### `recall_university`
 - **Type:** Categorical
 - **Label:** Recalls university research info
 - **Question:** "Did the study tell you about research from a university?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Yes | 1,287 (50.77%) |
-| 2 | No | 340 (13.41%) |
-| 3 | Don't remember study | 908 (35.82%) |
+| Code | Label |
+|------|-------|
+| 1 | Yes |
+| 2 | No |
+| 3 | Don't remember study |
 
 ### `recall_gavi`
 - **Type:** Categorical
 - **Label:** Recalls Gavi info
 - **Question:** "Did the study tell you about Gavi, the Vaccine Alliance?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Yes | 274 (10.81%) |
-| 2 | No | 1,141 (45.01%) |
-| 3 | Don't remember study | 1,120 (44.18%) |
+| Code | Label |
+|------|-------|
+| 1 | Yes |
+| 2 | No |
+| 3 | Don't remember study |
 
 ### `found_trustworthy`
 - **Type:** Categorical
 - **Label:** Found study info trustworthy
 - **Question:** "How trustworthy did you find the information in that study?"
 
-| Code | Label | N (%) |
-|------|-------|-------|
-| 1 | Don't remember study | 856 (33.77%) |
-| 2 | Trustworthy | 585 (23.08%) |
-| 3 | Somewhat trustworthy | 951 (37.51%) |
-| 4 | Not trustworthy | 143 (5.64%) |
+| Code | Label |
+|------|-------|
+| 1 | Don't remember study |
+| 2 | Trustworthy |
+| 3 | Somewhat trustworthy |
+| 4 | Not trustworthy |
 
 ---
 

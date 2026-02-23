@@ -16,7 +16,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-use "raw_data/flu_survey_main_January+9,+2026_08.08", clear
+use "raw_data/flu_survey_main_January+9,+2026_08.08.dta", clear
 
 * Verify we have data
 assert _N > 0
@@ -247,7 +247,7 @@ label var link4_clicked "Link 4 clicked"
 
 * Label all yes/no variables
 foreach var of varlist final_sample incomplete failed_attn pid_mismatch duplicate_study_id first_attempt is_preview ///
-    arm_control arm_industry arm_academic arm_personal maybe link_click {
+    arm_control arm_industry arm_academic arm_personal main_intent link_click {
     label values `var' yesno
 }
 
@@ -390,7 +390,7 @@ order study_id ///
       post_trial post_c_trial post_i_trial post_a_trial post_p_trial ///
       posterior_novacc posterior_vacc delta ///
       trust_trial relevant_trial trust_academic relevant_academic ///
-      vacc_intentions maybe ///
+      vacc_intentions main_intent ///
       link_click link1_clicked link2_clicked link3_clicked link4_clicked ///
       age gender education income race ethnicity polviews ///
       debrief_about comments

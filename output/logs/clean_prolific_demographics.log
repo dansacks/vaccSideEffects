@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      Stata 18.0
+ /__    /   ____/   /   ____/      StataNow 19.5
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Wisconsin School of Business
-               University of Wisconsin - Madison
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,8 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/projects/vaccSideEffects/code/clean_prolific_demographics
-> .do 
+. do /Users/sacks/Projects/VaccSideEffects/code/clean_prolific_demographics.do 
 
 . /*===========================================================================
 > ===
@@ -83,28 +82,28 @@ Notes:
 . }
 
 . cd "$projdir"
-C:\Users\dwsacks\Projects\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
-  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -155,10 +154,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/clean_prolif
-> ic_demographics.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_prolific_d
+> emographics.log
   log type:  text
- opened on:  29 Jan 2026, 10:36:54
+ opened on:  16 Feb 2026, 20:51:49
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prolific_demographics ===
 .     di "Log: output/logs/$scriptname.log"
@@ -186,71 +185,69 @@ end of do-file
   3.     di "=== Cleaning: `infile' ==="
   4. 
 .     * Import CSV
-.     import delimited using "`infile'", clear varnames(1) stringcols(_all)
+.     use "`infile'", clear 
   5. 
 .     * Rename key variables
-.     rename submissionid prolific_submission_id
-  6.     rename participantid prolific_pid
-  7.     rename status prolific_status
-  8.     rename startedat prolific_started
-  9.     rename completedat prolific_completed
- 10.     rename timetaken prolific_duration
- 11.     rename totalapprovals prolific_approvals
- 12. 
+.     rename status prolific_status
+  6.     rename startedat prolific_started
+  7.     rename completedat prolific_completed
+  8.     rename timetaken prolific_duration
+  9.     rename totalapprovals prolific_approvals
+ 10. 
 .     * Clean demographics
 .     rename age prolific_age
- 13.     rename sex prolific_sex
- 14.     rename ethnicitysimplified prolific_ethnicity
- 15.     rename countryofbirth prolific_country_birth
- 16.     rename countryofresidence prolific_country_residence
- 17.     rename nationality prolific_nationality
- 18.     rename language prolific_language
- 19.     rename studentstatus prolific_student
- 20.     rename employmentstatus prolific_employment
- 21. 
+ 11.     rename sex prolific_sex
+ 12.     rename ethnicitysimplified prolific_ethnicity
+ 13.     rename countryofbirth prolific_country_birth
+ 14.     rename countryofresidence prolific_country_residence
+ 15.     rename nationality prolific_nationality
+ 16.     rename language prolific_language
+ 17.     rename studentstatus prolific_student
+ 18.     rename employmentstatus prolific_employment
+ 19. 
 .     * Convert numeric variables
 .     destring prolific_age, replace force
- 22.     destring prolific_duration, replace force
- 23.     destring prolific_approvals, replace force
- 24. 
+ 20.     destring prolific_duration, replace force
+ 21.     destring prolific_approvals, replace force
+ 22. 
 .     * Clean string variables - handle DATA_EXPIRED
 .     foreach var in prolific_student prolific_employment {
- 25.         replace `var' = "" if `var' == "DATA_EXPIRED"
- 26.     }
- 27. 
+ 23.         replace `var' = "" if `var' == "DATA_EXPIRED"
+ 24.     }
+ 25. 
 .     * Create numeric codes for categorical variables
 . 
 .     * Sex
 .     gen prolific_female = (prolific_sex == "Female") if prolific_sex != ""
- 28.     gen prolific_male = (prolific_sex == "Male") if prolific_sex != ""
- 29.     label var prolific_female "Female (Prolific)"
- 30.     label var prolific_male "Male (Prolific)"
- 31. 
+ 26.     gen prolific_male = (prolific_sex == "Male") if prolific_sex != ""
+ 27.     label var prolific_female "Female (Prolific)"
+ 28.     label var prolific_male "Male (Prolific)"
+ 29. 
 .     * Ethnicity
 .     encode prolific_ethnicity, gen(prolific_ethnicity_n)
- 32.     label var prolific_ethnicity_n "Ethnicity (Prolific, numeric)"
- 33. 
+ 30.     label var prolific_ethnicity_n "Ethnicity (Prolific, numeric)"
+ 31. 
 .     * Student status
 .     gen prolific_is_student = (prolific_student == "Yes") if prolific_student
 >  != ""
- 34.     label var prolific_is_student "Currently a student (Prolific)"
- 35. 
+ 32.     label var prolific_is_student "Currently a student (Prolific)"
+ 33. 
 .     * Employment - create categories
 .     gen prolific_employed_ft = strpos(prolific_employment, "Full-Time") > 0 i
 > f prolific_employment != ""
- 36.     gen prolific_employed_pt = strpos(prolific_employment, "Part-Time") > 
+ 34.     gen prolific_employed_pt = strpos(prolific_employment, "Part-Time") > 
 > 0 if prolific_employment != ""
- 37.     gen prolific_not_working = strpos(prolific_employment, "Not in paid wo
+ 35.     gen prolific_not_working = strpos(prolific_employment, "Not in paid wo
 > rk") > 0 if prolific_employment != ""
- 38.     gen prolific_unemployed = strpos(prolific_employment, "Unemployed") > 
+ 36.     gen prolific_unemployed = strpos(prolific_employment, "Unemployed") > 
 > 0 if prolific_employment != ""
- 39.     label var prolific_employed_ft "Employed full-time (Prolific)"
- 40.     label var prolific_employed_pt "Employed part-time (Prolific)"
- 41.     label var prolific_not_working "Not in paid work (Prolific)"
- 42.     label var prolific_unemployed "Unemployed (Prolific)"
- 43. 
+ 37.     label var prolific_employed_ft "Employed full-time (Prolific)"
+ 38.     label var prolific_employed_pt "Employed part-time (Prolific)"
+ 39.     label var prolific_not_working "Not in paid work (Prolific)"
+ 40.     label var prolific_unemployed "Unemployed (Prolific)"
+ 41. 
 .     * Keep only relevant variables
-.     keep prolific_pid prolific_submission_id prolific_status ///
+.     keep study_id prolific_status ///
 >          prolific_started prolific_completed prolific_duration prolific_appro
 > vals ///
 >          prolific_age prolific_sex prolific_female prolific_male ///
@@ -260,35 +257,31 @@ end of do-file
 >          prolific_language prolific_student prolific_is_student ///
 >          prolific_employment prolific_employed_ft prolific_employed_pt ///
 >          prolific_not_working prolific_unemployed
- 44. 
+ 42. 
 .     * Label core variables
-.     label var prolific_pid "Prolific participant ID"
- 45.     label var prolific_submission_id "Prolific submission ID"
- 46.     label var prolific_status "Prolific submission status"
- 47.     label var prolific_started "Prolific start time"
- 48.     label var prolific_completed "Prolific completion time"
- 49.     label var prolific_duration "Time taken (seconds, Prolific)"
- 50.     label var prolific_approvals "Total approvals (Prolific)"
- 51.     label var prolific_age "Age (Prolific)"
- 52.     label var prolific_sex "Sex (Prolific)"
- 53.     label var prolific_ethnicity "Ethnicity simplified (Prolific)"
- 54.     label var prolific_country_birth "Country of birth (Prolific)"
- 55.     label var prolific_country_residence "Country of residence (Prolific)"
- 56.     label var prolific_nationality "Nationality (Prolific)"
- 57.     label var prolific_language "Language (Prolific)"
- 58.     label var prolific_student "Student status (Prolific)"
- 59.     label var prolific_employment "Employment status (Prolific)"
- 60. 
-.     * Check for duplicates
-.     duplicates report prolific_pid
- 61. 
+.     label var study_id "Cross-wave participant ID"
+ 43.     label var prolific_status "Prolific submission status"
+ 44.     label var prolific_started "Prolific start time"
+ 45.     label var prolific_completed "Prolific completion time"
+ 46.     label var prolific_duration "Time taken (seconds, Prolific)"
+ 47.     label var prolific_approvals "Total approvals (Prolific)"
+ 48.     label var prolific_age "Age (Prolific)"
+ 49.     label var prolific_sex "Sex (Prolific)"
+ 50.     label var prolific_ethnicity "Ethnicity simplified (Prolific)"
+ 51.     label var prolific_country_birth "Country of birth (Prolific)"
+ 52.     label var prolific_country_residence "Country of residence (Prolific)"
+ 53.     label var prolific_nationality "Nationality (Prolific)"
+ 54.     label var prolific_language "Language (Prolific)"
+ 55.     label var prolific_student "Student status (Prolific)"
+ 56.     label var prolific_employment "Employment status (Prolific)"
+ 57. 
 .     * Compress and save
 .     compress
- 62.     save "`outfile'", replace
- 63. 
+ 58.     save "`outfile'", replace
+ 59. 
 .     di "Saved: `outfile'"
- 64.     di "Observations: " _N
- 65. end
+ 60.     di "Observations: " _N
+ 61. end
 
 . 
 . /*---------------------------------------------------------------------------
@@ -299,18 +292,14 @@ end of do-file
 . 
 . * Prescreen (long string filename)
 . clean_prolific ///
->     "raw_data/prolific_demographic_export_692494f77a877e57e000eb60.csv" ///
+>     "raw_data/prolific_demographic_export_692494f77a877e57e000eb60" ///
 >     "derived/prolific_demographics_prescreen.dta"
 
-=== Cleaning: raw_data/prolific_demographic_export_692494f77a877e57e000eb60.csv
->  ===
-(encoding automatically selected: ISO-8859-1)
-(26 vars, 8,216 obs)
+=== Cleaning: raw_data/prolific_demographic_export_692494f77a877e57e000eb60 ===
 prolific_age: contains nonnumeric characters; replaced as int
 (168 missing values generated)
-prolific_duration: all characters numeric; replaced as long
-(164 missing values generated)
-prolific_approvals: all characters numeric; replaced as int
+prolific_duration already numeric; no replace
+prolific_approvals already numeric; no replace
 (1,795 real changes made)
 (1,825 real changes made)
 (1,795 missing values generated)
@@ -318,23 +307,17 @@ prolific_approvals: all characters numeric; replaced as int
 (1,825 missing values generated)
 (1,825 missing values generated)
 (1,825 missing values generated)
-
-Duplicates in terms of prolific_pid
-
---------------------------------------
-   Copies | Observations       Surplus
-----------+---------------------------
-        1 |         8216             0
---------------------------------------
+  variable study_id was float now int
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (427,232 bytes saved)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (213,616 bytes saved)
+(file derived/prolific_demographics_prescreen.dta not found)
 file derived/prolific_demographics_prescreen.dta saved
 Saved: derived/prolific_demographics_prescreen.dta
 Observations: 8216
@@ -342,17 +325,14 @@ Observations: 8216
 . 
 . * Main
 . clean_prolific ///
->     "raw_data/prolific_demographic_export_main.csv" ///
+>     "raw_data/prolific_demographic_export_main" ///
 >     "derived/prolific_demographics_main.dta"
 
-=== Cleaning: raw_data/prolific_demographic_export_main.csv ===
-(encoding automatically selected: ISO-8859-1)
-(30 vars, 2,752 obs)
+=== Cleaning: raw_data/prolific_demographic_export_main ===
 prolific_age: contains nonnumeric characters; replaced as byte
 (68 missing values generated)
-prolific_duration: all characters numeric; replaced as long
-(67 missing values generated)
-prolific_approvals: all characters numeric; replaced as int
+prolific_duration already numeric; no replace
+prolific_approvals already numeric; no replace
 (566 real changes made)
 (574 real changes made)
 (566 missing values generated)
@@ -360,23 +340,17 @@ prolific_approvals: all characters numeric; replaced as int
 (574 missing values generated)
 (574 missing values generated)
 (574 missing values generated)
-
-Duplicates in terms of prolific_pid
-
---------------------------------------
-   Copies | Observations       Surplus
-----------+---------------------------
-        1 |         2752             0
---------------------------------------
+  variable study_id was float now int
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (143,104 bytes saved)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (71,552 bytes saved)
+(file derived/prolific_demographics_main.dta not found)
 file derived/prolific_demographics_main.dta saved
 Saved: derived/prolific_demographics_main.dta
 Observations: 2752
@@ -384,17 +358,14 @@ Observations: 2752
 . 
 . * Main morepay
 . clean_prolific ///
->     "raw_data/prolific_demographic_export_main_morepay.csv" ///
+>     "raw_data/prolific_demographic_export_main_morepay" ///
 >     "derived/prolific_demographics_main_morepay.dta"
 
-=== Cleaning: raw_data/prolific_demographic_export_main_morepay.csv ===
-(encoding automatically selected: ISO-8859-1)
-(30 vars, 904 obs)
+=== Cleaning: raw_data/prolific_demographic_export_main_morepay ===
 prolific_age: contains nonnumeric characters; replaced as byte
 (22 missing values generated)
-prolific_duration: all characters numeric; replaced as long
-(22 missing values generated)
-prolific_approvals: all characters numeric; replaced as int
+prolific_duration already numeric; no replace
+prolific_approvals already numeric; no replace
 (176 real changes made)
 (180 real changes made)
 (176 missing values generated)
@@ -402,23 +373,17 @@ prolific_approvals: all characters numeric; replaced as int
 (180 missing values generated)
 (180 missing values generated)
 (180 missing values generated)
-
-Duplicates in terms of prolific_pid
-
---------------------------------------
-   Copies | Observations       Surplus
-----------+---------------------------
-        1 |          904             0
---------------------------------------
+  variable study_id was float now int
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (47,008 bytes saved)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (23,504 bytes saved)
+(file derived/prolific_demographics_main_morepay.dta not found)
 file derived/prolific_demographics_main_morepay.dta saved
 Saved: derived/prolific_demographics_main_morepay.dta
 Observations: 904
@@ -426,17 +391,14 @@ Observations: 904
 . 
 . * Followup
 . clean_prolific ///
->     "raw_data/prolific_demographic_export_followup.csv" ///
+>     "raw_data/prolific_demographic_export_followup" ///
 >     "derived/prolific_demographics_followup.dta"
 
-=== Cleaning: raw_data/prolific_demographic_export_followup.csv ===
-(encoding automatically selected: ISO-8859-1)
-(25 vars, 3,192 obs)
+=== Cleaning: raw_data/prolific_demographic_export_followup ===
 prolific_age: contains nonnumeric characters; replaced as byte
 (70 missing values generated)
-prolific_duration: all characters numeric; replaced as long
-(70 missing values generated)
-prolific_approvals: all characters numeric; replaced as int
+prolific_duration already numeric; no replace
+prolific_approvals already numeric; no replace
 (638 real changes made)
 (643 real changes made)
 (638 missing values generated)
@@ -444,23 +406,17 @@ prolific_approvals: all characters numeric; replaced as int
 (643 missing values generated)
 (643 missing values generated)
 (643 missing values generated)
-
-Duplicates in terms of prolific_pid
-
---------------------------------------
-   Copies | Observations       Surplus
-----------+---------------------------
-        1 |         3192             0
---------------------------------------
+  variable study_id was float now int
+  variable prolific_female was float now byte
+  variable prolific_male was float now byte
   variable prolific_ethnicity_n was long now byte
-  variable prolific_female was double now byte
-  variable prolific_male was double now byte
-  variable prolific_is_student was double now byte
-  variable prolific_employed_ft was double now byte
-  variable prolific_employed_pt was double now byte
-  variable prolific_not_working was double now byte
-  variable prolific_unemployed was double now byte
-  (165,984 bytes saved)
+  variable prolific_is_student was float now byte
+  variable prolific_employed_ft was float now byte
+  variable prolific_employed_pt was float now byte
+  variable prolific_not_working was float now byte
+  variable prolific_unemployed was float now byte
+  (82,992 bytes saved)
+(file derived/prolific_demographics_followup.dta not found)
 file derived/prolific_demographics_followup.dta saved
 Saved: derived/prolific_demographics_followup.dta
 Observations: 3192

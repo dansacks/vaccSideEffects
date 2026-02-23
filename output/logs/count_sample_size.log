@@ -1,9 +1,9 @@
 
   ___  ____  ____  ____  ____ ®
- /__    /   ____/   /   ____/      Stata 18.0
+ /__    /   ____/   /   ____/      StataNow 19.5
 ___/   /   /___/   /   /___/       SE—Standard Edition
 
- Statistics and Data Science       Copyright 1985-2023 StataCorp LLC
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
                                    StataCorp
                                    4905 Lakeway Drive
                                    College Station, Texas 77845 USA
@@ -12,8 +12,8 @@ ___/   /   /___/   /   /___/       SE—Standard Edition
 
 Stata license: Unlimited-user network, expiring 23 Oct 2026
 Serial number: 401909300710
-  Licensed to: Wisconsin School of Business
-               University of Wisconsin - Madison
+  Licensed to: Daniel Sacks
+               
 
 Notes:
       1. Stata is running in batch mode.
@@ -21,7 +21,7 @@ Notes:
       3. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:/Users/dwsacks/projects/vaccSideEffects/code/count_sample_size.do 
+. do /Users/sacks/Projects/VaccSideEffects/code/count_sample_size.do 
 
 . /*===========================================================================
 > ===
@@ -83,28 +83,28 @@ Notes:
 . }
 
 . cd "$projdir"
-C:\Users\dwsacks\Projects\VaccSideEffects
+/Users/sacks/Projects/VaccSideEffects
 
 . 
 . * Add local ado files to path (for plot_to_csv and other custom programs)
 . adopath + "$projdir/code/include"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
 
 . adopath + "$projdir/code/ado"
-  [1]  (BASE)      "C:\Program Files\Stata18\ado\base/"
-  [2]  (SITE)      "C:\Program Files\Stata18\ado\site/"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
   [3]              "."
-  [4]  (PERSONAL)  "C:\msys64\home\dwsacks\ado\personal/"
-  [5]  (PLUS)      "C:\msys64\home\dwsacks\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/include"
-  [8]              "C:/Users/dwsacks/Projects/VaccSideEffects/code/ado"
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
 
 . 
 . * Create output subdirectories if they don't exist
@@ -155,10 +155,10 @@ C:\Users\dwsacks\Projects\VaccSideEffects
 .     log using "output/logs/$scriptname.log", replace text
 -------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\dwsacks\Projects\VaccSideEffects\output/logs/count_sample
-> _size.log
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/count_sample_siz
+> e.log
   log type:  text
- opened on:   3 Feb 2026, 09:03:31
+ opened on:  16 Feb 2026, 20:51:49
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: count_sample_size ===
 .     di "Log: output/logs/$scriptname.log"
@@ -232,23 +232,23 @@ end of do-file
 . file write fout "Prescreen,Hesitant (final prescreen sample),`=_N'" _n
 
 . 
-. * Save prescreen final sample PIDs for linking
+. * Save prescreen final sample IDs for linking
 . preserve
 
-. keep prolific_pid
+. keep study_id
 
 . tempfile prescreen_final
 
 . save `prescreen_final'
-file C:\Users\dwsacks\projects\vaccSideEffects\ST_1252c_000002.tmp saved as
-    .dta format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St59374.000002 saved
+    as .dta format
 
 . restore
 
 . 
 . * Count matches to demographics
-. merge m:1 prolific_pid using "derived/prolific_demographics_prescreen.dta", k
-> eep(1 3) keepusing(prolific_pid)
+. merge m:1 study_id using "derived/prolific_demographics_prescreen.dta", keep(
+> 1 3) keepusing(study_id)
 
     Result                      Number of obs
     -----------------------------------------
@@ -319,7 +319,7 @@ Matches to demographics: 4525
 
 . 
 . * Merge with prescreen final sample
-. merge m:1 prolific_pid using `prescreen_final', keep(1 3)
+. merge m:1 study_id using `prescreen_final', keep(1 3)
 
     Result                      Number of obs
     -----------------------------------------
@@ -393,13 +393,13 @@ Matches to demographics: 4525
 . * Save main final sample PIDs for linking
 . preserve
 
-. keep prolific_pid
+. keep study_id
 
 . tempfile main_final
 
 . save `main_final'
-file C:\Users\dwsacks\projects\vaccSideEffects\ST_1252c_000004.tmp saved as
-    .dta format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St59374.000004 saved
+    as .dta format
 
 . restore
 
@@ -414,24 +414,23 @@ file C:\Users\dwsacks\projects\vaccSideEffects\ST_1252c_000004.tmp saved as
        data's values)
 (label prolific_ethnicity_n already defined)
 
-. duplicates drop prolific_pid, force
+. duplicates drop study_id, force
 
-Duplicates in terms of prolific_pid
+Duplicates in terms of study_id
 
 (0 observations are duplicates)
 
 . tempfile main_demog_combined
 
 . save `main_demog_combined'
-file C:\Users\dwsacks\projects\vaccSideEffects\ST_1252c_000006.tmp saved as
-    .dta format
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St59374.000006 saved
+    as .dta format
 
 . restore
 
 . 
 . * Count matches to demographics
-. merge m:1 prolific_pid using `main_demog_combined', keep(1 3) keepusing(proli
-> fic_pid)
+. merge m:1 study_id using `main_demog_combined', keep(1 3) keepusing(study_id)
 
     Result                      Number of obs
     -----------------------------------------
@@ -502,7 +501,7 @@ Matches to demographics: 3525
 
 . 
 . * Merge with main final sample
-. merge m:1 prolific_pid using `main_final', keep(1 3)
+. merge m:1 study_id using `main_final', keep(1 3)
 
     Result                      Number of obs
     -----------------------------------------
@@ -549,8 +548,8 @@ Matches to demographics: 3525
 
 . 
 . * Count matches to demographics
-. merge m:1 prolific_pid using "derived/prolific_demographics_followup.dta", ke
-> ep(1 3) keepusing(prolific_pid)
+. merge m:1 study_id using "derived/prolific_demographics_followup.dta", keep(1
+>  3) keepusing(study_id)
 
     Result                      Number of obs
     -----------------------------------------

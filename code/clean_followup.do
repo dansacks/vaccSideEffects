@@ -17,7 +17,7 @@ do "code/_config.do"
     1. Load raw SPSS data
 ------------------------------------------------------------------------------*/
 
-use "raw_data/flu_vacc_se_followup_January+9,+2026_19.43", clear
+use "raw_data/flu_vacc_se_followup_January+9,+2026_19.43.dta", clear
 
 * Verify we have data
 assert _N > 0
