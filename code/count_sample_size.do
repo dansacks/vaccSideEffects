@@ -114,6 +114,13 @@ local n_attn = _N
 coun
 file write fout "Main,Passed attention check,`=_N'" _n
 
+* randomized
+keep if ~missing(arm_n)
+local n_randomized = _N
+count
+file write fout "Main, randomized,`=_N'" _n
+
+
 * Non-missing delta and no -99 values in posteriors
 keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99  ///
 	& ~missing(post_trial)
@@ -183,6 +190,11 @@ keep if _merge == 3
 drop _merge
 local n_linked = _N
 file write fout "Followup,Linked to main final,`=_N'" _n
+
+keep if consent == 1
+local n_consent = _N
+file write fout "Followup,consented,`=_N'" _n
+
 
 keep if failed_attn == 0
 local n_attn = _N
