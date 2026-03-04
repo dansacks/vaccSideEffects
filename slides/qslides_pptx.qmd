@@ -11,13 +11,9 @@ author:
       - name: "Tulane University"
         department: "Department of Health Policy and Management"
 format:
-  clean-revealjs:
-    slide-number: "c"
-    width: 1600
-    height: 900
-    embed-resources: true
-    css: style.css
-    fragments: false
+  pptx:
+    slide-level: 2
+    reference-doc: reference.pptx
 ---
 
 
@@ -61,25 +57,7 @@ I am hoping to pursue this hypothesis in a series of experiments
 
 ## From communication to vaccination 
 
-```{dot}
-//| fig-align: center
-//| fig-width: 15
-//| fig-height: 1
-digraph timeline {
-  rankdir=LR
-  bgcolor=transparent
-  graph [pad="0", nodesep="1.5", ranksep="0.5"]
-  node [shape=ellipse, style=filled, fillcolor="#e8e8e8", color="#333333", fontcolor="#333333", fontname="Roboto", fontsize=14, height=0.4, margin="0.12,0.04"]
-  edge [color="#333333", penwidth=1.5, arrowsize=0.8]
-
-  A [label="Information"]
-  B [label="Understanding"]
-  C [label="Beliefs"]
-  D [label="Actions"]
-
-  A -> B -> C -> D
-}
-```
+**Information → Understanding → Beliefs → Actions**
 
 ::: {.fragment}
 
@@ -361,21 +339,21 @@ Controls (power-improving)
 
 ## Vaccine hesitant's beliefs might be hard to move
 
-![](../output/figures/use_info1.png ){width="90%"}
+![](../output/figures/use_info1.png ){width="90%"}{.center}
 
 
 ## Vaccine hesitant's beliefs might be hard to move
 
-![](../output/figures/use_info2.png ){width="90%"}
+![](../output/figures/use_info2.png ){width="90%"}{.center}
 
 
 ## Vaccine hesitant's beliefs might be hard to move  
 
-![](../output/figures/use_info3.png ){width="90%"}
+![](../output/figures/use_info3.png ){width="90%"}{.center}
 
 
 ## Vaccine hesitant's beliefs might be hard to move 
-![](../output/figures/reliable_info.png ){width="90%"}
+![](../output/figures/reliable_info.png ){width="90%"}{.center}
 
 
 ## Industry and academic study info moves beliefs {#te-slide}
