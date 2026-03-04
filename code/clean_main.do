@@ -204,7 +204,8 @@ egen n_missing = rowmiss(posterior_vacc posterior_novacc post_trial)
 * Final sample flag (main survey requires non-missing outcomes)
 gen final_sample = (consent == 1 & failed_attn == 0 ///
     & _distchannel == "anonymous" & is_preview == 0 ///
-		& n_missing == 0 & first_attempt == 1)
+		& n_missing == 0 & posterior_vacc != -99 & posterior_novacc != -99 ///
+		& first_attempt == 1)
 
 label var final_sample "Final analysis sample (consent, passed attn, non-missing outcomes, first attempt)"
 assert ~missing(arm_n) if final_sample

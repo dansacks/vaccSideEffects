@@ -179,7 +179,7 @@ global attn_check_val = $ATTN_CHECK_PRESCREEN
 do "code/include/_create_quality_flags.do"
 
 * Final sample flag (prescreen-specific criteria: consent + attn + anonymous + first attempt)
-gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & ~is_preview & first_attempt == 1)
+gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonymous" & ~is_preview & first_attempt == 1 & vacc_intent <= 2)
 label var final_sample "Final analysis sample (consent, passed attention, first attempt)"
 
 
