@@ -55,7 +55,7 @@ local keyvars arm_industry arm_academic arm_personal
 
 eststo clear
 
-foreach y in post_trial delta main_intends link_click vacc_post {
+foreach y in post_trial delta main_intent link_click vacc_post {
     regress `y' `keyvars' $controls, robust
     sum `y' if arm_control==1
     estadd scalar cm = r(mean)
@@ -66,7 +66,7 @@ foreach y in post_trial delta main_intends link_click vacc_post {
 local coltitles mtitles("SE (trial)" "Delta" "Vacc Intent" "Link Click" "Vaccinated")
 
 * .tex output: remove header, rules, and spacing for input into larger doc
-esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
+esttab m_post_trial m_delta m_main_intent m_link_click m_vacc_post ///
     using output/tables/treatment_effects.tex, ///
     b(%9.3f) se(%9.3f) ///
     keep(`keyvars') ///
@@ -75,7 +75,7 @@ esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
     fragment replace nomtitles nonotes nonumbers nolines nogaps
 
 * .md output: include column titles in header row
-esttab m_post_trial m_delta m_main_maybe m_link_click m_vacc_post ///
+esttab m_post_trial m_delta m_main_intent m_link_click m_vacc_post ///
     using output/tables/treatment_effects.md, ///
     b(%9.3f) se(%9.3f) ///
     keep(`keyvars') ///

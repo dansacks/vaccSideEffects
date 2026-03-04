@@ -77,7 +77,7 @@ foreach split in high_prior bad_experience high_trust high_relevance reliable_un
 
     eststo clear
 
-    foreach y in post_trial delta main_maybe {
+    foreach y in post_trial delta main_intent {
         foreach splitval in 0 1 {
             di as text ""
             di as text "--- `y', `split'=`splitval' ---"
@@ -103,7 +103,7 @@ foreach split in high_prior bad_experience high_trust high_relevance reliable_un
     local coltitles mtitles("SE (trial)" "Delta" "Vacc Intent" "SE (trial)" "Delta" "Vacc Intent")
 
     * .tex output: esttab followed by split label row
-    esttab post_trial_0 delta_0 main_maybe_0 post_trial_1 delta_1 main_maybe_1 ///
+    esttab post_trial_0 delta_0 main_intent_0 post_trial_1 delta_1 main_intent_1 ///
         using output/tables/het_`split'.tex, ///
         b(%9.3f) se(%9.3f) keep(`keyvars') label nostar ///
         stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
@@ -115,7 +115,7 @@ foreach split in high_prior bad_experience high_trust high_relevance reliable_un
     file close _het_tex
 
     * .md output: include column titles in header row, followed by split label row
-    esttab post_trial_0 delta_0 main_maybe_0 post_trial_1 delta_1 main_maybe_1 ///
+    esttab post_trial_0 delta_0 main_intent_0 post_trial_1 delta_1 main_intent_1 ///
         using output/tables/het_`split'.md, ///
         b(%9.3f) se(%9.3f) keep(`keyvars') label nostar `coltitles' ///
         stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///

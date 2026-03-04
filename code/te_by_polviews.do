@@ -112,7 +112,7 @@ gen liberal = inrange(polviews, 1,3)
 eststo clear
 local keyvars arm_industry arm_academic arm_personal
 
-qui foreach y in post_trial delta main_maybe vacc_post {
+qui foreach y in post_trial delta main_intent vacc_post {
 	noi di "outcome `y'"
 	forvalues l = 0/1 {
 		reg `y' `keyvars' $controls if liberal==`l', r 
@@ -137,7 +137,7 @@ local coltitles mtitles("SE (trial)" "Delta" "Vacc Intent" ///
 	
 
 * .md output: include column titles in header row, followed by split label row
-esttab post_trial_0 delta_0 main_maybe_0 post_trial_1  delta_1 main_maybe_1 ///
+esttab post_trial_0 delta_0 main_intent_0 post_trial_1  delta_1 main_intent_1 ///
 		using output/tables/het_polviews.md, ///
 		b(%9.3f) se(%9.3f) keep(`keyvars') label nostar `coltitles' ///
 		stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
