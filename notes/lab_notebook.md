@@ -4,6 +4,60 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-03-05: HTE by Flu Experience, Balance Table Updates, PCA + Lasso HTE
+
+### New file: `code/hte_flu_vacc_experience.do`
+- 4-column table for `delta` only, stratified by `flu_vacc_reaction` (0=No vaccine, 1=No reaction, 2=Mild, 3=Severe)
+- Outputs: `output/tables/het_flu_vacc_experience.tex` and `.md`
+- Makefile target: `hte-flu-vacc`
+
+### `code/balance_table.do` changes
+- Relabeled `prior_vacc_likely`: "Adverse event at least likely if vaccinate"
+- Added `age_50_64` = (age == 4), appears after `age_35_49` in all relevant tables
+- Rearranged main table: `trust_govt_high follow_doc_high` now appear before demographic rows
+- Renamed "Personal" → "Representative" in all three `labels(...)` calls
+- `balance_table_slides_demo.tex` updated to include `age_50_64`
+
+### New file: `code/pca_lasso_hte.do`
+Three sections:
+1. **PCA** on `trust_trial` and `relevant_trial` (main sample) → `pca1` scores + `output/tables/pca_quality.tex`
+2. **Lasso** (CV, 10-fold, seed=12345) on control group to predict `pca1` from `$controls` plus info source frequency/reliability predictors. Structural missingness in `reliable_*` recoded to 0 "N/A". Post-lasso OLS → `output/tables/lasso_predictors.tex`. Predicted `pca1_hat` applied to full sample.
+3. **HTE regressions** of `delta` and `main_intent` on treatment × pca1_hat interactions → `output/tables/hte_pca.tex` and 2-panel line plot → `output/figures/hte_pca.png`
+
+### Makefile
+- Added `hte-forest`, `hte-flu-vacc`, `pca-lasso-hte` targets and `.PHONY` entries
+
+---
+
+## 2026-03-04: HTE Forest Plot
+
+**Goal:** Add a single-panel forest plot for HTE on `delta`, stacking all 8 subgroups × 3 arms (24 points) vertically.
+
+### Changes Made
+
+**New file:** `code/plot_hte_forest.do`
+- Generates `output/figures/hte_forest.png`
+- 8 subgroups from 3 sections: Prior belief (Low/High), Flu vacc experience (No vaccine/No reaction/Mild/Severe), Univ. reliable (Not reliable ≤2 / Reliable =3)
+- Each subgroup runs `regress delta arm_industry arm_academic arm_personal $controls if <filter>, robust`
+- Y positions computed programmatically (1-unit arm spacing, 0.5-unit extra gap between subgroups, 1.5-unit extra gap between sections)
+- Subgroup labels on y-axis at academic (middle) row position
+- Horizontal dividers between sections via `yline(7.75 22.75)`
+- Colors/shapes match `plot_hte.do` (blue circle=Industry, orange diamond=Academic, green square=Personal)
+- Export: 1750×2000 px
+
+**Makefile:**
+- Added `hte-forest` target and `HTE_FOREST` variable
+- Added to `.PHONY` and help text
+
+### Usage
+```bash
+make hte-forest
+# or interactively:
+do "code/plot_hte_forest.do"
+```
+
+---
+
 ## 2026-01-31: Appendix slides with HTE tables and navigation
 
 **Goal:** Add an appendix section to slides with navigable HTE tables and a new HTE split by university info reliability.
