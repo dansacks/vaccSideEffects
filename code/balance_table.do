@@ -31,7 +31,7 @@ di "Total merged observations: " r(N)
 
 * Prior belief: somewhat likely or more likely to experience SE with vaccine (>=5)
 gen prior_vacc_likely = (prior_self_vacc >= 5) if ~missing(prior_self_vacc)
-label var prior_vacc_likely "Prior belief: SE likely with vaccine"
+label var prior_vacc_likely "Adverse event at least likely if vaccinate"
 
 * Do not intend to vaccinate (from prescreen, vacc_intent == 1)
 gen pre_no_intent = (pre_vacc_intent == 1) if ~missing(pre_vacc_intent)
@@ -65,6 +65,9 @@ capture label var age_18_34 "Age 18--34"
 capture gen age_35_49 = (age == 3) if ~missing(age) & age != $PREF_NOT_SAY
 capture label var age_35_49 "Age 35--49"
 
+capture gen age_50_64 = (age == 4) if ~missing(age) & age != $PREF_NOT_SAY
+capture label var age_50_64 "Age 50--64"
+
 capture gen race_white = (race == 1) if ~missing(race) & race != 7
 capture label var race_white "White"
 
@@ -96,11 +99,11 @@ label var college "College degree"
 balance_table
 	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid
 	severe_flu_reaction severe_covid_reaction
-	has_condition
-	age_18_34 age_35_49 race_white hispanic income_lt50k
-	trust_govt_high follow_doc_high college,
+	has_condition trust_govt_high follow_doc_high
+	age_18_34 age_35_49 age_50_64 race_white hispanic income_lt50k
+	college,
 	group(arm_n) saving(output/tables/balance_table.tex) jointtest
-	labels(Control Industry Academic Personal)
+	labels(Control Industry Academic Representative)
 ;
 # delimit cr
 
@@ -115,14 +118,14 @@ balance_table
 	severe_flu_reaction severe_covid_reaction
 	has_condition trust_govt_high follow_doc_high,
 	group(arm_n) saving(output/tables/balance_table_slides.tex) jointtest
-	labels(Control Industry Academic Personal)
+	labels(Control Industry Academic Representative)
 ;
 
 balance_table
-	age_18_34 age_35_49 race_white hispanic income_lt50k
+	age_18_34 age_35_49 age_50_64 race_white hispanic income_lt50k
 	college,
 	group(arm_n) saving(output/tables/balance_table_slides_demo.tex) jointtest
-	labels(Control Industry Academic Personal)
+	labels(Control Industry Academic Representative)
 ;
 # delimit cr
 capture log close
