@@ -54,7 +54,7 @@ ADO_REGRESSION := $(CODE)/ado/regression_table.ado
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte hte-plot persistence beliefs intro-figs exhibits dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte hte-plot hte-forest hte-flu-vacc pca-lasso-hte persistence beliefs intro-figs exhibits dirs clean-data clean-all help
 
 all: prescreen main followup prolific counts balance
 
@@ -71,6 +71,9 @@ help:
 	@echo "  analysis     - Run treatment effects regressions"
 	@echo "  hte          - Run heterogeneous treatment effects"
 	@echo "  hte-plot     - Generate HTE coefficient plot"
+	@echo "  hte-forest   - Generate HTE forest plot"
+	@echo "  hte-flu-vacc - HTE table for delta by flu vaccine experience"
+	@echo "  pca-lasso-hte - PCA + Lasso + HTE by trust/relevance index"
 	@echo "  persistence  - Run persistence of information analysis"
 	@echo "  beliefs      - Generate belief distribution figures"
 	@echo "  intro-figs   - Generate intro slide figures (vacc_trends)"
@@ -264,6 +267,39 @@ hte-plot: $(HTE_COEFPLOT)
 
 $(HTE_COEFPLOT): $(MERGED_ALL) $(CODE)/plot_hte.do $(CODE)/_config.do $(CODE)/_set_controls.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/plot_hte.do && mv plot_hte.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# HTE FOREST PLOT
+#-------------------------------------------------------------------------------
+HTE_FOREST := $(OUT_FIGURES)/hte_forest.png
+
+hte-forest: $(HTE_FOREST)
+
+$(HTE_FOREST): $(MERGED_ALL) $(CODE)/plot_hte_forest.do $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/plot_hte_forest.do && mv plot_hte_forest.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# HTE BY FLU VACCINE EXPERIENCE
+#-------------------------------------------------------------------------------
+HTE_FLU_VACC := $(OUT_TABLES)/het_flu_vacc_experience.tex
+
+hte-flu-vacc: $(HTE_FLU_VACC)
+
+$(HTE_FLU_VACC): $(MERGED_ALL) $(CODE)/hte_flu_vacc_experience.do \
+    $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/hte_flu_vacc_experience.do && mv hte_flu_vacc_experience.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# PCA + LASSO + HTE (TRUST/RELEVANCE INDEX)
+#-------------------------------------------------------------------------------
+HTE_PCA_TEX := $(OUT_TABLES)/hte_pca.tex
+HTE_PCA_FIG := $(OUT_FIGURES)/hte_pca.png
+
+pca-lasso-hte: $(HTE_PCA_TEX)
+
+$(HTE_PCA_TEX) $(HTE_PCA_FIG) &: $(MERGED_ALL) $(CODE)/pca_lasso_hte.do \
+    $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/pca_lasso_hte.do && mv pca_lasso_hte.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
 # PERSISTENCE ANALYSIS
