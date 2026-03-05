@@ -56,7 +56,7 @@ local keyvars arm_industry arm_academic arm_personal
 eststo clear
 
 foreach y in post_trial delta main_intent link_click vacc_post {
-    regress `y' `keyvars' $controls, robust
+    regress `y' `keyvars' $controls, vce(hc3)
     sum `y' if arm_control==1
     estadd scalar cm = r(mean)
     eststo m_`y'
