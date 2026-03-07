@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  4 MAR 2026 10:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  5 MAR 2026 12:44
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -162,7 +162,8 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count287
 \l__pdf_internal_box=\box61
-) (./exhibits.aux)
+)
+No file exhibits.aux.
 \openout1 = `exhibits.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
@@ -179,7 +180,6 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
 LaTeX Font Info:    ... okay on input line 42.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
 LaTeX Font Info:    ... okay on input line 42.
-
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -413,10 +413,10 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 3986 strings out of 473190
- 71463 string characters out of 5715801
- 478823 words of memory out of 5000000
- 27168 multiletter control sequences out of 15000+600000
+ 3983 strings out of 473190
+ 71412 string characters out of 5715801
+ 478832 words of memory out of 5000000
+ 27167 multiletter control sequences out of 15000+600000
  565919 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,9n,95p,773b,346s stack positions out of 10000i,1000n,20000p,200000b,200000s

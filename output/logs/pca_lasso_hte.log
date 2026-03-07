@@ -1,0 +1,3263 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       SE—Standard Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user network, expiring 23 Oct 2026
+Serial number: 401909300710
+  Licensed to: Daniel Sacks
+               
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do code/pca_lasso_hte.do 
+
+. /*===========================================================================
+> ===
+>     PCA + Lasso + HTE by Predicted Trust/Relevance Index
+> 
+>     Input:  derived/merged_all.dta
+>     Outputs:
+>       output/tables/pca_quality.tex      - PCA eigenvalues and loadings
+>       output/tables/lasso_predictors.tex - Post-lasso OLS coefficients
+>       output/tables/hte_pca.tex          - HTE regressions with pca1_hat inte
+> ractions
+>       output/figures/hte_pca.png         - 2-panel plot with 95% CI bands
+> 
+>     Section 3a: PCA on trust_trial and relevant_trial
+>     Section 3b: Lasso to predict pca1 from pre-experiment variables
+>     Section 3c: HTE estimation (regressions + table)
+>     Section 3d: Plot using lincom for correct 95% CIs
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. clear all
+
+. global scriptname "pca_lasso_hte"
+
+. do "code/_config.do"
+
+. /*===========================================================================
+> ===
+>     Project Configuration
+> 
+>     Set the project directory once here; all other scripts include this file.
+> 
+>     Usage: Include at the top of each do-file:
+>         global scriptname "my_script"
+>         do "code/_config.do"
+> 
+>     In batch mode (stata -e), logs to output/logs/{scriptname}.log
+>     In interactive mode, no logging occurs.
+> 
+>     Created by Dan + Claude Code
+> =============================================================================
+> =*/
+. 
+. * Settings for both batch and interactive mode
+. set more off
+
+. set rmsg off
+
+. 
+. * Set project directory based on operating system
+. * c(os) returns "Windows" on Windows, "Unix" or "MacOSX" on Mac
+. local usr `c(username)'
+
+. if "`c(os)'" == "Windows" {
+.     global projdir "C:/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. else {
+.     * macOS (Unix or MacOSX)
+.     global projdir "/Users/`usr'/Projects/VaccSideEffects"
+. }
+
+. cd "$projdir"
+/Users/sacks/Projects/VaccSideEffects
+
+. 
+. * Add local ado files to path (for plot_to_csv and other custom programs)
+. adopath + "$projdir/code/include"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+
+. adopath + "$projdir/code/ado"
+  [1]  (BASE)      "/Applications/StataNow/ado/base/"
+  [2]  (SITE)      "/Applications/StataNow/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/sacks/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/sacks/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/sacks/Projects/VaccSideEffects/code/include"
+  [8]              "/Users/sacks/Projects/VaccSideEffects/code/ado"
+
+. 
+. * Create output subdirectories if they don't exist
+. capture mkdir "output"
+
+. capture mkdir "output/logs"
+
+. capture mkdir "output/tables"
+
+. capture mkdir "output/docs"
+
+. capture mkdir "output/figures"
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Named Constants
+> 
+>     These replace magic numbers scattered throughout the codebase.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Attention check expected values (from survey design)
+. global ATTN_CHECK_PRESCREEN = 1965
+
+. global ATTN_CHECK_MAIN = 4419
+
+. global ATTN_CHECK_FOLLOWUP = 1163
+
+. 
+. * Special code for unselected responses
+. global UNSELECTED_VALUE  = -99
+
+. 
+. * Special code for "prefer not to say" responses (same as unselected)
+. global PREF_NOT_SAY = -99
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     Conditional Logging
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Only log in batch mode
+. if "`c(mode)'" == "batch" & "$scriptname" != "" {
+.     capture log close _all
+.     log using "output/logs/$scriptname.log", replace text
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/pca_lasso_hte.lo
+> g
+  log type:  text
+ opened on:   5 Mar 2026, 12:28:59
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: pca_lasso_hte ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/pca_lasso_hte.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. do "code/_set_controls.do"
+
+. /*===========================================================================
+> ===
+>     Control Variables Definition
+> 
+>     Include this file in do-files that run regressions with control variables
+> .
+>     Sets globals: prior_beliefs, vacc_experience, demographics, controls
+> =============================================================================
+> =*/
+. 
+. * Prior beliefs from main survey
+. global prior_beliefs "i.prior_self_placebo i.prior_self_vacc"
+
+. 
+. * Vaccine experiences from prescreen
+. global vacc_experience "had_prior_covid_vacc had_prior_flu_vacc i.covid_vacc_
+> reaction i.flu_vacc_reaction"
+
+. 
+. * Demographics from main survey (with missing indicators)
+. global demographics "i.age i.gender i.education i.income i.race i.ethnicity i
+> .polviews"
+
+. global demo_miss "age_miss gender_miss education_miss income_miss race_miss e
+> thnicity_miss polviews_miss"
+
+. 
+. * Prescreen control missing indicators (from clean_prescreen.do, renamed in m
+> erge)
+. global pre_miss "trust_govt_miss pre_had_prior_covid_vacc_miss pre_had_prior_
+> flu_vacc_miss pre_covid_vacc_reaction_miss pre_flu_vacc_reaction_miss"
+
+. 
+. * All controls combined
+. global controls "$prior_beliefs i.pre_vacc_intent $vacc_experience $demograph
+> ics i.trust_govt $demo_miss $pre_miss cond_*"
+
+. 
+end of do-file
+
+. 
+. /*===========================================================================
+> ===
+>     Section 3a: PCA on trust_trial and relevant_trial
+> =============================================================================
+> =*/
+. 
+. use "derived/merged_all.dta", clear
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3a.1 Compute PCA on main sample
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. pca trust_trial relevant_trial if main_sample == 1
+
+Principal components/correlation                 Number of obs    =      3,520
+                                                 Number of comp.  =          2
+                                                 Trace            =          2
+    Rotation: (unrotated = principal)            Rho              =     1.0000
+
+    --------------------------------------------------------------------------
+       Component |   Eigenvalue   Difference         Proportion   Cumulative
+    -------------+------------------------------------------------------------
+           Comp1 |      1.53196      1.06393             0.7660       0.7660
+           Comp2 |      .468036            .             0.2340       1.0000
+    --------------------------------------------------------------------------
+
+Principal components (eigenvectors) 
+
+    ------------------------------------------------
+        Variable |    Comp1     Comp2 | Unexplained 
+    -------------+--------------------+-------------
+     trust_trial |   0.7071    0.7071 |           0 
+    relevant_t~l |   0.7071   -0.7071 |           0 
+    ------------------------------------------------
+
+. 
+. * Extract PC1 scores for all obs (applies loadings to full dataset)
+. predict pca1 if main_sample == 1, score
+(1 components skipped)
+
+Scoring coefficients 
+    sum of squares(column-loading) = 1
+
+    ----------------------------------
+        Variable |    Comp1     Comp2 
+    -------------+--------------------
+     trust_trial |   0.7071           
+    relevant_t~l |   0.7071   -0.7071 
+    ----------------------------------
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3a.2 Build PCA quality table manually
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Retrieve eigenvalues and loadings from stored matrices
+. matrix Ev = e(Ev)
+
+. matrix L  = e(L)
+
+. 
+. local ev1 = Ev[1, 1]
+
+. local ev2 = Ev[1, 2]
+
+. local tot = `ev1' + `ev2'
+
+. local pv1 = `ev1' / `tot'
+
+. local pv2 = `ev2' / `tot'
+
+. local cv1 = `pv1'
+
+. local cv2 = `pv1' + `pv2'
+
+. 
+. * Loadings for PC1: rows = variables (trust_trial, relevant_trial), col 1
+. local load_trust = L[1, 1]
+
+. local load_rel   = L[2, 1]
+
+. 
+. file open _pca using "output/tables/pca_quality.tex", write replace
+
+. file write _pca "Component & Eigenvalue & Prop. var. & Cum. var. \\" _n
+
+. file write _pca "\midrule" _n
+
+. file write _pca "1 & " %6.3f (`ev1') " & " %6.3f (`pv1') " & " %6.3f (`cv1') 
+> " \\" _n
+
+. file write _pca "2 & " %6.3f (`ev2') " & " %6.3f (`pv2') " & " %6.3f (`cv2') 
+> " \\" _n
+
+. file write _pca "\midrule" _n
+
+. file write _pca "Loadings (Component 1) & & & \\" _n
+
+. file write _pca "Trust in trial & " %6.3f (`load_trust') " & & \\" _n
+
+. file write _pca "Relevance of trial & " %6.3f (`load_rel') " & &"
+
+. file close _pca
+
+. 
+. di as text "Saved: output/tables/pca_quality.tex"
+Saved: output/tables/pca_quality.tex
+
+. 
+. /*===========================================================================
+> ===
+>     Section 3b: Lasso to predict pca1 from pre-experiment variables
+> =============================================================================
+> =*/
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3b.1 Recode reliable_* for non-users (structural missingness)
+>          Missing means respondent never uses that source → code as 0 "N/A"
+>          reliable_university is asked of all respondents, so no imputation ne
+> eded.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. foreach src in doctor sm podcasts cdc news {
+  2.     replace reliable_`src' = 0 if missing(reliable_`src') & !missing(info_
+> `src')
+  3.     assert !missing(reliable_`src') if !missing(info_`src')
+  4.     label define rel_`src'_lbl 0 "N/A" 1 "Not reliable" 2 "Somewhat" 3 "Ye
+> s", replace
+  5.     label values reliable_`src' rel_`src'_lbl
+  6. }
+(798 real changes made)
+(2,150 real changes made)
+(2,791 real changes made)
+(1,775 real changes made)
+(2,347 real changes made)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3b.2 Recode info_* and follow_doctor: -1 means "No [source]" (a valid
+>          category) but Stata's i. factor notation requires non-negative value
+> s.
+>          Remap -1 → 0 so 0 = "No [source]" serves as the base dummy category.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. foreach v in info_doctor info_sm info_podcasts info_cdc info_news info_univer
+> sity follow_doctor {
+  2.     replace `v' = 0 if `v' == -1
+  3. }
+(281 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3b.3 Define additional predictors and expand variable list
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. global lasso_extra "i.info_doctor i.info_sm i.info_podcasts i.info_cdc i.info
+> _news"
+
+. global lasso_extra "$lasso_extra i.info_university i.reliable_doctor i.reliab
+> le_sm i.reliable_podcasts"
+
+. global lasso_extra "$lasso_extra i.reliable_cdc i.reliable_news i.reliable_un
+> iversity i.follow_doctor has_insurance"
+
+. 
+. * Expand factor notation to get full variable list (handles cond_* wildcard t
+> oo)
+. fvexpand $controls $lasso_extra
+
+. local all_preds `r(varlist)'
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3b.4 Lasso: CV selection in control group (primary)
+>          rseed ensures reproducibility across runs.
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. lasso linear pca1 `all_preds' if arm_n == 0 & main_sample == 1, ///
+>     rseed(12345) selection(cv, folds(10))
+1b.prior_self_placebo omitted
+1b.prior_self_vacc omitted
+1b.pre_vacc_intent omitted
+0b.covid_vacc_reaction omitted
+0b.flu_vacc_reaction omitted
+1b.age omitted
+1b.gender omitted
+1b.education omitted
+1b.income omitted
+1b.race omitted
+1b.ethnicity omitted
+1b.polviews omitted
+1b.trust_govt omitted
+0b.info_doctor omitted
+1b.info_sm omitted
+1b.info_podcasts omitted
+1b.info_cdc omitted
+1b.info_news omitted
+1b.info_university omitted
+0b.reliable_doctor omitted
+0b.reliable_sm omitted
+0b.reliable_podcasts omitted
+0b.reliable_cdc omitted
+0b.reliable_news omitted
+1b.reliable_university omitted
+1b.follow_doctor omitted
+note: age_miss omitted because it is constant.
+note: gender_miss omitted because it is constant.
+note: education_miss omitted because it is constant.
+note: income_miss omitted because it is constant.
+note: race_miss omitted because it is constant.
+note: ethnicity_miss omitted because it is constant.
+note: polviews_miss omitted because it is constant.
+note: trust_govt_miss omitted because it is constant.
+note: pre_had_prior_covi~s omitted because it is constant.
+note: pre_had_prior_flu_~s omitted because it is constant.
+note: pre_covid_vacc_rea~s omitted because it is constant.
+note: pre_flu_vacc_react~s omitted because it is constant.
+note: cond_asthma_miss omitted because it is constant.
+note: cond_lung_miss omitted because it is constant.
+note: cond_heart_miss omitted because it is constant.
+note: cond_diabetes_miss omitted because it is constant.
+note: cond_kidney_miss omitted because it is constant.
+note: cond_rather_not_sa~s omitted because it is constant.
+note: cond_none_miss omitted because it is constant.
+note: 6.age omitted because it is constant in C.V. subsamples.
+10-fold cross-validation with 100 lambdas ...
+Grid value 1:     lambda = .3586397   no. of nonzero coef. =   0
+Folds: 1...5....10   CVF = 1.429934
+Grid value 2:     lambda = .3267791   no. of nonzero coef. =   1
+Folds: 1...5....10   CVF = 1.414295
+Grid value 3:     lambda =  .297749   no. of nonzero coef. =   2
+Folds: 1...5....10   CVF = 1.394676
+Grid value 4:     lambda = .2712978   no. of nonzero coef. =   2
+Folds: 1...5....10   CVF = 1.372265
+Grid value 5:     lambda = .2471964   no. of nonzero coef. =   2
+Folds: 1...5....10   CVF = 1.352542
+Grid value 6:     lambda = .2252362   no. of nonzero coef. =   5
+Folds: 1...5....10   CVF = 1.332881
+Grid value 7:     lambda = .2052268   no. of nonzero coef. =   5
+Folds: 1...5....10   CVF = 1.308104
+Grid value 8:     lambda =  .186995   no. of nonzero coef. =   5
+Folds: 1...5....10   CVF = 1.284386
+Grid value 9:     lambda = .1703829   no. of nonzero coef. =   6
+Folds: 1...5....10   CVF = 1.264681
+Grid value 10:    lambda = .1552466   no. of nonzero coef. =   7
+Folds: 1...5....10   CVF = 1.247822
+Grid value 11:    lambda = .1414549   no. of nonzero coef. =  12
+Folds: 1...5....10   CVF = 1.232479
+Grid value 12:    lambda = .1288884   no. of nonzero coef. =  13
+Folds: 1...5....10   CVF = 1.216874
+Grid value 13:    lambda = .1174383   no. of nonzero coef. =  14
+Folds: 1...5....10   CVF = 1.201626
+Grid value 14:    lambda = .1070054   no. of nonzero coef. =  15
+Folds: 1...5....10   CVF = 1.187936
+Grid value 15:    lambda = .0974994   no. of nonzero coef. =  15
+Folds: 1...5....10   CVF = 1.175919
+Grid value 16:    lambda = .0888378   no. of nonzero coef. =  16
+Folds: 1...5....10   CVF = 1.165644
+Grid value 17:    lambda = .0809457   no. of nonzero coef. =  19
+Folds: 1...5....10   CVF = 1.154678
+Grid value 18:    lambda = .0737547   no. of nonzero coef. =  19
+Folds: 1...5....10   CVF = 1.145464
+Grid value 19:    lambda = .0672025   no. of nonzero coef. =  21
+Folds: 1...5....10   CVF = 1.138168
+Grid value 20:    lambda = .0612324   no. of nonzero coef. =  25
+Folds: 1...5....10   CVF = 1.132637
+Grid value 21:    lambda = .0557927   no. of nonzero coef. =  30
+Folds: 1...5....10   CVF = 1.128366
+Grid value 22:    lambda = .0508362   no. of nonzero coef. =  33
+Folds: 1...5....10   CVF = 1.125247
+Grid value 23:    lambda = .0463201   no. of nonzero coef. =  33
+Folds: 1...5....10   CVF =  1.12318
+Grid value 24:    lambda = .0422051   no. of nonzero coef. =  35
+Folds: 1...5....10   CVF = 1.122881
+Grid value 25:    lambda = .0384558   no. of nonzero coef. =  40
+Folds: 1...5....10   CVF = 1.123342
+Grid value 26:    lambda = .0350395   no. of nonzero coef. =  43
+Folds: 1...5....10   CVF = 1.123827
+Grid value 27:    lambda = .0319266   no. of nonzero coef. =  49
+Folds: 1...5....10   CVF = 1.124351
+Grid value 28:    lambda = .0290904   no. of nonzero coef. =  50
+Folds: 1...5....10   CVF = 1.124267
+Grid value 29:    lambda = .0265061   no. of nonzero coef. =  54
+Folds: 1...5....10   CVF = 1.124323
+... cross-validation complete ... minimum found
+
+Lasso linear model                          No. of obs        =        879
+                                            No. of covariates =        105
+Selection: Cross-validation                 No. of CV folds   =         10
+
+--------------------------------------------------------------------------
+         |                                No. of      Out-of-      CV mean
+         |                               nonzero       sample   prediction
+      ID |     Description      lambda     coef.    R-squared        error
+---------+----------------------------------------------------------------
+       1 |    first lambda    .3586397         0      -0.0007     1.429934
+      23 |   lambda before    .0463201        33       0.2140      1.12318
+    * 24 | selected lambda    .0422051        35       0.2142     1.122881
+      25 |    lambda after    .0384558        40       0.2139     1.123342
+      29 |     last lambda    .0265061        54       0.2132     1.124323
+--------------------------------------------------------------------------
+* lambda selected by cross-validation.
+
+. di "CV-selected lambda: " e(lambda)
+CV-selected lambda: .
+
+. di "Selected variables: " `"`e(allvars_sel)'"'
+Selected variables: 4bn.prior_self_placebo 6bn.prior_self_placebo 2bn.prior_sel
+> f_vacc 3bn.prior_self_vacc 6bn.prior_self_vacc 7bn.prior_self_vacc 2bn.pre_va
+> cc_intent had_prior_covid_vacc had_prior_flu_vacc 3bn.age 4bn.age 2bn.gender 
+> 5bn.education 6bn.income 3bn.ethnicity 7bn.polviews 8bn.polviews 3bn.trust_go
+> vt 4bn.trust_govt 5bn.trust_govt cond_lung cond_diabetes cond_rather_not_say 
+> 2bn.info_doctor 2bn.info_sm 3bn.info_sm 2bn.info_podcasts 3bn.info_cdc 2bn.in
+> fo_university 1bn.reliable_doctor 3bn.reliable_cdc 3bn.reliable_news 3bn.reli
+> able_university 4bn.follow_doctor 5bn.follow_doctor
+
+. 
+. local sel_vars `e(allvars_sel)'
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3b.5 Post-lasso OLS for standard errors (display table only)
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. regress pca1 `sel_vars' if arm_n == 0 & main_sample == 1, robust
+
+Linear regression                               Number of obs     =        879
+                                                F(35, 843)        =      11.71
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3084
+                                                Root MSE          =     1.0151
+
+------------------------------------------------------------------------------
+             |               Robust
+        pca1 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+prior_self~o |
+4. Neithe..  |  -.1848761   .1672956    -1.11   0.269    -.5132409    .1434886
+6. Very l..  |    -.26321   .1978924    -1.33   0.184    -.6516295    .1252096
+             |
+prior_self~c |
+2. Very u..  |   .0656033   .1072965     0.61   0.541    -.1449963    .2762028
+3. Somewh..  |   .0813524   .0943243     0.86   0.389    -.1037855    .2664904
+6. Very l..  |  -.0443858   .1041229    -0.43   0.670    -.2487563    .1599847
+7. Would ..  |  -.2667089   .1681494    -1.59   0.113    -.5967495    .0633317
+             |
+pre_vacc_i~t |
+2. May or..  |   .0536312   .0825779     0.65   0.516    -.1084511    .2157136
+had_p~d_vacc |   .2105354   .0790322     2.66   0.008     .0554124    .3656583
+had_p~u_vacc |   .0859953    .076383     1.13   0.261    -.0639279    .2359185
+             |
+         age |
+   3. 35-49  |   .1354538   .0817103     1.66   0.098    -.0249257    .2958333
+   4. 50-64  |  -.1359984   .0984134    -1.38   0.167    -.3291625    .0571657
+             |
+      gender |
+  2. Female  |  -.2304824   .0736231    -3.13   0.002    -.3749885   -.0859763
+             |
+   education |
+5. More t..  |  -.2154821   .0903276    -2.39   0.017    -.3927755   -.0381887
+             |
+      income |
+6. Prefer..  |  -.3764094   .2750042    -1.37   0.171    -.9161828    .1633639
+             |
+   ethnicity |
+3. Prefer..  |   .8241438   .4486594     1.84   0.067    -.0564768    1.704764
+             |
+    polviews |
+7. Very c..  |  -.0696725    .151073    -0.46   0.645     -.366196    .2268509
+8. Prefer..  |  -.2045023   .6777022    -0.30   0.763    -1.534684    1.125679
+             |
+  trust_govt |
+3. Neithe..  |   .4771086   .1034683     4.61   0.000     .2740229    .6801944
+4. Somewh..  |   .5694663   .1050686     5.42   0.000     .3632396     .775693
+5. Strong..  |   .8367932   .1441736     5.80   0.000     .5538118    1.119775
+             |
+   cond_lung |  -.6405783   .3980538    -1.61   0.108    -1.421871    .1407146
+cond_diab~es |  -.3051039   .1829317    -1.67   0.096     -.664159    .0539512
+cond_rathe~y |  -1.020145   .1776992    -5.74   0.000     -1.36893   -.6713606
+             |
+ info_doctor |
+  2. Rarely  |  -.1889376   .1096077    -1.72   0.085    -.4040736    .0261985
+             |
+     info_sm |
+  2. Rarely  |   .0751591   .0865989     0.87   0.386    -.0948157    .2451339
+3. Someti..  |  -.0907134   .0888486    -1.02   0.308    -.2651038     .083677
+             |
+info_podca~s |
+  2. Rarely  |   .1611464   .0778917     2.07   0.039     .0082619    .3140308
+             |
+    info_cdc |
+3. Someti..  |   .1785162   .0777259     2.30   0.022     .0259571    .3310752
+             |
+info_unive~y |
+  2. Rarely  |   .1039494   .0743881     1.40   0.163    -.0420584    .2499571
+             |
+reliable_d~r |
+Not relia..  |  -.4038658   .3329468    -1.21   0.225    -1.057368    .2496362
+             |
+reliable_cdc |
+        Yes  |   .0026988   .0963477     0.03   0.978    -.1864108    .1918083
+             |
+reliable_n~s |
+        Yes  |   .4013275   .1497412     2.68   0.008     .1074182    .6952368
+             |
+reliable_u~y |
+3. Yes, r..  |   .3648115   .0797345     4.58   0.000       .20831    .5213129
+             |
+follow_doc~r |
+4. Somewh..  |   .2072781   .0849051     2.44   0.015     .0406279    .3739283
+5. Strong..  |   .1808592   .1199761     1.51   0.132    -.0546278    .4163462
+             |
+       _cons |  -.7047339   .1319426    -5.34   0.000    -.9637084   -.4457594
+------------------------------------------------------------------------------
+
+. eststo lasso_ols
+
+. 
+. esttab lasso_ols using output/tables/lasso_predictors.tex, ///
+>     b(%9.3f) se(%9.3f) label nostar ///
+>     stats(N, labels("N (control group)") fmt(%9.0fc)) ///
+>     fragment replace nomtitles nonotes nonumbers nolines nogaps
+(output written to output/tables/lasso_predictors.tex)
+
+. 
+. di as text "Saved: output/tables/lasso_predictors.tex"
+Saved: output/tables/lasso_predictors.tex
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3b.6 Predict pca1_hat using lasso coefficients (penalized)
+>          Re-run lasso to restore e() (cleared by regress above), then predict
+> .
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. lasso linear pca1 `all_preds' if arm_n == 0 & main_sample == 1, ///
+>     rseed(12345) selection(cv, folds(10))
+1b.prior_self_placebo omitted
+1b.prior_self_vacc omitted
+1b.pre_vacc_intent omitted
+0b.covid_vacc_reaction omitted
+0b.flu_vacc_reaction omitted
+1b.age omitted
+1b.gender omitted
+1b.education omitted
+1b.income omitted
+1b.race omitted
+1b.ethnicity omitted
+1b.polviews omitted
+1b.trust_govt omitted
+0b.info_doctor omitted
+1b.info_sm omitted
+1b.info_podcasts omitted
+1b.info_cdc omitted
+1b.info_news omitted
+1b.info_university omitted
+0b.reliable_doctor omitted
+0b.reliable_sm omitted
+0b.reliable_podcasts omitted
+0b.reliable_cdc omitted
+0b.reliable_news omitted
+1b.reliable_university omitted
+1b.follow_doctor omitted
+note: age_miss omitted because it is constant.
+note: gender_miss omitted because it is constant.
+note: education_miss omitted because it is constant.
+note: income_miss omitted because it is constant.
+note: race_miss omitted because it is constant.
+note: ethnicity_miss omitted because it is constant.
+note: polviews_miss omitted because it is constant.
+note: trust_govt_miss omitted because it is constant.
+note: pre_had_prior_covi~s omitted because it is constant.
+note: pre_had_prior_flu_~s omitted because it is constant.
+note: pre_covid_vacc_rea~s omitted because it is constant.
+note: pre_flu_vacc_react~s omitted because it is constant.
+note: cond_asthma_miss omitted because it is constant.
+note: cond_lung_miss omitted because it is constant.
+note: cond_heart_miss omitted because it is constant.
+note: cond_diabetes_miss omitted because it is constant.
+note: cond_kidney_miss omitted because it is constant.
+note: cond_rather_not_sa~s omitted because it is constant.
+note: cond_none_miss omitted because it is constant.
+note: 6.age omitted because it is constant in C.V. subsamples.
+10-fold cross-validation with 100 lambdas ...
+Grid value 1:     lambda = .3586397   no. of nonzero coef. =   0
+Folds: 1...5....10   CVF = 1.429934
+Grid value 2:     lambda = .3267791   no. of nonzero coef. =   1
+Folds: 1...5....10   CVF = 1.414295
+Grid value 3:     lambda =  .297749   no. of nonzero coef. =   2
+Folds: 1...5....10   CVF = 1.394676
+Grid value 4:     lambda = .2712978   no. of nonzero coef. =   2
+Folds: 1...5....10   CVF = 1.372265
+Grid value 5:     lambda = .2471964   no. of nonzero coef. =   2
+Folds: 1...5....10   CVF = 1.352542
+Grid value 6:     lambda = .2252362   no. of nonzero coef. =   5
+Folds: 1...5....10   CVF = 1.332881
+Grid value 7:     lambda = .2052268   no. of nonzero coef. =   5
+Folds: 1...5....10   CVF = 1.308104
+Grid value 8:     lambda =  .186995   no. of nonzero coef. =   5
+Folds: 1...5....10   CVF = 1.284386
+Grid value 9:     lambda = .1703829   no. of nonzero coef. =   6
+Folds: 1...5....10   CVF = 1.264681
+Grid value 10:    lambda = .1552466   no. of nonzero coef. =   7
+Folds: 1...5....10   CVF = 1.247822
+Grid value 11:    lambda = .1414549   no. of nonzero coef. =  12
+Folds: 1...5....10   CVF = 1.232479
+Grid value 12:    lambda = .1288884   no. of nonzero coef. =  13
+Folds: 1...5....10   CVF = 1.216874
+Grid value 13:    lambda = .1174383   no. of nonzero coef. =  14
+Folds: 1...5....10   CVF = 1.201626
+Grid value 14:    lambda = .1070054   no. of nonzero coef. =  15
+Folds: 1...5....10   CVF = 1.187936
+Grid value 15:    lambda = .0974994   no. of nonzero coef. =  15
+Folds: 1...5....10   CVF = 1.175919
+Grid value 16:    lambda = .0888378   no. of nonzero coef. =  16
+Folds: 1...5....10   CVF = 1.165644
+Grid value 17:    lambda = .0809457   no. of nonzero coef. =  19
+Folds: 1...5....10   CVF = 1.154678
+Grid value 18:    lambda = .0737547   no. of nonzero coef. =  19
+Folds: 1...5....10   CVF = 1.145464
+Grid value 19:    lambda = .0672025   no. of nonzero coef. =  21
+Folds: 1...5....10   CVF = 1.138168
+Grid value 20:    lambda = .0612324   no. of nonzero coef. =  25
+Folds: 1...5....10   CVF = 1.132637
+Grid value 21:    lambda = .0557927   no. of nonzero coef. =  30
+Folds: 1...5....10   CVF = 1.128366
+Grid value 22:    lambda = .0508362   no. of nonzero coef. =  33
+Folds: 1...5....10   CVF = 1.125247
+Grid value 23:    lambda = .0463201   no. of nonzero coef. =  33
+Folds: 1...5....10   CVF =  1.12318
+Grid value 24:    lambda = .0422051   no. of nonzero coef. =  35
+Folds: 1...5....10   CVF = 1.122881
+Grid value 25:    lambda = .0384558   no. of nonzero coef. =  40
+Folds: 1...5....10   CVF = 1.123342
+Grid value 26:    lambda = .0350395   no. of nonzero coef. =  43
+Folds: 1...5....10   CVF = 1.123827
+Grid value 27:    lambda = .0319266   no. of nonzero coef. =  49
+Folds: 1...5....10   CVF = 1.124351
+Grid value 28:    lambda = .0290904   no. of nonzero coef. =  50
+Folds: 1...5....10   CVF = 1.124267
+Grid value 29:    lambda = .0265061   no. of nonzero coef. =  54
+Folds: 1...5....10   CVF = 1.124323
+... cross-validation complete ... minimum found
+
+Lasso linear model                          No. of obs        =        879
+                                            No. of covariates =        105
+Selection: Cross-validation                 No. of CV folds   =         10
+
+--------------------------------------------------------------------------
+         |                                No. of      Out-of-      CV mean
+         |                               nonzero       sample   prediction
+      ID |     Description      lambda     coef.    R-squared        error
+---------+----------------------------------------------------------------
+       1 |    first lambda    .3586397         0      -0.0007     1.429934
+      23 |   lambda before    .0463201        33       0.2140      1.12318
+    * 24 | selected lambda    .0422051        35       0.2142     1.122881
+      25 |    lambda after    .0384558        40       0.2139     1.123342
+      29 |     last lambda    .0265061        54       0.2132     1.124323
+--------------------------------------------------------------------------
+* lambda selected by cross-validation.
+
+. predict pca1_hat, xb
+(option penalized assumed; linear prediction with penalized coefficients)
+
+. 
+. * Verify all main_sample obs have non-missing pca1_hat
+. count if missing(pca1_hat) & main_sample == 1
+  0
+
+. assert r(N) == 0
+
+. 
+. /*===========================================================================
+> ===
+>     Section 3c: HTE estimation
+> =============================================================================
+> =*/
+. 
+. eststo clear
+
+. 
+. local hterhs "arm_industry arm_academic arm_personal c.pca1_hat"
+
+. local hterhs "`hterhs' c.pca1_hat#c.arm_industry c.pca1_hat#c.arm_academic c.
+> pca1_hat#c.arm_personal"
+
+. 
+. foreach y in delta main_intent {
+  2.     regress `y' `hterhs' $controls if main_sample == 1, robust
+  3.     sum `y' if arm_control == 1 & main_sample == 1
+  4.     estadd scalar cm = r(mean)
+  5.     eststo m_`y'
+  6. }
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: trust_govt_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
+
+Linear regression                               Number of obs     =      3,525
+                                                F(70, 3453)       =          .
+                                                Prob > F          =          .
+                                                R-squared         =     0.3672
+                                                Root MSE          =      21.04
+
+------------------------------------------------------------------------------
+             |               Robust
+       delta | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |  -2.885888    1.09156    -2.64   0.008    -5.026055     -.74572
+arm_academic |  -2.656125    1.09132    -2.43   0.015    -4.795822   -.5164277
+arm_personal |   .6779152   1.108162     0.61   0.541    -1.494804    2.850634
+    pca1_hat |  -.7318548   2.058087    -0.36   0.722    -4.767046    3.303337
+             |
+  c.pca1_hat#|
+          c. |
+arm_industry |  -4.398344   2.091576    -2.10   0.036    -8.499195   -.2974931
+             |
+  c.pca1_hat#|
+          c. |
+arm_academic |  -2.568718   2.120518    -1.21   0.226    -6.726315    1.588878
+             |
+  c.pca1_hat#|
+          c. |
+arm_personal |  -3.250271    2.27123    -1.43   0.153    -7.703362    1.202819
+             |
+prior_self~o |
+2. Very u..  |  -4.152052   1.058879    -3.92   0.000    -6.228144    -2.07596
+3. Somewh..  |  -8.247446   1.159987    -7.11   0.000    -10.52178   -5.973116
+4. Neithe..  |  -12.81931   1.653078    -7.75   0.000    -16.06042     -9.5782
+5. Somewh..  |  -16.34708   1.411095   -11.58   0.000    -19.11375   -13.58042
+6. Very l..  |  -26.58647     2.6911    -9.88   0.000    -31.86277   -21.31016
+7. Would ..  |  -25.21859   4.986238    -5.06   0.000    -34.99486   -15.44231
+             |
+prior_self~c |
+2. Very u..  |   3.788314   2.320709     1.63   0.103    -.7617864    8.338415
+3. Somewh..  |   6.775427   2.304945     2.94   0.003     2.256235    11.29462
+4. Neithe..  |   9.345386   2.450836     3.81   0.000     4.540152    14.15062
+5. Somewh..  |    17.1626   2.350439     7.30   0.000     12.55421    21.77099
+6. Very l..  |   35.65364   2.612269    13.65   0.000     30.53189    40.77538
+7. Would ..  |     49.867   3.547624    14.06   0.000     42.91135    56.82265
+             |
+pre_vacc_i~t |
+2. May or..  |    .136999   .8171172     0.17   0.867    -1.465083    1.739081
+had_p~d_vacc |   2.583149   1.677757     1.54   0.124    -.7063472    5.872645
+had_p~u_vacc |   9.145772   2.247738     4.07   0.000     4.738742     13.5528
+             |
+covid_vacc~n |
+1. None/d..  |   -2.77599    1.52875    -1.82   0.069    -5.773337    .2213563
+2. Mild ..)  |  -.2144025   1.543197    -0.14   0.890    -3.240074     2.81127
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |  -10.92695   2.249627    -4.86   0.000    -15.33768   -6.516214
+2. Mild ..)  |  -7.276129   2.311382    -3.15   0.002    -11.80794   -2.744315
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |   20.13682   4.813047     4.18   0.000     10.70011    29.57352
+   3. 35-49  |     20.609   4.826014     4.27   0.000     11.14687    30.07113
+   4. 50-64  |    21.0612   4.903124     4.30   0.000     11.44788    30.67451
+   5. 65-74  |   19.49216   5.086247     3.83   0.000     9.519808    29.46452
+     6. 75+  |   17.10882   11.53244     1.48   0.138    -5.502266    39.71991
+             |
+      gender |
+  2. Female  |   1.545648   .7940149     1.95   0.052     -.011138    3.102435
+   3. Other  |   4.335965   3.959144     1.10   0.274    -3.426536    12.09847
+4. Prefer..  |   7.783685   8.932191     0.87   0.384    -9.729227     25.2966
+             |
+   education |
+      2. HS  |   .7868687   4.940653     0.16   0.873    -8.900029    10.47377
+3. Some c..  |   .4713432   4.907397     0.10   0.923     -9.15035    10.09304
+4. 4-year..  |   .3663078   4.925388     0.07   0.941    -9.290661    10.02328
+5. More t..  |  -.4441451   4.984233    -0.09   0.929    -10.21649    9.328198
+6. Prefer..  |    .301562   8.347775     0.04   0.971    -16.06551    16.66864
+             |
+      income |
+ 2. $25-50k  |  -1.234331   1.246463    -0.99   0.322     -3.67821    1.209547
+ 3. $50-75k  |  -1.552965   1.271718    -1.22   0.222     -4.04636    .9404295
+4. $75-100k  |  -1.539149   1.414647    -1.09   0.277    -4.312778    1.234481
+  5. >$100k  |  -1.866017   1.298359    -1.44   0.151    -4.411646    .6796132
+6. Prefer..  |   1.657805   2.735727     0.61   0.545    -3.706002    7.021611
+             |
+        race |
+   2. Black  |  -2.527091   1.139421    -2.22   0.027    -4.761099   -.2930835
+   3. Asian  |  -2.848622   3.839972    -0.74   0.458    -10.37747    4.680224
+4. Am Ind..  |  -.2998262   1.577432    -0.19   0.849    -3.392619    2.792967
+5. Pacifi..  |  -15.07155   3.367621    -4.48   0.000    -21.67428   -8.468819
+   6. Other  |  -.2190849   2.193057    -0.10   0.920    -4.518906    4.080736
+7. Prefer..  |  -11.19626   5.760269    -1.94   0.052    -22.49014    .0976155
+             |
+   ethnicity |
+      2. No  |  -.6584989   1.339855    -0.49   0.623    -3.285488     1.96849
+3. Prefer..  |   3.388344   4.830223     0.70   0.483     -6.08204    12.85873
+             |
+    polviews |
+ 2. Liberal  |   1.458666   1.369527     1.07   0.287      -1.2265    4.143831
+3. Slight..  |   .8197386   1.439147     0.57   0.569    -2.001926    3.641404
+4. Moderate  |   1.293049   1.369773     0.94   0.345    -1.392599    3.978696
+5. Slight..  |   2.603902   1.555461     1.67   0.094     -.445815    5.653618
+6. Conser..  |   2.886664   1.529981     1.89   0.059    -.1130952    5.886423
+7. Very c..  |   3.404865   2.038171     1.67   0.095    -.5912766    7.401007
+8. Prefer..  |   11.09897   4.252559     2.61   0.009     2.761185    19.43675
+             |
+  trust_govt |
+2. Somewh..  |  -.9415311   1.591959    -0.59   0.554    -4.062807    2.179745
+3. Neithe..  |  -.4167555   1.606503    -0.26   0.795    -3.566548    2.733037
+4. Somewh..  |   .6975767   1.747864     0.40   0.690    -2.729374    4.124528
+5. Strong..  |  -.9526404   2.217847    -0.43   0.668    -5.301065    3.395785
+             |
+    age_miss |          0  (omitted)
+ gender_miss |   9.397539   8.775119     1.07   0.284    -7.807408    26.60249
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |   5.851521   2.708884     2.16   0.031     .5403447     11.1627
+   cond_lung |  -2.437813    3.33028    -0.73   0.464     -8.96733    4.091704
+  cond_heart |  -.1213583   3.249554    -0.04   0.970    -6.492601    6.249885
+cond_diab~es |   3.921769   2.741859     1.43   0.153     -1.45406    9.297597
+ cond_kidney |   3.023894   3.285531     0.92   0.357    -3.417886    9.465675
+cond_rathe~y |    4.94432   4.756017     1.04   0.299     -4.38057    14.26921
+   cond_none |   5.178167   2.787109     1.86   0.063    -.2863824    10.64272
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |  -22.39859   8.164914    -2.74   0.006    -38.40714   -6.390039
+------------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       delta |        882    15.42712    26.12313        -57        100
+
+added scalar:
+                 e(cm) =  15.42712
+note: 3.covid_vacc_reaction omitted because of collinearity.
+note: 3.flu_vacc_reaction omitted because of collinearity.
+note: age_miss omitted because of collinearity.
+note: gender_miss omitted because of collinearity.
+note: education_miss omitted because of collinearity.
+note: income_miss omitted because of collinearity.
+note: race_miss omitted because of collinearity.
+note: ethnicity_miss omitted because of collinearity.
+note: polviews_miss omitted because of collinearity.
+note: trust_govt_miss omitted because of collinearity.
+note: pre_had_prior_covid_vacc_miss omitted because of collinearity.
+note: pre_had_prior_flu_vacc_miss omitted because of collinearity.
+note: pre_covid_vacc_reaction_miss omitted because of collinearity.
+note: pre_flu_vacc_reaction_miss omitted because of collinearity.
+note: cond_asthma_miss omitted because of collinearity.
+note: cond_lung_miss omitted because of collinearity.
+note: cond_heart_miss omitted because of collinearity.
+note: cond_diabetes_miss omitted because of collinearity.
+note: cond_kidney_miss omitted because of collinearity.
+note: cond_rather_not_say_miss omitted because of collinearity.
+note: cond_none_miss omitted because of collinearity.
+
+Linear regression                               Number of obs     =      3,516
+                                                F(69, 3445)       =          .
+                                                Prob > F          =          .
+                                                R-squared         =     0.1400
+                                                Root MSE          =     .25773
+
+------------------------------------------------------------------------------
+             |               Robust
+ main_intent | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+arm_industry |  -.0049518   .0107274    -0.46   0.644    -.0259846     .016081
+arm_academic |   .0242413   .0112646     2.15   0.031     .0021553    .0463272
+arm_personal |   .0181457   .0111785     1.62   0.105    -.0037714    .0400628
+    pca1_hat |   .0139665   .0264929     0.53   0.598    -.0379768    .0659098
+             |
+  c.pca1_hat#|
+          c. |
+arm_industry |   .0449644   .0229722     1.96   0.050    -.0000762     .090005
+             |
+  c.pca1_hat#|
+          c. |
+arm_academic |   .0731031    .024836     2.94   0.003     .0244083    .1217979
+             |
+  c.pca1_hat#|
+          c. |
+arm_personal |   .0656062   .0245616     2.67   0.008     .0174494     .113763
+             |
+prior_self~o |
+2. Very u..  |  -.0239712   .0113597    -2.11   0.035    -.0462436   -.0016988
+3. Somewh..  |   .0082303   .0164158     0.50   0.616    -.0239554     .040416
+4. Neithe..  |   .0412101   .0225172     1.83   0.067    -.0029384    .0853585
+5. Somewh..  |   .0196546   .0172136     1.14   0.254    -.0140952    .0534045
+6. Very l..  |   .0280727   .0223498     1.26   0.209    -.0157475    .0718928
+7. Would ..  |   .0332312   .0343442     0.97   0.333     -.034106    .1005683
+             |
+prior_self~c |
+2. Very u..  |  -.0040231   .0323194    -0.12   0.901    -.0673903    .0593441
+3. Somewh..  |   -.022138   .0317741    -0.70   0.486    -.0844361      .04016
+4. Neithe..  |  -.0293905   .0326438    -0.90   0.368    -.0933937    .0346126
+5. Somewh..  |   -.037001    .030248    -1.22   0.221    -.0963068    .0223047
+6. Very l..  |  -.0488131   .0308056    -1.58   0.113    -.1092121     .011586
+7. Would ..  |  -.0262704   .0344974    -0.76   0.446    -.0939079    .0413671
+             |
+pre_vacc_i~t |
+2. May or..  |   .1371298   .0128554    10.67   0.000     .1119248    .1623348
+had_p~d_vacc |  -.0105504   .0166834    -0.63   0.527    -.0432608    .0221599
+had_p~u_vacc |  -.0013262   .0144364    -0.09   0.927     -.029631    .0269786
+             |
+covid_vacc~n |
+1. None/d..  |   .0173623   .0177803     0.98   0.329    -.0174987    .0522232
+2. Mild ..)  |   .0143161   .0181766     0.79   0.431    -.0213219     .049954
+  3. Severe  |          0  (omitted)
+             |
+flu_vacc_r~n |
+1. None/d..  |   .0146526   .0169925     0.86   0.389    -.0186638    .0479689
+2. Mild ..)  |   .0406852   .0175043     2.32   0.020     .0063654     .075005
+  3. Severe  |          0  (omitted)
+             |
+         age |
+   2. 18-34  |   .1257874   .0470134     2.68   0.007     .0336105    .2179643
+   3. 35-49  |   .1049646   .0462537     2.27   0.023     .0142773     .195652
+   4. 50-64  |    .122767   .0477526     2.57   0.010     .0291408    .2163932
+   5. 65-74  |   .0901109   .0490296     1.84   0.066     -.006019    .1862409
+     6. 75+  |   .1919311   .0952462     2.02   0.044     .0051863    .3786759
+             |
+      gender |
+  2. Female  |  -.0027158   .0101634    -0.27   0.789    -.0226427     .017211
+   3. Other  |   .0647162   .0628554     1.03   0.303    -.0585215    .1879538
+4. Prefer..  |  -.0405888   .0823101    -0.49   0.622    -.2019702    .1207927
+             |
+   education |
+      2. HS  |  -.0354646   .0482688    -0.73   0.463    -.1301029    .0591737
+3. Some c..  |  -.0143767   .0484409    -0.30   0.767    -.1093524     .080599
+4. 4-year..  |  -.0013516   .0487893    -0.03   0.978    -.0970106    .0943073
+5. More t..  |   .0276333   .0503247     0.55   0.583    -.0710359    .1263026
+6. Prefer..  |  -.0585664   .0705543    -0.83   0.407    -.1968989    .0797662
+             |
+      income |
+ 2. $25-50k  |   .0062815   .0137578     0.46   0.648    -.0206927    .0332557
+ 3. $50-75k  |    .007132   .0146968     0.49   0.628    -.0216833    .0359474
+4. $75-100k  |  -.0108607   .0153521    -0.71   0.479    -.0409608    .0192395
+  5. >$100k  |    .024182    .015977     1.51   0.130    -.0071433    .0555073
+6. Prefer..  |  -.0422769   .0238248    -1.77   0.076     -.088989    .0044353
+             |
+        race |
+   2. Black  |    .019949   .0145633     1.37   0.171    -.0086047    .0485026
+   3. Asian  |  -.0082026   .0388871    -0.21   0.833    -.0844467    .0680415
+4. Am Ind..  |  -.0377852   .0203136    -1.86   0.063    -.0776131    .0020428
+5. Pacifi..  |   .2405316   .1474619     1.63   0.103      -.04859    .5296531
+   6. Other  |  -.0554944   .0209869    -2.64   0.008    -.0966424   -.0143463
+7. Prefer..  |   .0230885    .057822     0.40   0.690    -.0902804    .1364574
+             |
+   ethnicity |
+      2. No  |   .0062764   .0175352     0.36   0.720     -.028104    .0406568
+3. Prefer..  |  -.0712791   .0428908    -1.66   0.097    -.1553731    .0128149
+             |
+    polviews |
+ 2. Liberal  |  -.0165755   .0213334    -0.78   0.437     -.058403     .025252
+3. Slight..  |  -.0013792   .0225864    -0.06   0.951    -.0456632    .0429049
+4. Moderate  |  -.0085311   .0197883    -0.43   0.666    -.0473291    .0302669
+5. Slight..  |  -.0082337   .0218557    -0.38   0.706    -.0510851    .0346177
+6. Conser..  |     .01552   .0213277     0.73   0.467    -.0262963    .0573363
+7. Very c..  |   .0170293   .0230093     0.74   0.459     -.028084    .0621425
+8. Prefer..  |   .0477599   .0412209     1.16   0.247      -.03306    .1285798
+             |
+  trust_govt |
+2. Somewh..  |   .0012514   .0103764     0.12   0.904    -.0190931    .0215958
+3. Neithe..  |  -.0375051   .0129098    -2.91   0.004    -.0628167   -.0121935
+4. Somewh..  |  -.0058396   .0177858    -0.33   0.743    -.0407113    .0290321
+5. Strong..  |  -.0150093   .0290099    -0.52   0.605    -.0718876     .041869
+             |
+    age_miss |          0  (omitted)
+ gender_miss |          0  (omitted)
+education_~s |          0  (omitted)
+ income_miss |          0  (omitted)
+   race_miss |          0  (omitted)
+ethnicity_~s |          0  (omitted)
+polviews_m~s |          0  (omitted)
+trust_govt~s |          0  (omitted)
+~d_vacc_miss |          0  (omitted)
+~u_vacc_miss |          0  (omitted)
+pre_covid_~s |          0  (omitted)
+pre_flu_va~s |          0  (omitted)
+ cond_asthma |  -.0052927   .0375654    -0.14   0.888    -.0789453      .06836
+   cond_lung |    .117478   .0632216     1.86   0.063    -.0064776    .2414336
+  cond_heart |   .0463385   .0440153     1.05   0.293    -.0399603    .1326373
+cond_diab~es |   .0150464    .038184     0.39   0.694    -.0598191    .0899119
+ cond_kidney |   .0126787   .0512019     0.25   0.804    -.0877104    .1130678
+cond_rathe~y |   .0623256   .0932192     0.67   0.504    -.1204449    .2450962
+   cond_none |  -.0158229   .0389033    -0.41   0.684    -.0920988    .0604529
+cond_asthm~s |          0  (omitted)
+cond_lung_~s |          0  (omitted)
+cond_heart~s |          0  (omitted)
+cond_diab~ss |          0  (omitted)
+cond_kidne~s |          0  (omitted)
+cond_rathe~s |          0  (omitted)
+cond_none_~s |          0  (omitted)
+       _cons |  -.0576614   .0852517    -0.68   0.499    -.2248105    .1094876
+------------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+ main_intent |        879     .069397    .2542728          0          1
+
+added scalar:
+                 e(cm) =  .06939704
+
+. 
+. local keep_vars "arm_industry arm_academic arm_personal pca1_hat"
+
+. local keep_vars "`keep_vars' c.pca1_hat#c.arm_industry c.pca1_hat#c.arm_acade
+> mic c.pca1_hat#c.arm_personal"
+
+. 
+. esttab m_delta m_main_intent ///
+>     using output/tables/hte_pca.tex, ///
+>     b(%9.3f) se(%9.3f) keep(`keep_vars') label nostar ///
+>     stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+>     fragment replace nomtitles nonotes nonumbers nolines nogaps
+(output written to output/tables/hte_pca.tex)
+
+. 
+. di as text "Saved: output/tables/hte_pca.tex"
+Saved: output/tables/hte_pca.tex
+
+. 
+. /*===========================================================================
+> ===
+>     Section 3d: Plot — lincom CIs over pca1_hat grid [-2, 2]
+> 
+>     For each arm k at grid point x:
+>       TE_k(x) = arm_k + x * (pca1_hat # arm_k)
+>     lincom computes this linear combination along with its SE, giving exact 9
+> 5% CIs.
+> =============================================================================
+> =*/
+. 
+. tempfile plot_data
+
+. postfile phandle str10 arm str12 outcome float xval float te float ci_lo floa
+> t ci_hi ///
+>     using `plot_data', replace
+(file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St92651.000001 not
+    found)
+
+. 
+. foreach outcm in delta main_intent {
+  2.     estimates restore m_`outcm'
+  3.     forvalues xi = 0/40 {
+  4.         local x = (`xi' - 20) / 10
+  5.         foreach arm in industry academic personal {
+  6.             lincom arm_`arm' + `x' * c.pca1_hat#c.arm_`arm'
+  7.             post phandle ("`arm'") ("`outcm'") (`x') ///
+>                 (`r(estimate)') ///
+>                 (`r(estimate)' - 1.96*`r(se)') ///
+>                 (`r(estimate)' + 1.96*`r(se)')
+  8.         }
+  9.     }
+ 10. }
+(results m_delta are active now)
+
+ ( 1)  arm_industry - 2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |     5.9108   4.752455     1.24   0.214    -3.407107    15.22871
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   2.481312   4.876739     0.51   0.611    -7.080273     12.0429
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   7.178458    5.16631     1.39   0.165    -2.950874    17.30779
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   5.470966   4.548068     1.20   0.229    -3.446209    14.38814
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    2.22444   4.668902     0.48   0.634    -6.929649    11.37853
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   6.853431   4.943431     1.39   0.166    -2.838913    16.54578
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   5.031131   4.344135     1.16   0.247    -3.486202    13.54846
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.967568   4.461463     0.44   0.659    -6.779804    10.71494
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   6.528404   4.720957     1.38   0.167    -2.727746    15.78455
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   4.591297   4.140723     1.11   0.268    -3.527217    12.70981
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.710696   4.254477     0.40   0.688     -6.63085    10.05224
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   6.203377   4.498947     1.38   0.168    -2.617489    15.02424
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   4.151463   3.937913     1.05   0.292    -3.569412    11.87234
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.453825   4.048017     0.36   0.720    -6.482925    9.390574
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    5.87835   4.277474     1.37   0.169    -2.508285    14.26498
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   3.711628   3.735804     0.99   0.321     -3.61298    11.03624
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.196953   3.842165     0.31   0.755    -6.336194    8.730099
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   5.553322   4.056626     1.37   0.171    -2.400306    13.50695
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   3.271794   3.534514     0.93   0.355    -3.658156    10.20174
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .9400809   3.637026     0.26   0.796    -6.190859    8.071021
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   5.228295    3.83651     1.36   0.173    -2.293763    12.75035
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   2.831959   3.334194     0.85   0.396    -3.705231     9.36915
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .6832091   3.432728     0.20   0.842    -6.047172    7.413591
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   4.903268   3.617261     1.36   0.175     -2.18892    11.99546
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   2.392125   3.135027     0.76   0.445     -3.75457     8.53882
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .4263373   3.229429     0.13   0.895    -5.905446     6.75812
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   4.578241   3.399047     1.35   0.178    -2.086104    11.24259
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.952291    2.93725     0.66   0.506    -3.806633    7.711214
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1694654   3.027331     0.06   0.955    -5.766074    6.105005
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   4.253214   3.182079     1.34   0.181    -1.985733    10.49216
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.512456   2.741163     0.55   0.581    -3.862009    6.886921
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0874064   2.826691    -0.03   0.975    -5.629562     5.45475
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   3.928187   2.966632     1.32   0.186    -1.888344    9.744717
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.072622   2.547157     0.42   0.674    -3.921464    6.066708
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.3442783   2.627845    -0.13   0.896    -5.496566    4.808009
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    3.60316   2.753062     1.31   0.191    -1.794636    9.000955
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .6327875   2.355744     0.27   0.788    -3.986005     5.25158
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.6011501   2.431232    -0.25   0.805    -5.367947    4.165647
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   3.278132   2.541844     1.29   0.197    -1.705537    8.261802
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1929531   2.167614     0.09   0.929    -4.056981    4.442888
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -.858022    2.23744    -0.38   0.701    -5.244861    3.528817
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   2.953105   2.333615     1.27   0.206    -1.622299     7.52851
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.2468813   1.983699    -0.12   0.901    -4.136223     3.64246
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.114894   2.047271    -0.54   0.586    -5.128878    2.899091
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   2.628078   2.129252     1.23   0.217    -1.546643    6.802799
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.6867157   1.805289    -0.38   0.704    -4.226257    2.852826
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.371766   1.861836    -0.74   0.461    -5.022176    2.278645
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   2.303051   1.929985     1.19   0.233    -1.480976    6.087078
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -1.12655   1.634187    -0.69   0.491     -4.33062     2.07752
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.628637   1.682699    -0.97   0.333    -4.927824    1.670549
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.978024   1.737567     1.14   0.255    -1.428739    5.384786
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.566384   1.472942    -1.06   0.288    -4.454311    1.321542
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.885509   1.512103    -1.25   0.213    -4.850215    1.079197
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.652997   1.554543     1.06   0.288    -1.394921    4.700914
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.006219   1.325159    -1.51   0.130    -4.604394     .591956
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.142381   1.353279    -1.58   0.113    -4.795689     .510927
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    1.32797   1.384645     0.96   0.338    -1.386836    4.042775
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.446053   1.195838    -2.05   0.041    -4.790674   -.1014328
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.399253    1.21087    -1.98   0.048    -4.773346   -.0251599
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   1.002942   1.233307     0.81   0.416    -1.415143    3.421028
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.885888    1.09156    -2.64   0.008    -5.026055     -.74572
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.656125    1.09132    -2.43   0.015    -4.795822   -.5164277
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .6779152   1.108162     0.61   0.541    -1.494804    2.850634
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.325722   1.020035    -3.26   0.001    -5.325654    -1.32579
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.912997   1.002838    -2.90   0.004    -4.879212   -.9467815
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .3528881   1.018905     0.35   0.729     -1.64483    2.350606
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.765556   .9883992    -3.81   0.000    -5.703462    -1.82765
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.169869   .9541073    -3.32   0.001     -5.04054   -1.299197
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0278609   .9754402     0.03   0.977    -1.884637    1.940359
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.205391   1.000444    -4.20   0.000    -6.166913   -2.243868
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -3.42674    .951257    -3.60   0.000    -5.291824   -1.561657
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.2971662   .9838539    -0.30   0.763    -2.226161    1.631828
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.645225   1.054675    -4.40   0.000    -6.713074   -2.577376
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.683612   .9946813    -3.70   0.000    -5.633835   -1.733389
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.6221934   1.042892    -0.60   0.551     -2.66694    1.422554
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -5.08506   1.145112    -4.44   0.000    -7.330226   -2.839893
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.940484   1.078807    -3.65   0.000    -6.055648   -1.825321
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.9472205   1.144748    -0.83   0.408    -3.191672    1.297231
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.524894   1.264009    -4.37   0.000    -8.003176   -3.046612
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.197356   1.195068    -3.51   0.000    -6.540468   -1.854243
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.272248   1.279235    -0.99   0.320    -3.780381    1.235886
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.964728   1.404155    -4.25   0.000    -8.717786    -3.21167
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.454228   1.335098    -3.34   0.001    -7.071888   -1.836567
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.597275   1.437222    -1.11   0.266    -4.415165    1.220616
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -6.404563   1.559832    -4.11   0.000    -9.462849   -3.346276
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    -4.7111   1.492218    -3.16   0.002    -7.636818   -1.785381
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -1.922302   1.611813    -1.19   0.233    -5.082504      1.2379
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -6.844397   1.726845    -3.96   0.000    -10.23014   -3.458656
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.967971   1.661588    -2.99   0.003    -8.225766   -1.710177
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.247329   1.798178    -1.25   0.211    -5.772929     1.27827
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -7.284231   1.902211    -3.83   0.000     -11.0138   -3.554659
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.224843   1.839828    -2.84   0.005    -8.832105   -1.617582
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.572356   1.993017    -1.29   0.197    -6.479967    1.335255
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -7.724066   2.083822    -3.71   0.000    -11.80971   -3.638418
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.481715   2.024597    -2.71   0.007    -9.451243   -1.512187
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -2.897383   2.194074    -1.32   0.187    -7.199197     1.40443
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    -8.1639   2.270179    -3.60   0.000    -12.61493    -3.71287
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.738587    2.21426    -2.59   0.010    -10.07998   -1.397195
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.222411   2.399786    -1.34   0.179    -7.927554    1.482733
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -8.603735   2.460205    -3.50   0.000    -13.42734   -3.780131
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.995459   2.407662    -2.49   0.013    -10.71604   -1.274873
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.547438   2.609052    -1.36   0.174     -8.66288    1.568004
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -9.043569   2.653111    -3.41   0.001    -14.24539   -3.841745
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -6.252331    2.60397    -2.40   0.016    -11.35781   -1.146854
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -3.872465   2.821083    -1.37   0.170    -9.403624    1.658694
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -9.483403   2.848311    -3.33   0.001    -15.06795   -3.898858
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -6.509202   2.802572    -2.32   0.020    -12.00407   -1.014336
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.197492   3.035297    -1.38   0.167    -10.14865    1.753667
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -9.923238   3.045366    -3.26   0.001    -15.89414   -3.952338
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -6.766074   3.003014    -2.25   0.024    -12.65394   -.8782108
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.522519   3.251264    -1.39   0.164    -10.89711    1.852077
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -10.36307   3.243936    -3.19   0.001     -16.7233   -4.002845
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -7.022946   3.204951    -2.19   0.028    -13.30674   -.7391551
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -4.847546   3.468657    -1.40   0.162    -11.64837    1.953281
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -10.80291    3.44376    -3.14   0.002    -17.55492   -4.050894
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -7.279818   3.408117    -2.14   0.033    -13.96195   -.5976899
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.172573   3.687223    -1.40   0.161    -12.40193    2.056785
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -11.24274   3.644632    -3.08   0.002    -18.38859   -4.096889
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -7.53669   3.612304    -2.09   0.037    -14.61916   -.4542219
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.497601   3.906765    -1.41   0.159     -13.1574    2.162204
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -11.68258   3.846387    -3.04   0.002      -19.224   -4.141152
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -7.793562   3.817349    -2.04   0.041    -15.27805   -.3090722
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+       delta | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -5.822628   4.127128    -1.41   0.158    -13.91449    2.269231
+------------------------------------------------------------------------------
+(results m_main_intent are active now)
+
+ ( 1)  arm_industry - 2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0948805   .0423293    -2.24   0.025    -.1778736   -.0118874
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.1219649   .0455836    -2.68   0.007    -.2113384   -.0325913
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.1130666   .0450806    -2.51   0.012    -.2014541   -.0246791
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0903841   .0400958    -2.25   0.024     -.168998   -.0117702
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.1146546   .0431638    -2.66   0.008    -.1992838   -.0300253
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -.106506   .0426881    -2.49   0.013    -.1902026   -.0228094
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0858876   .0378698    -2.27   0.023    -.1601372   -.0116381
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.1073442   .0407518    -2.63   0.008    -.1872443   -.0274442
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0999454   .0403033    -2.48   0.013    -.1789662   -.0209246
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0813912   .0356529    -2.28   0.022    -.1512942   -.0114882
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.1000339   .0383488    -2.61   0.009    -.1752227   -.0248452
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0933848   .0379275    -2.46   0.014    -.1677475    -.019022
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0768948   .0334468    -2.30   0.022    -.1424724   -.0113171
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0927236   .0359569    -2.58   0.010    -.1632226   -.0222247
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0868242   .0355627    -2.44   0.015    -.1565503    -.017098
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0723983   .0312539    -2.32   0.021    -.1336764   -.0111203
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0854133   .0335782    -2.54   0.011    -.1512486    -.019578
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0802635   .0332112    -2.42   0.016    -.1453792   -.0151479
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0679019   .0290771    -2.34   0.020    -.1249119   -.0108918
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -.078103   .0312159    -2.50   0.012    -.1393067   -.0168994
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0737029   .0308759    -2.39   0.017    -.1342399    -.013166
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0634054   .0269203    -2.36   0.019    -.1161868   -.0106241
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0707927    .028874    -2.45   0.014    -.1274046   -.0141808
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0671423    .028561    -2.35   0.019    -.1231404   -.0111442
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -.058909   .0247887    -2.38   0.018    -.1075111    -.010307
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0634824   .0265578    -2.39   0.017    -.1155531   -.0114117
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0605817   .0262716    -2.31   0.021    -.1120913   -.0090721
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - 1.1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0544126   .0226895    -2.40   0.017    -.0988988   -.0099263
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - 1.1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0561721   .0242748    -2.31   0.021    -.1037666   -.0085777
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - 1.1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0540211   .0240153    -2.25   0.025    -.1011068   -.0069354
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0499161   .0206325    -2.42   0.016    -.0903694   -.0094629
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0488618   .0220352    -2.22   0.027    -.0920651   -.0056585
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0474605   .0218022    -2.18   0.030    -.0902071   -.0047138
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0454197   .0186318    -2.44   0.015    -.0819502   -.0088892
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0415515   .0198537    -2.09   0.036    -.0804777   -.0026253
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0408998    .019647    -2.08   0.037    -.0794208   -.0023789
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0409233   .0167075    -2.45   0.014    -.0736809   -.0081656
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0342412   .0177518    -1.93   0.054    -.0690462    .0005638
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0343392    .017571    -1.95   0.051    -.0687898    .0001113
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0364268   .0148893    -2.45   0.014    -.0656197    -.007234
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0269309   .0157613    -1.71   0.088    -.0578333    .0039715
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0277786   .0156057    -1.78   0.075    -.0583759    .0028187
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0319304   .0132211    -2.42   0.016    -.0578525   -.0060083
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0196206   .0139301    -1.41   0.159    -.0469326    .0076915
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -.021218   .0137986    -1.54   0.124    -.0482722    .0058362
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   -.027434   .0117669    -2.33   0.020    -.0505047   -.0043632
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0123103   .0123294    -1.00   0.318    -.0364839    .0118633
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0146574   .0122201    -1.20   0.230    -.0386167    .0093019
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0229375   .0106148    -2.16   0.031    -.0437494   -.0021256
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |      -.005   .0110596    -0.45   0.651    -.0266841    .0166841
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0080968   .0109693    -0.74   0.460    -.0296037    .0134101
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0184411   .0098713    -1.87   0.062    -.0377953    .0009132
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0023103   .0102447     0.23   0.822     -.017776    .0223967
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0015362   .0101678    -0.15   0.880    -.0214717    .0183994
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0139446   .0096316    -1.45   0.148    -.0328288    .0049395
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0096206   .0099965     0.96   0.336     -.009979    .0292203
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0050245   .0099252     0.51   0.613    -.0144355    .0244844
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry - .1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0094482    .009932    -0.95   0.342    -.0289215    .0100251
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic - .1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0169309   .0103558     1.63   0.102    -.0033731     .037235
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal - .1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0115851   .0102811     1.13   0.260    -.0085726    .0317428
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0049518   .0107274    -0.46   0.644    -.0259846     .016081
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0242413   .0112646     2.15   0.031     .0021553    .0463272
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0181457   .0111785     1.62   0.105    -.0037714    .0400628
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0004553   .0119191    -0.04   0.970    -.0238246    .0229139
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0315516   .0126046     2.50   0.012     .0068383    .0562648
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0247063   .0125012     1.98   0.048     .0001958    .0492169
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0040411   .0134018     0.30   0.763    -.0222351    .0303173
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0388619   .0142547     2.73   0.006     .0109133    .0668105
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0312669   .0141304     2.21   0.027     .0035621    .0589717
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0085375   .0150898     0.57   0.572    -.0210484    .0381235
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0461722   .0161201     2.86   0.004     .0145663     .077778
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0378275   .0159725     2.37   0.018      .006511    .0691441
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    .013034    .016922     0.77   0.441    -.0201442    .0462121
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0534825   .0181342     2.95   0.003     .0179275    .0890374
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0443882   .0179622     2.47   0.014     .0091706    .0796057
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0175304   .0188563     0.93   0.353    -.0194402     .054501
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0607928    .020253     3.00   0.003     .0210838    .1005018
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0509488   .0200555     2.54   0.011     .0116269    .0902707
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0220268   .0208643     1.06   0.291    -.0188808    .0629345
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0681031   .0224466     3.03   0.002     .0240931    .1121131
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0575094   .0222232     2.59   0.010     .0139373    .1010815
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0265233   .0229267     1.16   0.247     -.018428    .0714746
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0754134   .0246952     3.05   0.002     .0269946    .1238322
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |     .06407   .0244456     2.62   0.009     .0161407    .1119994
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0310197     .02503     1.24   0.215    -.0180555    .0800949
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0827237   .0269851     3.07   0.002     .0298153    .1356321
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0706306   .0267089     2.64   0.008     .0182637    .1229976
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + .9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0355162   .0271648     1.31   0.191    -.0177445    .0887768
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + .9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    .090034   .0293065     3.07   0.002      .032574     .147494
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + .9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0771912   .0290037     2.66   0.008     .0203251    .1340574
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0400126   .0293241     1.36   0.173    -.0174818     .097507
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0973443   .0316526     3.08   0.002     .0352845    .1594041
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0837519   .0313229     2.67   0.008     .0223385    .1451652
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.1*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    .044509   .0315029     1.41   0.158    -.0172573    .1062753
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.1*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1046546   .0340182     3.08   0.002     .0379567    .1713525
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.1*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0903125   .0336616     2.68   0.007     .0243138    .1563111
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0490055   .0336975     1.45   0.146    -.0170636    .1150745
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1119649   .0363995     3.08   0.002     .0405981    .1833318
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0968731   .0360159     2.69   0.007     .0262584    .1674877
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.3*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0535019   .0359049     1.49   0.136    -.0168952    .1238989
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.3*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1192752   .0387937     3.07   0.002     .0432143    .1953362
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.3*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1034337    .038383     2.69   0.007     .0281781    .1786894
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.4*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0579983   .0381229     1.52   0.128    -.0167475    .1327442
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.4*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1265855   .0411984     3.07   0.002     .0458097    .2073613
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.4*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1099943   .0407606     2.70   0.007      .030077    .1899117
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.5*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0624948   .0403498     1.55   0.122    -.0166172    .1416067
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.5*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1338958    .043612     3.07   0.002     .0483878    .2194038
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.5*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1165549    .043147     2.70   0.007     .0319587    .2011512
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.6*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0669912   .0425842     1.57   0.116    -.0165016     .150484
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.6*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1412061    .046033     3.07   0.002     .0509513    .2314609
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.6*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1231156   .0455408     2.70   0.007     .0338258    .2124053
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.7*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0714876   .0448249     1.59   0.111    -.0163984    .1593737
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.7*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1485164   .0484604     3.06   0.002     .0535024    .2435305
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.7*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1296762    .047941     2.70   0.007     .0356806    .2236718
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.8*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0759841   .0470711     1.61   0.107    -.0163059    .1682741
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.8*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1558268   .0508932     3.06   0.002     .0560429    .2556106
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.8*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1362368   .0503465     2.71   0.007     .0375247    .2349488
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 1.9*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0804805   .0493219     1.63   0.103    -.0162227    .1771837
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 1.9*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1631371   .0533307     3.06   0.002     .0585741       .2677
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 1.9*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1427974   .0527567     2.71   0.007     .0393598     .246235
+------------------------------------------------------------------------------
+
+ ( 1)  arm_industry + 2*c.pca1_hat#c.arm_industry = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    .084977   .0515769     1.65   0.100    -.0161474    .1861013
+------------------------------------------------------------------------------
+
+ ( 1)  arm_academic + 2*c.pca1_hat#c.arm_academic = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |   .1704474   .0557722     3.06   0.002     .0610974    .2797973
+------------------------------------------------------------------------------
+
+ ( 1)  arm_personal + 2*c.pca1_hat#c.arm_personal = 0
+
+------------------------------------------------------------------------------
+ main_intent | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         (1) |    .149358    .055171     2.71   0.007     .0411869    .2575292
+------------------------------------------------------------------------------
+
+. 
+. postclose phandle
+
+. 
+. use `plot_data', clear
+
+. 
+. * 3x2 grid: columns = arms (Industry / Academic / Personal)
+. *            rows    = outcomes (Delta / Vaccination Intent)
+. * Each panel has one CI band + one line.
+. 
+. local color_industry "31 119 180"
+
+. local color_academic "255 127 14"
+
+. local color_personal "44 160 44"
+
+. local title_industry "Industry"
+
+. local title_academic "Academic"
+
+. local title_personal "Personal"
+
+. 
+. foreach outcm in delta main_intent {
+  2.     if "`outcm'" == "delta"       local ytitle "Effect on delta"
+  3.     if "`outcm'" == "main_intent" local ytitle "Effect on vacc. intent"
+  4. 
+.     foreach arm in industry academic personal {
+  5.         twoway ///
+>             (rarea ci_lo ci_hi xval if arm=="`arm'" & outcome=="`outcm'", ///
+>                 color("`color_`arm''%30") lwidth(none)) ///
+>             (line te xval if arm=="`arm'" & outcome=="`outcm'", ///
+>                 lcolor("`color_`arm''") lwidth(medthick)) ///
+>             , xline(0, lcolor(gray) lpattern(dash)) ///
+>               yline(0, lcolor(gray) lpattern(dash)) ///
+>               xlabel(-2(1)2, labsize(small)) ///
+>               ylabel(, labsize(small)) ///
+>               xtitle("") ///
+>               ytitle("`ytitle'", size(small)) ///
+>               title("`title_`arm''", size(small)) ///
+>               legend(off) ///
+>               graphregion(color(white)) ///
+>               name(p_`outcm'_`arm', replace)
+  6.     }
+  7. }
+
+. 
+. graph combine ///
+>     p_delta_industry    p_delta_academic    p_delta_personal ///
+>     p_main_intent_industry p_main_intent_academic p_main_intent_personal, ///
+>     cols(3) graphregion(color(white)) ///
+>     note("x-axis: predicted trust/relevance index (pca1_hat); shaded regions 
+> = 95% CI", ///
+>          size(vsmall))
+
+. 
+. graph export "output/figures/hte_pca.png", width(2400) height(1600) replace
+file output/figures/hte_pca.png written in PNG format
+
+. 
+. di as text "Saved: output/figures/hte_pca.png"
+Saved: output/figures/hte_pca.png
+
+. 
+. capture log close
+
+. 
+end of do-file

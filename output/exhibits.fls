@@ -59,9 +59,6 @@ INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
-INPUT ./exhibits.aux
-INPUT ./exhibits.aux
-INPUT exhibits.aux
 OUTPUT exhibits.aux
 INPUT /usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 INPUT /usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
