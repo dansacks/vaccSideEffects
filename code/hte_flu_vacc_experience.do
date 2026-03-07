@@ -31,7 +31,7 @@ keep if main_sample==1
 * Label treatment indicators
 label var arm_industry "Industry"
 label var arm_academic "Academic"
-label var arm_personal "Personal"
+label var arm_personal "Representative"
 
 local keyvars arm_industry arm_academic arm_personal
 
