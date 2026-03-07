@@ -1,0 +1,76 @@
+% !TEX program = pdflatex
+\documentclass[12pt, english]{article}
+
+\input{preamble.tex}
+\input{titlepage.tex}
+\begin{document}
+
+\begin{spacing}{0.9}
+\begin{titlepage}
+\maketitle
+
+\thispagestyle{empty}
+
+
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+\vspace{0.2in}
+{{\small JEL codes: D83, I12, I18, L65
+\\ 
+Key words: vaccines, belief elicitation, demand estimation }}
+
+\end{titlepage}
+    
+\end{spacing}
+
+\onehalfspacing
+
+
+\section{Introduction} 
+    \label{sec:intro}
+    \input{intro}
+
+
+\section{Experiment Design} 
+    \label{sec:design}
+    \input{design} 
+   
+
+\section{Results} 
+    \label{sec:design}
+    \input{results} 
+   
+
+\section{Conclusion}
+    \label{sec:conclusion}
+    \input{conclusions}
+
+\newpage
+
+\bibliographystyle{chicago}
+\bibliography{references.bib}
+
+
+\newpage
+\singlespacing
+
+\input{tables}
+\input{figures}
+
+
+\clearpage
+\appendix
+\setcounter{table}{0}
+\renewcommand{\thetable}{A.\arabic{table}}
+
+\input{appendix_tables}
+
+\clearpage
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A.\arabic{figure}}
+
+\input{appendix_figures}
+
+\end{document}

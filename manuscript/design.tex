@@ -1,0 +1,187 @@
+
+\subsection{Preregistration}
+The analysis plan was pre-registered on AsPredicted; see \url{https://aspredicted.org/5p4dq2.pdf}. 
+The preregistration describes our main hypotheses, all interventions, primary and secondary 
+outcomes, and statistical methods.
+
+\subsection{Trial protocol}
+
+We collected data over three waves, indicated in Figure \ref{fig:study_flow}.
+All participants were recruited via the online platform 
+Prolific and participants took survesy on Qualtrics.  The study was advertised
+as an academic survey asking about experiences, views, and backgrounds. We avoided
+signalling our intentions or study goals. 
+ Our baseline wave measured flu vaccine 
+intentions, and we collected information on health conditions predicting vulnerability to flu, 
+as well as several covariates: prior vaccine experiences, trust in government vaccine 
+information, whether participants follow doctor’s advice on vaccines, and the use and 
+reliability of several sources for obtaining  health care information 
+(such as their doctors, the CDC, newspapers, and social media). 
+
+Our main survey wave, run the week after the conclusion of our baseline survey, was administered 
+to baseline wave participants who indicated flu vaccine hesitancy,
+meaning they said they “may or may not” or “do not intend” to get the flu vaccine.  In the 
+main survey, we randomly assigned participants to treatment arms, 
+elicited prior and posterior beliefs about side effect risk, asked about intentions to 
+vaccinate, and asked whether participants found the described study trustworthy and 
+(separately) relevant to their vaccination decision. We gave participants the opportunity 
+to click on a link to sign up for a vaccine appointment. 
+After our main survey was running for two days, we noticed that enrollment was lower
+than anticipated in our sample size calculations, so we increased the payment. In our 
+follow up survey (open to all main survey participants), begun a week after the 
+main survey ended, we asked if participants had vaccinated against the flu in the last month. 
+All survey waves included an attention check. 
+
+\subsection{Interventions}
+We randomly assigned participants to a control condition or one of three information provision 
+conditions. Randomization was conducted using the randomizer tool on Qualtrics. 
+All participants are first told the following:
+\begin{quote}
+Getting the flu vaccine is a personal decision. It carries benefits as well as risk. 
+The main benefit is reducing the chance of getting severe flu. 
+
+The main risk is an adverse event such as headache, muscle ache, tiredness, 
+joint pain, fever, chills, or general discomfort, in the days after vaccination. 
+“Severe” adverse events are ones that are bad enough to disrupt daily activity. 
+\end{quote}
+Our definition of severe adverse events corresponds roughly to a grade 3 adverse event rate.
+We focus on severe events because they represent a ubstantial cost - a loss of work or leisure
+- and are measured in clinical trials. 
+
+Participants are then told that, to measure benefits and risks, vaccine manufacturers 
+conduct clinical trials with a placebo arm and a vaccine arm, and in the clinical trial 
+for Fluarix,  the placebo arm had a severe adverse event rate of 3 percent in the next few 
+days. The control arm sees no further information. In the treatment arms, patients see 
+additional information on the same screen. We test three treatment arms: 
+
+\begin{enumerate}
+  \item \textbf{Industry arm:} Participants are truthfully told that people getting the flu 
+  vaccine in the trial were not statistically more likely to experience a severe adverse 
+  event than people getting the placebo. 
+
+  \item \textbf{Academic arm:} Participants are truthfully told about a study conducted 
+  by “academic researchers” in which participants were offered small rewards as an 
+  encouragement to vaccinate.  They are further told that the study found no significant 
+  increase in severe adverse events, and the researchers concluded that the flu vaccine 
+  did not increase the rate of severe adverse events. 
+  (The study is \citet{sacks2025preferences}.) 
+
+  \item \textbf{Representative arm:} The representative arm was identical to the academic 
+  arm except that participants were additionally told, truthfully, that the study was 
+  conducted among Prolific participants who weren’t sure they wanted to get the flu vaccine. 
+\end{enumerate}
+Appendix Figure \ref{fig:interventions} provides screen shots showing what partiipants see 
+in each arm.
+
+\textbf{Rationale:} Our intervention aimed to provide quantitative information on flu vaccine 
+side effects from scientific studies. We expected that participants had a general understanding 
+that pharmaceutical companies and researchers conduct trials to measure efficacy and side 
+effects. By providing this background information to the control arm, we keep their experience 
+similar  to the treatment arms, and indeed the only difference between control and industry 
+arm is one additional statistic. Our industry arm reports on the Fluarix trial, because 
+its vaccine arm experienced especially low adverse event rate. 
+
+In the academic arm, we presented information from \citet{sacks2025preferences} because 
+participants in that study were representative of flu vaccine hesitant prolific participants, 
+and hence we could truthfully describe that study in the personal arm. Our academic and 
+personal arms could have proceeded without first describing the placebo rate in the 
+Fluarix trial. However presenting this information let us measure information salience 
+in a consistent way across arms, as we explain below. 
+
+Our study design decisions followed the recommendations in \citet{haaland2023designing}. 
+Our specific interventions were influenced by information provision experiments, 
+such as \citet{chopra2025home} and especially \citet{roth2024misperceived}, 
+where participants are provided with straightforward statistical information. 
+
+\subsection{Measures}
+
+\textbf{Primary outcome:} Our pre-specified primary outcome is the short-run personal 
+side effect belief, which we conceptualize as 
+the believed effect of vaccination on the short run experience of side effects severe enough t
+o disrupt daily activities. To operationalize this measure, we first ask 
+participants how likely they are to experience severe adverse events over 
+the next few days, assuming they do not vaccinate and are not vaccinated.%
+\footnote{The exact text of our question is, 
+"For this question, please imagine, regardless of your actual vaccination status, 
+that you \textbf{DO NOT} get the flu vaccine tomorrow or in the following few days.
+Thinking about yourself, how likely do you think you would be to experience a severe 
+adverse event, such as headache, muscle ache, tiredness, joint pain, fever, chills, or 
+general discomfort, in the following few days? 
+(\textit{As a reminder, severe means bad enough to disrupty your daily activity.})"
+}
+Call this
+$\tilde{b}_i(0)$, the believed side effect rate absent vaccination.  Then we ask them the 
+same question but assuming they do vaccinate tomorrow. Call this $\tilde{b}_i(1)$, 
+the believed side effect rate given vaccination.  Then the short run personal side effect 
+belief is $\tilde{\Delta}_i = \tilde{y}_i(1) - \tilde{y}_i(0)$. 
+This measure is person-specific, limited to a short time horizon, and a causal contrast. 
+
+We measure personal beliefs twice, before and after information provision. To avoid asking 
+the identical questions twice, our before-information-provision version uses a 
+likert scale for $\tilde{b}_i(1)$ and $\tilde{b}_i(0)$. These prior beliefs are a covariate 
+rather than an outcome. 
+
+\textbf{Secondary outcomes:} We also measure beliefs about what happened in the trial.
+After the information provision screen, we ask all arms (including control) 
+what they think is the severe side adverse event rate in the vaccine arm of the 
+manufacturer trial. We use this secondary outcome to assess the salience of the 
+information provided. We incentivize the elicitation of this belief, offering participants 
+an additional \$0.50 if their answer is within 1 percentage point of the truth. 
+Our elicitation of personal and objective beliefs is similar to that in 
+\citet{roth2024misperceived}.
+
+We collected three additional secondary outcome metrics related to vaccination behavior. 
+At the end of the main survey we ask participants if they intend to vaccinate against the flu. 
+We code participants as intending to vaccinate if they answer that they are already vaccinated or intend to vaccinate 
+(other possible answer: may or may not vaccinate, intend to vaccinate). 
+We provide links for participants to click on to schedule a vaccination, and we track whether they click on the link. 
+Third, in our follow up survey we ask participants if they have vaccinated in the last month.
+
+\textbf{Trustworthiness and relevance:} After our intervention and after we elicited personal side effect beliefs, we asked all participants how trustworthy 
+they found the described industry study, and how relevant to their decision to vaccinate they found it. For participants in the academic and representative arm, 
+we also asked the analogous questions about the academic study. These questions, which were drawn from Alsan et al. (2024), were on a 0-10 scale.
+
+\subsection{Methods}
+
+\textbf{Sample size determination:} Our goal was to enroll 4,000 participants in the main 
+survey, all of whom would be invited to complete the follow-up survey,
+yielding 700 participants per arm in the follow-up trial under an assumed 30 percent attrition 
+rate, for 80 percent power to detect a treatment effect of 0.15 standard deviations. 
+This is the minimum power \citet{haaland2023designing} recommend for information provision 
+experiments.  Simulations indicated that we would be highly powered to detect plausible effect 
+sizes on beliefs (e.g. 25 percent learning rates), but we would likely be underpowered to
+detect effects on vaccinations unless beliefs responded very sharply to our information
+provision (e.g. learning rates above 50 percent). 
+We therefore pre-specified beliefs rather than vaccinations as the primary outcome. 
+To achieve our target sample size we ran the baseline survey until we had 8,000 completions. 
+We prespecified that we would run the main survey for 1 week or until we had 4,000 completions. 
+We ran the follow-up survey until a month had passed from the main survey ending, because our 
+lookback period to measure  vaccination was one month. 
+
+\textbf{Sample inclusion criteria:} Americans 18 and older were eligible for the baseline study.
+All vaccine hesitant baseline survey participants were invited to participate in the main 
+survey and all main survey participants were invited to the follow-up survey. We exclude cases 
+who fail attention checks or with missing belief measures. For secondary outcome analysis 
+we additionally exclude participants missing that outcome, so the sample size varies across 
+secondary outcomes. We also excluded survey attempts  after the first (a possibility we did 
+not anticipate and therefore did not prespecify).
+
+\textbf{Specification:} Our pre-specified primary specification estimates the effect of each 
+arm on outcomes with the following linear regression, estimated by ordinary least squares:
+\begin{equation} \label{eq:main}
+  y_i = \beta_0 + \beta_1 industry_i + \beta_2 academic_i + \beta_3 representative_i + 
+    X_i \theta + \epsilon_i.
+\end{equation}
+Here $\beta_1, \beta_2$ and $\beta_3$ give the effect of industry, academic, and personal 
+arm relative to control,  and $X_i$ is a vector of prespecified covariates, included to improve 
+power.  Specifically, we include indicators for each level of the following categorical 
+variables: prior beliefs; baseline vaccine intentions; reported vaccine experiences (separately 
+for flu and COVID), with possible experiences unvaccinated, vaccinated without remembered side 
+effects, vaccinated with mild side effects, or vaccinated with moderate side effects, or 
+vaccinated with severe side effects); demographics (age, gender, education, income, race, 
+ethnicity), political views) trust in 
+government on vaccines (ranging from strongly disagree to strongly agree), and reported 
+health conditions (asthma, lung disease, heart disease, diabetes, kidney disease, or 
+have a condition but prefer not to say which). 
+We include separate indicators for missing covariate values. 
+ 

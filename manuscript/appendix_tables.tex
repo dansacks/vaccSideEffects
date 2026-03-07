@@ -1,0 +1,108 @@
+%==============================================================================
+% Appendix Tables
+%==============================================================================
+
+%------------------------------------------------------------------------------
+% Table A.1: Sample counts by treatment arm and outcome
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Sample counts by treatment arm and outcome}
+\label{tab:counts}
+\begin{tabular}{l ccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) \\
+ & Personal SE belief & Trial belief & Vacc.\ intent & Link click & Vaccinated \\ \midrule
+\input{../output/tables/counts_by_arm.tex} \\
+\bottomrule
+\end{tabular}
+\tabnote{\linewidth}{Notes: Each cell reports the number of main-survey
+respondents in the indicated treatment arm with non-missing values for the
+indicated outcome. Column 3 (vaccination intention) has slightly fewer
+observations due to missing responses to the intention question. Column 5
+(vaccinated) reports follow-up survey respondents, reflecting attrition
+between the main and follow-up surveys. See Table~\ref{tab:treat_effects}
+for outcome definitions.}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------------------------------------
+% Table A.2: Treatment effects on trust and relevance perceptions
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Treatment effects on trust and relevance perceptions}
+\label{tab:trust_relevance}
+\begin{tabular}{l cccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & Trust in trial & Relevance of trial & Trust in acad.\ study & Relevance of acad.\ study \\ \midrule
+\input{../output/tables/trust_relevance.tex} \\
+\bottomrule
+\end{tabular}
+\tabnote{\linewidth}{Notes: Each column is a separate OLS regression of the
+indicated outcome on treatment arm indicators, with pre-specified controls
+included but not shown. Robust standard errors in parentheses. Outcomes are
+measured on a 0--10 scale. Columns 1--2 use all four arms with Control as the
+omitted category. Columns 3--4 are restricted to Academic and Representative
+arm respondents, as the academic study trust and relevance questions were only
+asked of those arms; Academic is the omitted category so only the
+Representative arm coefficient is reported. The base mean for columns 3--4 is
+the Academic arm mean.}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------------------------------------
+% Table A.3: Treatment effects on personal SE belief by prior flu vaccine experience
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Treatment effects on personal side-effect belief by prior flu vaccine experience}
+\label{tab:hte_flu_vacc}
+\begin{tabular}{l cccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & No vaccine & No reaction & Mild reaction & Severe reaction \\ \midrule
+\input{../output/tables/het_flu_vacc_experience.tex} \\
+\bottomrule
+\end{tabular}
+\tabnote{\linewidth}{Notes: Each column is a separate OLS regression of
+personal side-effect belief ($\tilde{\Delta}$) on treatment arm indicators
+(Industry, Academic, Representative), with Control as the omitted category.
+The sample is split by prior flu vaccine experience: never vaccinated (column
+1), vaccinated with no reaction (column 2), vaccinated with a mild reaction
+(column 3), and vaccinated with a severe reaction (column 4). Pre-specified
+controls are included but not shown. Robust standard errors in parentheses.
+The bottom row indicates the subgroup for each column.}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------------------------------------
+% Table A.4: Heterogeneous treatment effects by predicted trust/relevance index
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Heterogeneous treatment effects by predicted trust and relevance}
+\label{tab:hte_pca}
+\begin{tabular}{l cc}
+\toprule
+ & (1) & (2) \\
+ & Personal SE belief & Vacc.\ intention \\ \midrule
+\input{../output/tables/hte_pca.tex} \\
+\bottomrule
+\end{tabular}
+\tabnote{\linewidth}{Notes: Each column is a separate OLS regression of the
+indicated outcome on treatment arm indicators (Industry, Academic,
+Representative), a predicted trust/relevance index (\texttt{pca1\_hat}), and
+interactions of each arm indicator with the index. \texttt{pca1\_hat} is the
+first principal component of post-treatment trust in the clinical trial and
+perceived relevance of the trial, predicted from pre-experiment covariates
+using lasso selected in the control group. Rows labeled ``Fitted values,
+penalized'' report the coefficient on \texttt{pca1\_hat}; interaction rows
+report the coefficient on the arm-by-index interaction. Pre-specified controls
+are included but not shown. Robust standard errors in parentheses. See
+Table~\ref{tab:treat_effects} for outcome definitions.}
+\end{table}

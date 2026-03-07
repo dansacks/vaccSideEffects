@@ -1,0 +1,52 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{ragged2e} 
+\usepackage{setspace}
+\usepackage[compress]{natbib}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{caption, subcaption}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{longtable}
+\usepackage{xcolor}
+%\usepackage[hypertexnames=false]{hyperref}
+\usepackage[hidelinks]{hyperref}
+\usepackage{lscape}
+\usepackage{ebgaramond}
+
+\usepackage[page,header]{appendix}
+\usepackage{lipsum}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
+\ProcessOptions
+\RequirePackage{titletoc}
+
+\usepackage[export]{adjustbox}
+
+
+\newcommand{\fignote}[2]{\begin{center}\parbox[c]{#1}{\footnotesize #2} \end{center}}
+\newcommand{\tabnote}[2]{\begin{center}\parbox[c]{#1}{\footnotesize #2} \end{center}}
+\providecommand{\set}[1]{\left\lbrace#1\right\rbrace}
+
+\usepackage{epigraph}
+
+%%%%%%%% Edit at your own risk %%%%%%%%%
+\pagestyle{plain}                     %%
+%%%%%%%% EXACT 1in MARGINS %%%%%%%%%%%%%
+\setlength{\textwidth}{6.5in}     %%  %%
+\setlength{\oddsidemargin}{0in}   %%  %%
+\setlength{\evensidemargin}{0in}  %%  %%
+\setlength{\textheight}{8.75in}   %%  %%
+\setlength{\topmargin}{0in}       %%  %%
+\setlength{\headheight}{0in}      %%  %%
+\setlength{\headsep}{0in}         %%  %%
+\setlength{\footskip}{.5in}       %%  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\hypersetup{nolinks=true}
+
+\newcommand{\specialcell}[2][r]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
