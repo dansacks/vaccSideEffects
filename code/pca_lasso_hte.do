@@ -113,7 +113,7 @@ local all_preds `r(varlist)'
          rseed ensures reproducibility across runs.
 ------------------------------------------------------------------------------*/
 
-lasso linear pca1 `all_preds' if arm_n == 0 & main_sample == 1, ///
+lasso linear pca1 `all_preds' if main_sample == 1, ///
     rseed(12345) selection(cv, folds(10))
 di "CV-selected lambda: " e(lambda)
 di "Selected variables: " `"`e(allvars_sel)'"'
@@ -124,7 +124,7 @@ local sel_vars `e(allvars_sel)'
     3b.5 Post-lasso OLS for standard errors (display table only)
 ------------------------------------------------------------------------------*/
 
-regress pca1 `sel_vars' if arm_n == 0 & main_sample == 1, robust
+regress pca1 `sel_vars' if  main_sample == 1, robust
 eststo lasso_ols
 
 esttab lasso_ols using output/tables/lasso_predictors.tex, ///
@@ -139,13 +139,19 @@ di as text "Saved: output/tables/lasso_predictors.tex"
          Re-run lasso to restore e() (cleared by regress above), then predict.
 ------------------------------------------------------------------------------*/
 
-lasso linear pca1 `all_preds' if arm_n == 0 & main_sample == 1, ///
+lasso linear pca1 `all_preds' if main_sample == 1, ///
     rseed(12345) selection(cv, folds(10))
 predict pca1_hat, xb
 
 * Verify all main_sample obs have non-missing pca1_hat
 count if missing(pca1_hat) & main_sample == 1
 assert r(N) == 0
+
+sum pca1_hat if main_sample==1,d
+count if pca1_hat <= 1 & main_sample==1
+di r(N)/_N
+count if pca1_hat <= -1 & main_sample==1
+di r(N)/_N
 
 /*==============================================================================
     Section 3c: HTE estimation
@@ -162,6 +168,7 @@ foreach y in delta main_intent {
     estadd scalar cm = r(mean)
     eststo m_`y'
 }
+
 
 local keep_vars "arm_industry arm_academic arm_personal pca1_hat"
 local keep_vars "`keep_vars' c.pca1_hat#c.arm_industry c.pca1_hat#c.arm_academic c.pca1_hat#c.arm_personal"
@@ -189,7 +196,7 @@ postfile phandle str10 arm str12 outcome float xval float te float ci_lo float c
 foreach outcm in delta main_intent {
     estimates restore m_`outcm'
     forvalues xi = 0/40 {
-        local x = (`xi' - 20) / 10
+        local x = (`xi' - 20) / 20
         foreach arm in industry academic personal {
             lincom arm_`arm' + `x' * c.pca1_hat#c.arm_`arm'
             post phandle ("`arm'") ("`outcm'") (`x') ///
@@ -209,41 +216,46 @@ use `plot_data', clear
 * Each panel has one CI band + one line.
 
 local color_industry "31 119 180"
-local color_academic "255 127 14"
-local color_personal "44 160 44"
+local color_academic "31 119 180"
+local color_personal "31 119 180"
 local title_industry "Industry"
 local title_academic "Academic"
 local title_personal "Personal"
 
 foreach outcm in delta main_intent {
-    if "`outcm'" == "delta"       local ytitle "Effect on delta"
-    if "`outcm'" == "main_intent" local ytitle "Effect on vacc. intent"
+    if "`outcm'" == "delta"       local yn "side effect belief"
+    if "`outcm'" == "main_intent" local ytitle "vacc. intent"
 
+		if "`outcm'" == "delta" local yl -10(5)10
+		if "`outcm'" == "main_intent" local yl -0.07(0.07)0.14
     foreach arm in industry academic personal {
+		
+			local title "`title_`arm'' arm"
+				# delimit ;
         twoway ///
-            (rarea ci_lo ci_hi xval if arm=="`arm'" & outcome=="`outcm'", ///
-                color("`color_`arm''%30") lwidth(none)) ///
-            (line te xval if arm=="`arm'" & outcome=="`outcm'", ///
-                lcolor("`color_`arm''") lwidth(medthick)) ///
-            , xline(0, lcolor(gray) lpattern(dash)) ///
-              yline(0, lcolor(gray) lpattern(dash)) ///
-              xlabel(-2(1)2, labsize(small)) ///
-              ylabel(, labsize(small)) ///
-              xtitle("") ///
-              ytitle("`ytitle'", size(small)) ///
-              title("`title_`arm''", size(small)) ///
-              legend(off) ///
-              graphregion(color(white)) ///
-              name(p_`outcm'_`arm', replace)
+            (rarea ci_lo ci_hi xval if arm=="`arm'" & outcome=="`outcm'", 
+                color("`color_`arm''%30") lwidth(none)) 
+            (line te xval if arm=="`arm'" & outcome=="`outcm'", 
+                lcolor("`color_`arm''") lwidth(medthick))
+            , xline(0, lcolor(gray) lpattern(dash))
+              yline(0, lcolor(gray) lpattern(dash))
+              xlabel(-1(.5)1, labsize(small))
+              ylabel(`yl', labsize(small)) 
+              xtitle("Perceived trial quality") 
+              ytitle("Effect on `yn'", size(small)) 
+              title("`title'", size(medium) span pos(11)) 
+              legend(off) 
+              graphregion(color(white)) 
+              name(p_`outcm'_`arm', replace) 
+				;
+				# delimit cr
     }
 }
 
 graph combine ///
     p_delta_industry    p_delta_academic    p_delta_personal ///
     p_main_intent_industry p_main_intent_academic p_main_intent_personal, ///
-    cols(3) graphregion(color(white)) ///
-    note("x-axis: predicted trust/relevance index (pca1_hat); shaded regions = 95% CI", ///
-         size(vsmall))
+    cols(3)
 
 graph export "output/figures/hte_pca.png", width(2400) height(1600) replace
 
