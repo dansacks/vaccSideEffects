@@ -7,10 +7,15 @@ do "code/balance_table.do"
 do "code/balance_tables_full.do"
 do "code/plot_info_by_hes.do"
 
+do "code/counts_by_arm.do"
 do "code/treatment_effects.do"
+do "code/trust_relevance_effects.do"
+do "code/delta_predictors.do"
 do "code/heterogeneous_treatment_effects"
 do "code/te_by_polviews"
 do "code/validate_polviews_delta"
+
+do "code/pca_lasso_hte"
 
 do "code/explore_persistence.do"
 do "code/explore_beliefs.do"

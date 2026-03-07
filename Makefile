@@ -240,10 +240,19 @@ $(PROLIFIC_PRE) $(PROLIFIC_MAIN) $(PROLIFIC_MAIN_MP) $(PROLIFIC_FU) &: \
 #-------------------------------------------------------------------------------
 TREATMENT_EFFECTS := $(OUT_TABLES)/treatment_effects.tex
 
-analysis: $(TREATMENT_EFFECTS)
+TRUST_RELEVANCE := $(OUT_TABLES)/trust_relevance.tex
+COUNTS_BY_ARM   := $(OUT_TABLES)/counts_by_arm.tex
+
+analysis: $(TREATMENT_EFFECTS) $(TRUST_RELEVANCE) $(COUNTS_BY_ARM)
 
 $(TREATMENT_EFFECTS): $(MERGED_ALL) $(CODE)/treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do $(ADO_REGRESSION)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/treatment_effects.do && mv treatment_effects.log $(OUT_LOGS)/
+
+$(TRUST_RELEVANCE): $(MERGED_ALL) $(CODE)/trust_relevance_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/trust_relevance_effects.do && mv trust_relevance_effects.log $(OUT_LOGS)/
+
+$(COUNTS_BY_ARM): $(MERGED_ALL) $(CODE)/counts_by_arm.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/counts_by_arm.do && mv counts_by_arm.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
 # HETEROGENEOUS TREATMENT EFFECTS
