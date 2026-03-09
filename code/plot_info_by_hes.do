@@ -104,7 +104,7 @@ twoway
 graph export output/figures/reliable_info.png, replace width(1750) height(1000)
 
 graph combine ui3 rel, cols(1) xsize(7) ysize(8)
-graph export output/figures/use_reliable_info.png, rplace width(1750) height(2000)
+graph export output/figures/use_reliable_info.png, replace width(1750) height(2000)
 
 
 
