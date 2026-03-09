@@ -32,15 +32,9 @@ do "code/_set_controls.do"
 use "derived/merged_all.dta", clear
 keep if main_sample==1
 
-* Create link_click if not already present (max of link1-4)
-capture confirm variable link_click
-if _rc {
-    egen link_click = rowmax(link1_clicked link2_clicked link3_clicked link4_clicked)
-    label var link_click "Any link clicked"
-}
 
 * Create vaccination outcome (got vaccine or already had it)
-gen vacc_post = got_flu_vacc == 1 | flu_why_already == 1 if ~missing(got_flu_vacc)
+gen vacc_post = got_flu_vacc == 1 if ~missing(got_flu_vacc)
 
 * Label treatment indicators
 label var arm_industry "Industry"
@@ -56,7 +50,7 @@ local keyvars arm_industry arm_academic arm_personal
 eststo clear
 
 foreach y in post_trial delta main_intent link_click vacc_post {
-    regress `y' `keyvars' $controls, vce(hc3)
+    regress `y' `keyvars' $controls, robust
     sum `y' if arm_control==1
     estadd scalar cm = r(mean)
     eststo m_`y'

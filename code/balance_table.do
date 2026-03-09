@@ -38,20 +38,21 @@ gen pre_no_intent = (pre_vacc_intent == 1) if ~missing(pre_vacc_intent)
 label var pre_no_intent "Do not intend to vaccinate"
 
 * Previously had flu vaccine
-gen pre_had_flu = had_prior_flu_vacc
-label var pre_had_flu "Previously had flu vaccine"
+foreach d in flu covid {
+	
+	gen no_prior_`d' = 0.`d'_vacc_reaction if ~missing(`d'_vacc_reaction)
+	label var no_prior_`d' "No prior `d' vaccine" 
+	
+	gen no_react_`d' = 1.`d'_vacc_reaction if ~missing(`d'_vacc_reaction)
+	label var no_react_`d' "No reaction remembered to `d' vaccine" 
+	
+	gen mild_react_`d' = 2.`d'_vacc_reaction if ~missing(`d'_vacc_reaction)
+	label var mild_react_`d' "Mild reaction remembered to `d' vaccine" 
+	
+	gen severe_react_`d' = 3.`d'_vacc_reaction if ~missing(`d'_vacc_reaction)
+	label var severe_react_`d' "Severe reaction remembered to `d' vaccine" 
+}
 
-* Previously had COVID vaccine
-gen pre_had_covid = had_prior_covid_vacc
-label var pre_had_covid "Previously had COVID vaccine"
-
-* Severe flu vaccine reaction (conditional on having had flu vacc)
-gen severe_flu_reaction = (flu_vacc_reaction == 3) if had_prior_flu_vacc == 1
-label var severe_flu_reaction "Severe flu vaccine reaction"
-
-* Severe COVID vaccine reaction (conditional on having had COVID vacc)
-gen severe_covid_reaction = (covid_vacc_reaction == 3) if had_prior_covid_vacc == 1
-label var severe_covid_reaction "Severe COVID vaccine reaction"
 
 * Has health condition (cond_none == 0, conditional on not missing)
 gen has_condition = (cond_none == 0) if ~missing(cond_none)
@@ -97,8 +98,11 @@ label var college "College degree"
 ------------------------------------------------------------------------------*/
 # delimit ;
 balance_table
-	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid
-	severe_flu_reaction severe_covid_reaction
+	prior_vacc_likely pre_no_intent 
+	
+	no_prior_flu no_react_flu mild_react_flu severe_react_flu
+	no_prior_covid severe_react_covid mild_react_covid severe_react_covid
+	
 	has_condition trust_govt_high follow_doc_high
 	age_18_34 age_35_49 age_50_64 race_white hispanic income_lt50k
 	college,
@@ -114,9 +118,9 @@ balance_table
 ------------------------------------------------------------------------------*/
 # delimit ;
 balance_table
-	prior_vacc_likely pre_no_intent pre_had_flu pre_had_covid
-	severe_flu_reaction severe_covid_reaction
-	has_condition trust_govt_high follow_doc_high,
+	prior_vacc_likely pre_no_intent 
+	no_prior_flu severe_react_flu no_prior_covid severe_react_covid 
+		has_condition trust_govt_high follow_doc_high,
 	group(arm_n) saving(output/tables/balance_table_slides.tex) jointtest
 	labels(Control Industry Academic Representative)
 ;

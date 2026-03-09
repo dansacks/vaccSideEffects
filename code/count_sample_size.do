@@ -17,7 +17,6 @@ clear all
 global scriptname "count_sample_size"
 do "code/_config.do"
 
-
 /*------------------------------------------------------------------------------
     1. Counts for pre-screen
 

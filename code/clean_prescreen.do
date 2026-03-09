@@ -309,18 +309,19 @@ label var intent_no "Intent: No, do not intend (vs. may or may not)"
 
 * --- Vaccine Reaction indicators ---
 * covid_vacc_reaction (0=no vaccine, 1=none/don't remember, 2=mild, 3=severe)
-gen covid_react_none = (covid_vacc_reaction == 1) if had_prior_covid_vacc == 1
-gen covid_react_mild = (covid_vacc_reaction == 2) if had_prior_covid_vacc == 1
-gen covid_react_severe = (covid_vacc_reaction == 3) if had_prior_covid_vacc == 1
+gen covid_react_none = (covid_vacc_reaction == 1) if  ~missing(covid_vacc_reaction) 
+gen covid_react_mild = (covid_vacc_reaction == 2) if  ~missing(covid_vacc_reaction) 
+gen covid_react_severe = (covid_vacc_reaction == 3) if  ~missing(covid_vacc_reaction) 
 
 label var covid_react_none "COVID reaction: None/don't remember"
 label var covid_react_mild "COVID reaction: Mild"
 label var covid_react_severe "COVID reaction: Severe"
 
 * flu_vacc_reaction
-gen flu_react_none = (flu_vacc_reaction == 1) if had_prior_flu_vacc == 1
-gen flu_react_mild = (flu_vacc_reaction == 2) if had_prior_flu_vacc == 1
-gen flu_react_severe = (flu_vacc_reaction == 3) if had_prior_flu_vacc == 1
+
+gen flu_react_none = (flu_vacc_reaction == 1) if ~missing(flu_vacc_reaction) 
+gen flu_react_mild = (flu_vacc_reaction == 2) if  ~missing(flu_vacc_reaction) 
+gen flu_react_severe = (flu_vacc_reaction == 3) if  ~missing(flu_vacc_reaction) 
 
 label var flu_react_none "Flu reaction: None/don't remember"
 label var flu_react_mild "Flu reaction: Mild"

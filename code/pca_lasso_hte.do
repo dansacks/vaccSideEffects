@@ -25,16 +25,14 @@ do "code/_set_controls.do"
     Section 3a: PCA on trust_trial and relevant_trial
 ==============================================================================*/
 
-use "derived/merged_all.dta", clear
+use "derived/merged_all.dta" if main_sample==1, clear
 
 /*------------------------------------------------------------------------------
     3a.1 Compute PCA on main sample
 ------------------------------------------------------------------------------*/
 
-pca trust_trial relevant_trial if main_sample == 1
-
-* Extract PC1 scores for all obs (applies loadings to full dataset)
-predict pca1 if main_sample == 1, score
+pca trust_trial relevant_trial 
+predict pca1, score
 
 /*------------------------------------------------------------------------------
     3a.2 Build PCA quality table manually
@@ -173,6 +171,7 @@ esttab m_delta m_main_intent ///
     fragment replace nomtitles nonotes nonumbers nolines nogaps
 
 di as text "Saved: output/tables/hte_pca.tex"
+sum pca1_hat, d
 
 /*==============================================================================
     Section 3d: Plot — lincom CIs over pca1_hat grid [-2, 2]
@@ -189,7 +188,7 @@ postfile phandle str10 arm str12 outcome float xval float te float ci_lo float c
 foreach outcm in delta main_intent {
     estimates restore m_`outcm'
     forvalues xi = 0/40 {
-        local x = (`xi' - 20) / 10
+        local x = (`xi' - 20) / 20
         foreach arm in industry academic personal {
             lincom arm_`arm' + `x' * c.pca1_hat#c.arm_`arm'
             post phandle ("`arm'") ("`outcm'") (`x') ///
@@ -209,8 +208,8 @@ use `plot_data', clear
 * Each panel has one CI band + one line.
 
 local color_industry "31 119 180"
-local color_academic "255 127 14"
-local color_personal "44 160 44"
+local color_academic "31 119 180"
+local color_personal "31 119 180"
 local title_industry "Industry"
 local title_academic "Academic"
 local title_personal "Personal"
@@ -227,7 +226,7 @@ foreach outcm in delta main_intent {
                 lcolor("`color_`arm''") lwidth(medthick)) ///
             , xline(0, lcolor(gray) lpattern(dash)) ///
               yline(0, lcolor(gray) lpattern(dash)) ///
-              xlabel(-2(1)2, labsize(small)) ///
+              xlabel(-1(.5)1, labsize(small)) ///
               ylabel(, labsize(small)) ///
               xtitle("") ///
               ytitle("`ytitle'", size(small)) ///

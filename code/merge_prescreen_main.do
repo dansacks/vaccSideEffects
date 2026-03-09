@@ -41,8 +41,6 @@ rename had_prior_flu_vacc_miss pre_had_prior_flu_vacc_miss
 rename covid_vacc_reaction_miss pre_covid_vacc_reaction_miss
 rename flu_vacc_reaction_miss pre_flu_vacc_reaction_miss
 
-* Keep the key variable unchanged
-* prolific_pid is the merge key
 
 * Save temporary file
 tempfile prescreen
