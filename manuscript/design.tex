@@ -2,7 +2,8 @@
 \subsection{Preregistration}
 The analysis plan was pre-registered on AsPredicted; see \url{https://aspredicted.org/5p4dq2.pdf}. 
 The preregistration describes our main hypotheses, all interventions, primary and secondary 
-outcomes, and statistical methods.
+outcomes, and statistical methods. When we conduct additional analyses beyond those described 
+in the preregistration, we describe them as such.
 
 \subsection{Trial protocol}
 
@@ -10,8 +11,7 @@ We collected data over three waves, indicated in Figure \ref{fig:study_flow}.
 All participants were recruited via the online platform 
 Prolific and participants took survesy on Qualtrics.  The study was advertised
 as an academic survey asking about experiences, views, and backgrounds. We avoided
-signalling our intentions or study goals. 
- Our baseline wave measured flu vaccine 
+signalling our intentions or study goals. Our baseline wave measured flu vaccine 
 intentions, and we collected information on health conditions predicting vulnerability to flu, 
 as well as several covariates: prior vaccine experiences, trust in government vaccine 
 information, whether participants follow doctor’s advice on vaccines, and the use and 
@@ -88,7 +88,12 @@ personal arms could have proceeded without first describing the placebo rate in 
 Fluarix trial. However presenting this information let us measure information salience 
 in a consistent way across arms, as we explain below. 
 
-Our study design decisions followed the recommendations in \citet{haaland2023designing}. 
+Our study design decisions followed the recommendations in \citet{haaland2023designing}
+and \citet{stantcheva2023run}. For example, we elicit priors as well as posteriors to facilitate 
+heterogeneous effect estimation (as expected in information provision experiments).
+We recruit subjects using neutral language to avoid telegraphing our intentions, and
+throughout the survey we provide face-saving language, especially emphasizing
+that vaccination carries costs and benefits, to reduce eperiment demand effects.
 Our specific interventions were influenced by information provision experiments, 
 such as \citet{chopra2025home} and especially \citet{roth2024misperceived}, 
 where participants are provided with straightforward statistical information. 
@@ -97,8 +102,8 @@ where participants are provided with straightforward statistical information.
 
 \textbf{Primary outcome:} Our pre-specified primary outcome is the short-run personal 
 side effect belief, which we conceptualize as 
-the believed effect of vaccination on the short run experience of side effects severe enough t
-o disrupt daily activities. To operationalize this measure, we first ask 
+the believed effect of vaccination on the short run experience of side effects severe enough 
+to disrupt daily activities. To operationalize this measure, we first ask 
 participants how likely they are to experience severe adverse events over 
 the next few days, assuming they do not vaccinate and are not vaccinated.%
 \footnote{The exact text of our question is, 
@@ -110,11 +115,13 @@ general discomfort, in the following few days?
 (\textit{As a reminder, severe means bad enough to disrupty your daily activity.})"
 }
 Call this
-$\tilde{b}_i(0)$, the believed side effect rate absent vaccination.  Then we ask them the 
+$\tilde{b}_i(0)$, the believed side effect rate absent vaccination.  Then we ask the 
 same question but assuming they do vaccinate tomorrow. Call this $\tilde{b}_i(1)$, 
 the believed side effect rate given vaccination.  Then the short run personal side effect 
 belief is $\tilde{\Delta}_i = \tilde{y}_i(1) - \tilde{y}_i(0)$. 
-This measure is person-specific, limited to a short time horizon, and a causal contrast. 
+This measure is person-specific, limited to a short time horizon, and a causal contrast.%
+\footnote{Designing the measure as a causal contrast is consistent with the recommendations
+of \citet{smith2021participants}.}
 
 We measure personal beliefs twice, before and after information provision. To avoid asking 
 the identical questions twice, our before-information-provision version uses a 
@@ -132,14 +139,17 @@ Our elicitation of personal and objective beliefs is similar to that in
 
 We collected three additional secondary outcome metrics related to vaccination behavior. 
 At the end of the main survey we ask participants if they intend to vaccinate against the flu. 
-We code participants as intending to vaccinate if they answer that they are already vaccinated or intend to vaccinate 
-(other possible answer: may or may not vaccinate, intend to vaccinate). 
-We provide links for participants to click on to schedule a vaccination, and we track whether they click on the link. 
-Third, in our follow up survey we ask participants if they have vaccinated in the last month.
+We code participants as intending to vaccinate if they answer that they are already vaccinated or 
+intend to vaccinate (other possible answer: may or may not vaccinate, intend to vaccinate). 
+We provide links for participants to click on to schedule a vaccination, and we track whether 
+they click on the link. Third, in our follow up survey we ask participants if they have vaccinated 
+in the last month.
 
-\textbf{Trustworthiness and relevance:} After our intervention and after we elicited personal side effect beliefs, we asked all participants how trustworthy 
-they found the described industry study, and how relevant to their decision to vaccinate they found it. For participants in the academic and representative arm, 
-we also asked the analogous questions about the academic study. These questions, which were drawn from Alsan et al. (2024), were on a 0-10 scale.
+\textbf{Trustworthiness and relevance:} After our intervention and after we elicited personal side 
+effect beliefs, we asked all participants how trustworthy they found the described industry study, 
+and how relevant to their decision to vaccinate they found it. For participants in the academic and 
+representative arm, we also asked the analogous questions about the academic study. 
+These questions, which were drawn from \citet{alsan2024representation}, were on a 0-10 scale.
 
 \subsection{Methods}
 

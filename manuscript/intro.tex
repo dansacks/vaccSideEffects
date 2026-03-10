@@ -4,72 +4,115 @@ percent in 2020 to 6 percent in 2025; polio and hepatitis-B vaccination rates fe
 \citep{cdc_schoolvaxview_data}.
 Adult vaccination rates have fallen as well, with flu vaccination rates falling each year 
 since 2020 \citep{cdc_flu_vaccinations_weekly}.
-These declining vaccination rates are concerning given the health benefits of vaccination 
-and widespread scientific evidence supporting the safety and effectiveness of vaccination.
+These declining vaccination rates are concerning given the health costs of vaccine-amenable
+diseases and the widespread scientific evidence supporting the safety and effectiveness of vaccination.
 
 Many interventions have been tested to address declining vaccination rates, but with limited 
 success, especially for vaccine hesitant people. 
 For example, nudges and reminders can raise flu vaccination rates by 1-3 percentage points 
 \citep{milkman2022680,patel2023randomized}, but reminders had mixed effects among the hesitant 
-\citep{chang2023reminders,chang2026impact} Incentives raised vaccination rates COVID booster 
-rates by A-B percentage points, among people who had already received a primary shot 
-\citep{campos2024incentives}. Incentives in the US among vaccine hesitant Americans produced 
+\citep{chang2023reminders,chang2026impact}. In Sweden, incentives for the COVID-19 vaccine
+raised first-dose vaccination rate by 4 percentage points on a high base rate,
+and booster incentives raised second dose taking y 9 percentage points
+\citep{campos2024incentives}. However, incentives for vaccine hesitant Americans produced 
 much smaller increases \citep{chang2023reminders, chang2026impact}.
 
-The limited success of nudges, reminders, and incentives indicates that Increasing vaccination rates among vaccine hesitant people may require changing their beliefs about the benefits and costs of vaccination, 
-although doing so in practice has proven challenging. Addressing beliefs via information provision has yielded mixed results: dispelling myths did not increase flu or pediatric vaccination rates 
-\citep{nyhan2014effective, nyhan2015does}, 
-while highlighting harms of pediatric illness raised support for pediatric vaccinations \citep{horne2015countering}.
-Endorsements from trusted messengers may help \citep{larsen2023counter,alsan2024experimental}, albeit with modest effect sizes.  
+The limited success of nudges, reminders, and incentives indicates that increasing vaccination 
+rates among vaccine hesitant people may require changing their beliefs about the costs and benefits
+of vaccinating, although doing so in practice has proven challenging. Addressing beliefs 
+via information provision has yielded mixed results: dispelling myths did not increase flu or 
+pediatric vaccination rates \citep{nyhan2014effective, nyhan2015does}, 
+while highlighting harms of pediatric illness raised support for pediatric vaccinations 
+\citep{horne2015countering}. Endorsements from trusted messengers may help 
+\citep{larsen2023counter,alsan2024experimental}, albeit with modest effect sizes. 
 
-In this paper, we test whether providing scientific evidence about flu vaccine side effects to vaccine hesitant people can shift beliefs about their own risks from the flu vaccine. 
-Scientific information provides part of the basis for the widespread recommendation to evaluate---establishing the safety of vaccines---so it is natural to communicate. However it may not influence 
-beliefs if vaccine hesitant participants do not trust the information source or do not believe it is relevant to them. 
+In this paper, we test whether providing scientific evidence about flu vaccine side effects 
+to vaccine hesitant people can shift beliefs about their own risks from the flu vaccine. 
+Scientific information provides part of the basis for the widespread recommendation to 
+evaluate---establishing the safety of vaccines---so it is natural to communicate. 
+However it may not influence beliefs if vaccine hesitant participants do not trust the 
+information source or do not believe it is relevant to them.  We therefore investigate whether 
+the source of the information---industry trial or academic study---influences belief udpating, and we ask whether
+side effect information can shift intentions to vaccinate and actual vaccinations.
+Existing interventions have not specifically tested providing scientific information about
+short run side effect risks. Messenging campaign emphasize the safety and effectiveness 
+of vaccines (e.g. \citet{athey2023digital,alsan2024experimental }) but do not provide quantitative
+information, explain the soruce of the information, or test specifically the role of 
+side effect information.
 
-We focus on the flu vaccine because flu remains an important seasonal disease, killing tens of thousands of Americans annually and infecting tens of millions. 
-We focus on side effect beliefs because prior work has shown that flu vaccine hesitancy is strongly associated with pessimistic beliefs about sides \citep{chapman1999predictors,tsutsui2012economic}.
-Quantitative belief elicitations show that vaccine hesitant people believe the flu vaccine side effect rate is 7-15 percentage points on average, 
-much higher than clinical trial reports \citep{sacks2025preferences,fda_flulaval_package_insert,fda_fluzone_quadrivalent_package_insert}. 
-Thus there is scope to move side effect beliefs with scientific information. Flu vaccine hesitancy is also associated with more negative views about 
-flu vaccine effectiveness and side effect risk, but those views are nonetheless consistent with CDC estimates \citep{sacks2025preferences}.
+We focus on the flu vaccine because flu remains an important seasonal disease, killing tens of 
+thousands of Americans annually and infecting tens of millions. We provide side effect information because 
+rior work has shown that flu vaccine hesitancy is strongly associated with pessimistic beliefs about sides 
+\citep{chapman1999predictors,tsutsui2012economic}. Quantitative belief elicitations show that vaccine hesitant 
+people believe the flu vaccine side effect rate is 7-15 percentage points on average, much higher than clinical 
+trial reports \citep{sacks2025preferences,fda_flulaval_package_insert,fda_fluzone_quadrivalent_package_insert}. 
+Thus there is scope to move side effect beliefs with scientific information. Flu vaccine hesitancy is also 
+associated with more negative views about flu vaccine effectiveness and side effect risk, but those views 
+are nonetheless consistent with CDC estimates \citep{sacks2025preferences}.
 
-We use an online experiment with 3,525 participants to test three forms of information provision. We ask three research questions. 
-First, can scientific information provision to vaccine hesitant people 
-change their beliefs about side effect risks? Second, motivated by the possibility that vaccine hesitancy is associated with mistrust of the pharmaceutical industry. 
+We use an online experiment with 3,525 vaccine hesitant participants to estimate the effects of flu vaccine 
+side effect information provision. In our control condition, we inform participants that vaccine manufacturers 
+use placebo-controlled clinical trials to establish the effectiveness and safety of vaccines, 
+and we tell them that the severe adverse event rate in the placebo arm of a flu vaccine trial was 3 percent.  
+In our three treatment conditions,  we provide information about the low adverse event rate in the vaccine arms. 
+One condition describes results from the industry-sponsored trial. A second condition reports low adverse event rate 
+in an academic study, and a third emphasizes the representativeness of participants in the academic 
+study to current participants. We describe this as scientific information provision because we describe 
+the setup and results of research studies.  We measure beliefs prior to the intervention and, in a modified form, 
+after the intervention. We measure beliefs both about the trial adverse event rate and about personal 
+side effect risk, our primary outcome. These belief measures are correlated with proxies for vaccine hesitancy 
+(such as trust in doctors or willingness to follow government recommendations), as well as with prior experiences 
+with the flu and COVID vaccines. 
 
-We use an online experiment with 3,525 vaccine hesitant participants to estimate the effects of flu vaccine side effect information provision. 
-In our control condition, we inform participants that vaccine manufacturers use placebo-controlled clinical trials to establish the effectiveness and safety of vaccines, 
-and we tell them that the severe adverse event rate in the placebo arm of a flu vaccine trial was 3 percent.  In our three treatment conditions, 
-we provide information about the low adverse event rate in the vaccine arms. One condition describes results from the industry-sponsored trial. 
-A second condition reports low adverse event rate in an academic study, and a third emphasizes the representativeness of participants in the academic study to current participants. 
-We describe this as scientific information provision because we describe the setup and results of research studies. 
-We measure beliefs prior to the intervention and, in a modified form, after the intervention. We measure beliefs both about the trial adverse event rate and about personal side effect risk, our primary outcome. 
-These belief measures are correlated with proxies for vaccine hesitancy (such as trust in doctors or willingness to follow government recommendations), as well as with prior experiences with the flu and COVID vaccines. 
+Descriptive evidence suggests a role for scientific information provision to
+help address vaccine hesitancy. Vaccine hesitant participants are less likely to obtain health care information
+from traditional sources such as their doctor, the CDC, university, or news, but more likely to obtain information
+from recently emerging sources such as social media and podcasts. Vaccine hesitant and non-hesitant alike 
+view social media and podcasts as less reliable, suggesting they may be less likely to convey objective information. 
+Thus it is possible that vaccine hesitant pparticipants are less aware of the evidence base establishing the safety
+of the flu vaccine. Vaccine hesitant people also hold pessimistic side effect beliefs: in our control group, the average 
+vaccine hesitantparticipant beliefs that vaccinating will inreasing their experience of severe adverse events by 15 
+percentage points,but clinical trials indicate an effect of 0-1 percentage points 
+\citep{fda_flulaval_package_insert,fda_fluzone_quadrivalent_package_insert}.
 
-We have four main results. First, scientific information provision can reduce beliefs about side effect risk among the vaccine hesitant. 
-In clinical trials, the severe adverse event rate in the vaccine and placebo arms are within about 1 percentage points of each other.
-In our control group, vaccine hesitant people believe this difference is 15 percentage points on average. In our industry information arm, this belief was 3 percentage points lower.  
-Our second result is that funding source—academic or industry—does not affect belief updating. 
-Third, our arm highlighting representativeness did not increase perceived relevance of information. 
-Fourth, scientific information provision can increase intentions to vaccinate, which grew by 3 percentage points (45\% of control mean) in the academic arm. 
-This increased intention did not translate into a statistically significant increase in vaccinations (measured two weeks later in a follow-up survey), 
-although we lacked the power to detect plausible increases in vaccinations. This lack of power for vaccine take-up is an important limitation of our study, 
-as is our reliance on subjective measures. 
+We find that providing scientific information reduces side effect beliefs and raises vaccine intentions among
+the vaccine hesitant. Providing information from about an industry study side effect rate reduced personal side effect
+beliefs by about 3 percentage points, 20 percent of the control mean.  Consistent with belief updating, we find 
+larger effects for peoplewith more pessimistic prior beliefs, and for people who find university-provided information more reliable.
+We find a similar effect size of providing information about low side effects in an academic study.
+Thus although study source may matter, the academic/industry distinction is not the most salient source of difference. 
+We find no effect on beliefs of an interventin highlighting the personal relevance of the provided information, but 
+this intervention was ineffective in the sense that participants did not view the information
+as especially relevant or trustworthy. Our academic arm (but not industry arm) also increated intention 
+to vaccinate, which grew by 3 percentage points (45\% of control mean) in the academic arm. 
+However, this increased intention did not translate into a statistically significant increase in vaccinations 
+(measured two weeks later in a follow-up survey),  as we lacked the power to detect plausible increases in vaccinations. 
 
-Several results confirm that our information led to belief updating, and rule out other explanations such as experimenter demand or expressive answering. 
-First, we find larger effects for participants with more negative prior beliefs, as well as for participants without prior vaccine experience (whose beliefs should be easier to influence). 
-Second, we incentivized participants to report beliefs about trial outcomes. These incentivized beliefs are correlated with reported personal risk. 
-Third, our treatment effects on beliefs and intentions are moderated by trial perceptions of trust and relevance. 
-For participants who found the provided information highly trustworthy and relevant, the effects were large. 
-For participants who found it untrustworthy or irrelevant, the effects on beliefs were small and the effects on intentions were negative, 
-a backlash effect similar to that documented by \citet{nyhan2014effective}. This pattern of responses and heterogeneous effects is consistent with belief reporting and 
-updating but not experimenter demand or expressive answering.  
+Our results therefore show that the academic- and industry-based studies produced similar belief responses but different 
+responses for intentions. This puzzling result is largely explained by trust in the described industry trial, which turns
+out to be a key moderator. People with higher trust respond strongly on both beliefs and intentions. Participants with 
+low trust respond only slightly on beliefs, and for low trust participanst we predict a {\em negative} effect on intentions, 
+a backlash effect similar to that documented by \citet{nyhan2014effective}.  This backlash effect at low trust levels generates a zero 
+overall effect of the industry-based studyi nformation on intention to vaccinate 
 
-Our results point to a potentially promising class of interventions. 
-Providing scientific information about side effects appears effective at moving beliefs and flu vaccine intentions among the vaccine hesitant. A
-lthough vaccine hesitancy is characterized by mistrust of doctors and government recommendations, it is nonetheless possible to move some participants’ beliefs with scientific information. 
-As the updating happened among people who trusted the trial information, our results suggest that side effect information provision would be especially effective if delivered via a trusted messenger, 
-as prior work has found. Prior work such as \citet{alsan2024experimental,larsen2023counter} has shown the importance of the messenger; our contribution is to find a promising message. 
+Our findings are subject to two important limitations. First, because belief responses were not especially large, we lacked the power 
+to detect effects on actual vaccinations. Second, our main outcome measures---beliefs and intentions to vaccinate---are subjectively
+assessed. This raises raises the possibility that expressive answering or experimenter demand explain our findings. Although
+we cannot completely rule out this interpretation, it is difficult for expressive answering or experimenter
+demand to fully explain our findings. For example, to account for our pattern of heterogeneous of effects,
+it would have to be true that high trust participants are also participants especially sesntiive to perceived 
+experimenter demand, and our treatment arms differentially signal our intentions. Answers to an an incentivized question measuring 
+beliefs about side effects in the clinical trial are also inconsistent with expressive answering. Beliefs about
+side effects in the trial responds sharply to side effect information provision and are also highly predictive of personal 
+highly predictive, inconsistent with expressive answering.
+
+Overall, our results point to a potentially promising class of interventions. Providing scientific information about side 
+effects appears effective at moving beliefs and flu vaccine intentions among the vaccine hesitant. Although vaccine 
+hesitancy is characterized by mistrust of doctors and government recommendations, it is nonetheless possible to 
+move some participants’ beliefs with scientific information. As the updating happened among people who trusted the 
+trial information, our results suggest that side effect information provision would be especially effective if delivered 
+via a trusted messenger, as prior work has found. Prior work such as \citet{alsan2024experimental,larsen2023counter} has 
+shown the importance of the messenger; our contribution is to find a promising message. 
 
 
 
