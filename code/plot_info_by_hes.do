@@ -14,13 +14,7 @@ foreach source in doctor cdc univ news  sm podcasts  {
 	gen st`n' = info_`source'>= 3 if ~missing(info_`source')
 	gen rel`n' = reliable_`source' == 3 if ~missing(reliable_`source')
 }
-
-
-
-foreach v in trust_govt follow_doc {
-	replace `v' = 3*`v' - (hes==0) + (hes==1)
-	format `v' %6.3f
-}
+replace rel3 = . if info_university<3 
 
 
 

@@ -4,6 +4,21 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-03-10: Trust and Doctor-Following Figures
+
+### New file: `code/plot_trust_by_hes.do`
+- Grouped bar chart (two panels) showing distribution of `trust_govt` and `follow_doctor` by hesitancy (`vacc_intent <= 3`)
+- Same sample as `plot_info_by_hes.do`: consent + attention check + first attempt
+- X-axis: Likert response (1=Strongly disagree to 5=Strongly agree); y-axis: proportion in each category
+- Side-by-side bars for not hesitant (stc1) and vaccine hesitant (stc2)
+- Single collapse for both variables using `pt1`-`pt5` (trust_govt) and `pf1`-`pf5` (follow_doctor); indicators set to missing when underlying variable is missing; reshaped with two stubs `pt pf`
+- Output: `output/figures/trust_by_hes.png`
+
+### `code/plot_info_by_hes.do` fix
+- Removed dead code block that referenced non-existent variable `follow_doc` and corrupted `trust_govt`; this had been introduced via a merge conflict from origin
+
+---
+
 ## 2026-03-05: HTE by Flu Experience, Balance Table Updates, PCA + Lasso HTE
 
 ### New file: `code/hte_flu_vacc_experience.do`
