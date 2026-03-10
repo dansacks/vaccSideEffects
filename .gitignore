@@ -44,10 +44,21 @@ tmpclaude-*
 
 # LaTeX artifacts
 *.aux
+*.blg
 *.fdb_latexmk
 *.fls
+*.nav
+*.snm
 *.synctex.gz
 *.toc
+*.vrb
+manuscript/*.log
+manuscript/*.out
+slides/*.log
+slides/*.out
+logbook/*.log
+logbook/*.out
+texput.log
 
 # Python
 __pycache__/

@@ -1,0 +1,31 @@
+
+\section{2026-03-10: Trust and Doctor-Following Figures}
+
+\subsection{New file: \texttt{code/plot\_trust\_by\_hes.do}}
+
+Grouped bar chart (two panels) showing the distribution of \texttt{trust\_govt} and
+\texttt{follow\_doctor} by vaccine hesitancy, analogous to \texttt{plot\_info\_by\_hes.do}.
+
+Sample and hesitancy definition match \texttt{plot\_info\_by\_hes.do}: consent, passed
+attention check, first attempt; \texttt{hes = vacc\_intent <= 3}.
+
+Structure:
+\begin{itemize}
+    \item X-axis: Likert response (1 = Strongly disagree to 5 = Strongly agree)
+    \item Y-axis: proportion of respondents in each category, conditional on hesitancy group
+    \item Side-by-side bars for not hesitant (\texttt{stc1}) and vaccine hesitant (\texttt{stc2})
+\end{itemize}
+
+Implementation uses a single \texttt{collapse} for both variables. Indicator variables
+\texttt{pt1}--\texttt{pt5} (trust\_govt) and \texttt{pf1}--\texttt{pf5} (follow\_doctor)
+are set to missing when the underlying variable is missing, so the collapsed means
+are conditional on non-missing responses. A single \texttt{reshape long pt pf} then
+produces both series simultaneously.
+
+Output: \texttt{output/figures/trust\_by\_hes.png}
+
+\subsection{\texttt{code/plot\_info\_by\_hes.do} fix}
+
+Removed dead code that referenced non-existent variable \texttt{follow\_doc} and
+corrupted \texttt{trust\_govt} values. This code had been introduced via a merge
+conflict from origin.
