@@ -1,7 +1,10 @@
 
 
 use "derived/prescreen_clean.dta", clear 
-keep if final_sample==1
+
+gen ok_sample = consent == 1 & failed_attn == 0 &  ~is_preview & first_attempt == 1 
+
+keep if ok_sample
 
 gen hes = vacc_intent<=3 
 
@@ -32,7 +35,7 @@ replace source = source + .45 if hes == 1
 
 # delimit ;
 twoway 
-	(bar st source if hes == 0 ,  barwidth(.9) fcolor(stc1%60))
+	(bar st source if hes == 0 ,  barwidth(.9) fcolor(stc1%30))
 	(bar st source if hes == 1 , barwidth(.9) color(stc2%0))
 	,
 	ytitle("") title("% getting health care info from source", span pos(11))
@@ -48,7 +51,7 @@ graph export output/figures/use_info1.png, replace width(1750) height(1000);
 
 # delimit ;
 twoway 
-	(bar st source if hes == 0 ,  barwidth(.9) fcolor(stc1%60))
+	(bar st source if hes == 0 ,  barwidth(.9) fcolor(stc1%30))
 	(bar st source if hes == 1 & source <= 9, barwidth(.9) fcolor(stc2%60))
 	(bar st source if hes == 1, barwidth(.9) color(stc2%0))
 	,
@@ -65,7 +68,7 @@ graph export output/figures/use_info2.png, replace width(1750) height(1000);
 
 # delimit ;
 twoway 
-	(bar st source if hes == 0 ,  barwidth(.9) fcolor(stc1%60))
+	(bar st source if hes == 0 ,  barwidth(.9) fcolor(stc1%30))
 	(bar st source if hes == 1 , barwidth(.9) fcolor(stc2%60))
 	,
 	ytitle("") title("% getting health care info from source", span pos(11))
@@ -81,7 +84,7 @@ graph export output/figures/use_info3.png, replace width(1750) height(1000);
 
 # delimit ;
 twoway 
-	(bar rel source if hes == 0 ,  barwidth(.9) fcolor(stc1%60))
+	(bar rel source if hes == 0 ,  barwidth(.9) fcolor(stc1%30))
 	(bar rel source if hes == 1 , barwidth(.9) fcolor(stc2%60))
 	,
 	ytitle("") title("% saying source is reliable  vs. somewhat or not reliable", 
@@ -92,9 +95,16 @@ twoway
 	xtitle("") 
 	xlabel(2 "Doctor" 4 "CDC" 6 "University" 8 "News" 10 "Social Media" 12 "Podcasts")
 	xsize(7) ysize(4)
-	text(.99 1 "(Conditional on using source)", place(e) size(large) )
+	text(.99 1 "Conditional on using source", place(e) size(large) )
+	name(rel, replace)
 ;
 
 
-graph export output/figures/reliable_info.png, replace width(1750) height(1000);
+# delimit cr
+graph export output/figures/reliable_info.png, replace width(1750) height(1000)
+
+graph combine ui3 rel, cols(1) xsize(7) ysize(8)
+graph export output/figures/use_reliable_info.png, replace width(1750) height(2000)
+
+
 

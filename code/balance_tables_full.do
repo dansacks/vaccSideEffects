@@ -33,15 +33,36 @@ do "code/_config.do"
 
 use "derived/merged_main_pre.dta", clear
 
-local prior_vars "prior_placebo_1 prior_placebo_2 prior_placebo_3 prior_placebo_4 prior_placebo_5 prior_placebo_6 prior_placebo_7 prior_vacc_1 prior_vacc_2 prior_vacc_3 prior_vacc_4 prior_vacc_5 prior_vacc_6 prior_vacc_7"
+local prior_vars ""
+forvalues n = 1/7{ 
+	foreach t in placebo vacc {
+		local prior_vars "`prior_vars' prior_`t'_`n'"
+	}
+}
 
-local vacc_vars "intent_no had_prior_covid_vacc had_prior_flu_vacc covid_react_none covid_react_mild covid_react_severe flu_react_none flu_react_mild flu_react_severe"
+# delimit ;
+local vacc_vars "intent_no had_prior_covid_vacc had_prior_flu_vacc 
+	covid_react_none covid_react_mild covid_react_severe 
+	flu_react_none flu_react_mild flu_react_severe"
+;
 
-local demo_vars "age_18_34 age_35_49 age_50_64 age_65plus female gender_other educ_hs_or_less educ_some_college educ_college educ_grad income_lt25k income_25_50k income_50_75k income_75_100k income_100kplus race_white race_black race_asian race_native race_other hispanic polviews_very_liberal polviews_liberal polviews_slight_liberal polviews_moderate polviews_slight_conserv polviews_conservative polviews_very_conserv"
+local demo_vars "age_18_34 age_35_49 age_50_64 age_65plus 
+	female gender_other educ_hs_or_less educ_some_college educ_college educ_grad 
+	income_lt25k income_25_50k income_50_75k income_75_100k income_100kplus 
+	race_white race_black race_asian race_native race_other hispanic 
+	polviews_very_liberal polviews_liberal polviews_slight_liberal 
+	polviews_moderate polviews_slight_conserv polviews_conservative 
+	polviews_very_conserv"
+;
 
-local trust_vars "trust_strongly_disagree trust_somewhat_disagree trust_neither trust_somewhat_agree trust_strongly_agree"
+local trust_vars "trust_strongly_disagree trust_somewhat_disagree trust_neither 
+	trust_somewhat_agree trust_strongly_agree"
+;
 
-local health_vars "cond_none cond_asthma cond_lung cond_heart cond_diabetes cond_kidney cond_rather_not_say"
+local health_vars "cond_none cond_asthma cond_lung cond_heart cond_diabetes 
+	cond_kidney cond_rather_not_say"
+;
+# delimit cr
 
 /*------------------------------------------------------------------------------
     2. Create balance tables by domain

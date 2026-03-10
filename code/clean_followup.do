@@ -44,7 +44,7 @@ rename factors pharmacy_factor
 rename Price_compare_ price_compare
 rename Coupons_deals_ use_coupons
 
-* Vaccination status
+* meds 
 rename GLP1_ got_glp1
 rename Flu_vax_ got_flu_vacc
 rename COVID_Vax_ got_covid_vacc

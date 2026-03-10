@@ -75,10 +75,7 @@ foreach v of varlist trust_trial relevant_trial trust_academic relevant_academic
 	assert r(max) == 11 & r(min)==1
 	replace `v' = `v' - 1 if !mi(`v')
 }
-label values trust_trial scale10_lbl
-label values relevant_trial scale10_lbl
-label values trust_academic scale10_lbl
-label values relevant_academic scale10_lbl
+label values trust_trial relevant_trial trust_academic relevant_academic scale10_lbl
 
 * --- Vaccination intentions (already numeric from SPSS) ---
 label values vacc_intentions vacc_intent_lbl
@@ -149,7 +146,6 @@ foreach a in c i a p {
 		assert post_`a'_trial == ",7" if missing(real(post_`a'_trial)) & ~missing(post_`a'_trial)
     destring post_`a'_trial, replace force
 }
-
 gen post_trial = .
 foreach a in c i a p {
     replace post_trial = post_`a'_trial if !mi(post_`a'_trial)
