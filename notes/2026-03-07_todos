@@ -1,0 +1,41 @@
+
+trust and info soruce figures could probably be made smaller 
+
+need to report mean beliefs somewhere! 
+xxx demean all predictors 
+belief delta_predictors table should have 2 decimal places 
+fix 
+
+[cf: income  
+-	Change label to adverse eventt at least likey if vaccinate
+-	Add new age row.
+-	Comparison to national averages: income < 50k, white, Hispanic]
+-	Maybe rearrange trust and gov above demographics. Also relabel 
+-	“personal” arm should instead
+]
+
+in general, deal with extra space at end of tables. 
+
+combine hte side effect and hte reliable academic into one table with two panels.
+
+appendix table with HTE by prior vacc experience 
+
+hte tables row labels: representative not personal
+
+clean up figure of HTEs by arm / outcome / trial quality
+
+add pca diagnostic table
+
+names: pca1 sohuld be called quality, or $\hat{quality}$.
+
+lasso: report lasso coefficients not post-lasso coefficients, and table note should
+list the zeroed otu predictors.
+
+figure with HTEs.
+
+is it functional form? terciles of quality 
+
+robustness:
+- no controls 
+- drop repeat takers (as opposed to first)
+- reweight for demographic representativeness as best as possible (age issue)
