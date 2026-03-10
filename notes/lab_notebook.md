@@ -4,6 +4,18 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-03-10: Draft Review
+
+### New file: `notes/draft_review_output.md`
+Five-task review of the manuscript (abstract, intro, design, results, conclusions):
+1. Abstract claims cross-checked against intro quotes — all 4 abstract claims have intro matches; noted one hedging difference on effectiveness beliefs.
+2. Intro claims cross-checked against results evidence — coverage is strong; flagged that the 45% of control mean figure for intentions is not computed in results.tex.
+3. Intro logical gaps — 9 issues flagged, including incomplete sentence (line 59 results.tex), unsupported inferential leap about belief change being necessary, missing external validity discussion, and misplaced limitations content.
+4. CONSORT 2025 checklist — 30 items reviewed; key gaps: unstructured abstract (1b), no data sharing statement (4), no funding/COI (5a/5b), blinding not addressed (20a/20b), harms not reported (15/27), allocation concealment missing (17b/18).
+5. Typos — catalogued ~50 typos across intro (20), design (9), results (20), conclusions (4). Notably "rubella" misspelled as "urbella" (intro line 2), arm name inconsistency "personal" vs "representative" (design line 185).
+
+---
+
 ## 2026-03-10: Trust and Doctor-Following Figures
 
 ### New file: `code/plot_trust_by_hes.do`
