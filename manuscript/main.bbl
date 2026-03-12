@@ -1,5 +1,11 @@
 \begin{thebibliography}{}
 
+\bibitem[\protect\citeauthoryear{Alsan, Durvasula, Gupta, Schwartzstein, and
+  Williams}{Alsan et~al.}{2024}]{alsan2024representation}
+Alsan, M., M.~Durvasula, H.~Gupta, J.~Schwartzstein, and H.~Williams (2024).
+\newblock Representation and extrapolation: evidence from clinical trials.
+\newblock {\em The quarterly journal of economics\/}~{\em 139\/}(1), 575--635.
+
 \bibitem[\protect\citeauthoryear{Alsan and Eichmeyer}{Alsan and
   Eichmeyer}{2024}]{alsan2024experimental}
 Alsan, M. and S.~Eichmeyer (2024).
@@ -7,6 +13,14 @@ Alsan, M. and S.~Eichmeyer (2024).
   improving vaccine demand.
 \newblock {\em American Economic Journal: Economic Policy\/}~{\em 16\/}(1),
   394--414.
+
+\bibitem[\protect\citeauthoryear{Athey, Grabarz, Luca, and Wernerfelt}{Athey
+  et~al.}{2023}]{athey2023digital}
+Athey, S., K.~Grabarz, M.~Luca, and N.~Wernerfelt (2023).
+\newblock Digital public health interventions at scale: The impact of social
+  media advertising on beliefs and outcomes related to covid vaccines.
+\newblock {\em Proceedings of the National Academy of Sciences\/}~{\em
+  120\/}(5), e2208110120.
 
 \bibitem[\protect\citeauthoryear{Campos-Mercade, Meier, Meier, Pope, Schneider,
   and Wengstr{\"o}m}{Campos-Mercade et~al.}{2024}]{campos2024incentives}
@@ -134,6 +148,12 @@ Roth, C., P.~Schwardmann, and E.~Tripodi (2024).
 Sacks, D.~W. and J.~R. Sydnor (2025).
 \newblock Preferences, beliefs, and demand for the flu vaccine.
 \newblock Technical report, National Bureau of Economic Research.
+
+\bibitem[\protect\citeauthoryear{Smith, Whalley, and Wilcox}{Smith
+  et~al.}{2021}]{smith2021participants}
+Smith, J., A.~Whalley, and N.~Wilcox (2021).
+\newblock {\em Are Participants Good Evaluators?}
+\newblock WE Upjohn Institute.
 
 \bibitem[\protect\citeauthoryear{Stantcheva}{Stantcheva}{2023}]{stantcheva2023run}
 Stantcheva, S. (2023).

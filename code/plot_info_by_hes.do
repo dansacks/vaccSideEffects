@@ -81,7 +81,7 @@ twoway
 	(bar rel source if hes == 0 ,  barwidth(.9) fcolor(stc1%30))
 	(bar rel source if hes == 1 , barwidth(.9) fcolor(stc2%60))
 	,
-	ytitle("") title("% saying source is reliable  vs. somewhat or not reliable", 
+	ytitle("") title("% saying source is reliable vs. somewhat or not reliable", 
 		span pos(11))
 	legend(ring(0) pos(2) cols(1) 
 		order(1 "Not vaccine hesitant" 2 "Vaccine hesitant"))

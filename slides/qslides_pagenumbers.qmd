@@ -131,7 +131,7 @@ Why side effect information provision?
 
 Side effect information from scientific studies shifts [beliefs about personal risk]{.alert}
 
-  - by 3 percentage points on a base of 15 (vs. 0-1 in clinical trials)
+  - by 3 percentage points on a base of 15 (clincial trial estimate: 0-1 ppts)
 
 Belief responses don't clearly move with [source]{.alert}
 
@@ -159,7 +159,7 @@ Correlational evidence:
 
 Experiments find:
 
-- Nudges + encouragement help but onlyto a limited extent 
+- Nudges + encouragement help but only to a limited extent 
 - Identity of messenger can matter (racial concordance, political concordance)
 - Messages correcting false beliefs mostly unhelpful. No work on short-run side effects.
 
@@ -361,12 +361,14 @@ Controls (power-improving)
 
 ## Vaccine hesitant's beliefs might be hard to move
 
-![](../output/figures/use_info1.png ){width="90%"}
+![](../output/figures/use_info1.png ){width="90%" }
+
 
 
 ## Vaccine hesitant's beliefs might be hard to move
 
-![](../output/figures/use_info2.png ){width="90%"}
+![](../output/figures/use_info2.png ){width="90%" }
+
 
 
 ## Vaccine hesitant's beliefs might be hard to move  
@@ -375,6 +377,8 @@ Controls (power-improving)
 
 
 ## Vaccine hesitant's beliefs might be hard to move 
+
+
 ![](../output/figures/reliable_info.png ){width="90%"}
 
 
@@ -482,7 +486,7 @@ Notes: Robust standard errors in parentheses. Controls not shown. [Appendix →]
 View of trial
 
 - Did you find it trustworthy? (0-10 scale)
-- Did ou find relevant? (0-10 scale)
+- Did you find relevant? (0-10 scale)
 
 Views of university-provided information
 
