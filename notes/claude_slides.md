@@ -1,3 +1,13 @@
+[note: prompt environment is a box with a solid outline and a very light
+gray background]
+[note: if there is an enumerate with a single elment, change to an itemize,
+and enforce consistent across all enumerates on a given slide ]
+Title: Integrating cladue code into research workflow.
+
+author: Dan Sacks, PROFESSOR of Risk and Insurance
+
+Date: March 13, 2026
+
 Title: Integrating cladue code into research workflow.
 Slide: What is claude code?
 -	Claude implementation that can run commands 
