@@ -517,4 +517,43 @@ Test & \multicolumn{4}{c}{Statistic} & P-value \\
 \end{minipage}
 \end{table}
 
+%===============================================================================
+\section{Open-Ended Response Classification}
+%===============================================================================
+
+%-------------------------------------------------------------------------------
+\subsection{What Did Respondents Think the Study Was About?}
+%-------------------------------------------------------------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/debrief_what_about.png}
+\caption{Classification of Open-Ended ``What Was This Study About?'' Responses}
+\label{fig:debrief_what_about}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Bars show, for the main sample, the percent of responses to ``What do you think this study was about?'' classified by claude-haiku-4.5 (prompt in code/classification\_prompt.md) as mentioning each category. Categories are not mutually exclusive. ``Understood study's intent'' indicates the response was classified as mentioning flu/vaccine, information, and change, and at least one of attitudes, beliefs, or intentions.
+\end{minipage}
+\end{figure}
+
+\begin{table}[H]
+\caption{Example Responses by Classification Pattern}
+\label{tab:debrief_examples}
+\centering
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.4\textwidth} >{\raggedright\arraybackslash}X}
+\toprule
+Classification pattern & Example response \\
+\midrule
+\input{tables/debrief_examples.tex}
+\\
+\bottomrule
+\end{tabularx}
+\begin{minipage}{\textwidth}
+\vspace{0.5em}
+\footnotesize
+\textit{Notes:} Each row shows one participant's verbatim response to ``What do you think this study was about?'', illustrating a pattern of categories (defined in code/classification\_prompt.md) assigned by the claude-haiku-4.5 classifier.
+\end{minipage}
+\end{table}
+
 \end{document}

@@ -1,0 +1,424 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/sacks/Projects/VaccSideEffects/output/logs/explore_what_abo
+> ut.log
+  log type:  text
+ opened on:  12 Jun 2026, 10:03:51
+.     di "=== Running in batch mode: $scriptname ==="
+=== Running in batch mode: explore_what_about ===
+.     di "Log: output/logs/$scriptname.log"
+Log: output/logs/explore_what_about.log
+.     di ""
+
+. }
+
+. 
+end of do-file
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     1. Load data and merge classifications
+> -----------------------------------------------------------------------------
+> -*/
+. import delimited using output/tables/debrief_classifications.csv, clear
+(encoding automatically selected: ISO-8859-1)
+(9 vars, 3,525 obs)
+
+. tempfile classifications
+
+. save `classifications'
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St84056.000001 saved
+    as .dta format
+
+. 
+. use "derived/merged_all.dta", clear
+
+. 
+. merge 1:1 study_id using `classifications', assert(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                            13
+        from master                        13  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                             3,525  (_merge==3)
+    -----------------------------------------
+
+. 
+. * Responses not sent for classification are exactly those with missing/"n/a" 
+> debrief_about
+. assert _merge == 1 if missing(debrief_about) | debrief_about == "n/a"
+
+. assert _merge == 3 if !missing(debrief_about) & debrief_about != "n/a"
+
+. drop _merge
+
+. 
+. keep if main_sample == 1
+(13 observations deleted)
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     2. Treat unclassified responses (missing or "n/a") as unclear
+> -----------------------------------------------------------------------------
+> -*/
+. count if missing(debrief_about) | debrief_about == "n/a"
+  13
+
+. assert r(N) == 13
+
+. 
+. local about_vars about_flu about_attitude about_info about_beliefs about_inte
+> nt about_change
+
+. foreach v of local about_vars {
+  2.     replace `v' = 0 if missing(debrief_about) | debrief_about == "n/a"
+  3. }
+(13 real changes made)
+(13 real changes made)
+(13 real changes made)
+(13 real changes made)
+(13 real changes made)
+(13 real changes made)
+
+. replace unclear           = 1 if missing(debrief_about) | debrief_about == "n
+> /a"
+(13 real changes made)
+
+. replace understood_intent = 0 if missing(debrief_about) | debrief_about == "n
+> /a"
+(13 real changes made)
+
+. 
+. count
+  3,525
+
+. assert r(N) == 3525
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     3. Figure: percent of responses in each category
+> -----------------------------------------------------------------------------
+> -*/
+. preserve
+
+. 
+. local catvars about_flu about_attitude about_info about_beliefs about_intent 
+> about_change unclear understood_intent
+
+. local i = 0
+
+. foreach v of local catvars {
+  2.     local ++i
+  3.     qui sum `v', meanonly
+  4.     local pct`i' = r(mean) * 100
+  5. }
+
+. 
+. clear
+
+. set obs 8
+Number of observations (_N) was 0, now 8.
+
+. gen cat = _n
+
+. gen pct = .
+(8 missing values generated)
+
+. forvalues i = 1/8 {
+  2.     replace pct = `pct`i'' if cat == `i'
+  3. }
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+
+. 
+. label define catlbl ///
+>     1 "Mentions flu or vaccine" ///
+>     2 "Mentions attitudes or opinions" ///
+>     3 "Mentions information or research" ///
+>     4 "Mentions risks or effectiveness" ///
+>     5 "Mentions vaccination intentions" ///
+>     6 "Mentions changing behavior" ///
+>     7 "Unclear / unclassifiable" ///
+>     8 "Understood study's intent"
+
+. label values cat catlbl
+
+. 
+. #delimit ;
+delimiter now ;
+. graph hbar pct,
+>     over(cat, label(labsize(medium)))
+>     blabel(bar, format(%4.1f) size(medsmall))
+>     ytitle("Percent of main sample", size(medlarge))
+>     ylabel(0(20)100, labsize(medium))
+>     legend(off)
+>     xsize(8) ysize(5)
+> ;
+
+. #delimit cr
+delimiter now cr
+. 
+. graph export "output/figures/debrief_what_about.png", replace width(2000) hei
+> ght(1250)
+file output/figures/debrief_what_about.png written in PNG format
+
+. 
+. restore
+
+. 
+. /*---------------------------------------------------------------------------
+> ---
+>     4. Table: example responses by understanding pattern
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. * Order of flag positions used for asserts below
+. local flagvars about_flu about_attitude about_info about_beliefs about_intent
+>  about_change unclear understood_intent
+
+. 
+. * Pattern 1: flu/vaccine only
+. local pat1_id 207
+
+. local pat1_lbl "Mentions flu or vaccine only"
+
+. local pat1_flags "1 0 0 0 0 0 . ."
+
+. 
+. * Pattern 2: attitudes/opinions only
+. local pat2_id 3464
+
+. local pat2_lbl "Mentions feelings, attitudes, or opinions only"
+
+. local pat2_flags "0 1 0 0 0 0 . ."
+
+. 
+. * Pattern 3: information/research only
+. local pat3_id 349
+
+. local pat3_lbl "Mentions information or research only"
+
+. local pat3_flags "0 0 1 0 0 0 0 0"
+
+. 
+. * Pattern 4: risks/effectiveness only
+. local pat4_id 7441
+
+. local pat4_lbl "Mentions risks, side effects, or effectiveness only"
+
+. local pat4_flags "0 0 0 1 0 0 . ."
+
+. 
+. * Pattern 5: vaccination intentions only
+. local pat5_id 6894
+
+. local pat5_lbl "Mentions vaccination intentions only"
+
+. local pat5_flags "0 0 0 0 1 0 . ."
+
+. 
+. * Pattern 6: changing behavior/attitudes/beliefs only
+. local pat6_id 2993
+
+. local pat6_lbl "Mentions changing behavior, attitudes, or beliefs only"
+
+. local pat6_flags "0 0 0 0 0 1 . ."
+
+. 
+. * Pattern 7: flu/vaccine + attitudes
+. local pat7_id 61
+
+. local pat7_lbl "Mentions flu/vaccine and feelings/attitudes"
+
+. local pat7_flags "1 1 0 0 0 0 . ."
+
+. 
+. * Pattern 8: flu/vaccine + information
+. local pat8_id 1329
+
+. local pat8_lbl "Mentions flu/vaccine and information"
+
+. local pat8_flags "1 0 1 0 0 0 . ."
+
+. 
+. * Pattern 9: flu/vaccine + risks/effectiveness
+. local pat9_id 126
+
+. local pat9_lbl "Mentions flu/vaccine and risks/effectiveness"
+
+. local pat9_flags "1 0 0 1 0 0 . ."
+
+. 
+. * Pattern 10: flu/vaccine + attitudes + information
+. local pat10_id 1118
+
+. local pat10_lbl "Mentions flu/vaccine, feelings/attitudes, and information"
+
+. local pat10_flags "1 1 1 0 0 0 . ."
+
+. 
+. * Pattern 11: flu/vaccine + change, without information
+. local pat11_id 3370
+
+. local pat11_lbl "Mentions flu/vaccine and changing behavior, without informat
+> ion"
+
+. local pat11_flags "1 0 0 0 0 1 . ."
+
+. 
+. * Pattern 12: understood study's intent
+. local pat12_id 89
+
+. local pat12_lbl "Understood study's intent (flu/vaccine, information, change,
+>  and attitudes/beliefs/intentions)"
+
+. local pat12_flags "1 . 1 . . 1 0 1"
+
+. 
+. * Pattern label and row order for each of the 12 example responses
+. gen str200 pattern_label = ""
+(3,525 missing values generated)
+
+. gen byte  pattern_order  = .
+(3,525 missing values generated)
+
+. 
+. forvalues p = 1/12 {
+  2.     local sid = `pat`p'_id'
+  3. 
+.     qui count if study_id == `sid'
+  4.     assert r(N) == 1
+  5. 
+.     * Verify this study_id matches the labeled pattern
+.     forvalues j = 1/8 {
+  6.         local ev : word `j' of `pat`p'_flags'
+  7.         if "`ev'" != "." {
+  8.             local vn : word `j' of `flagvars'
+  9.             qui sum `vn' if study_id == `sid', meanonly
+ 10.             assert r(mean) == `ev'
+ 11.         }
+ 12.     }
+ 13. 
+.     replace pattern_label = "`pat`p'_lbl'" if study_id == `sid'
+ 14.     replace pattern_order = `p'           if study_id == `sid'
+ 15. }
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+
+. 
+. keep if !missing(pattern_order)
+(3,513 observations deleted)
+
+. sort pattern_order
+
+. assert _N == 12
+
+. 
+. * Build LaTeX-ready response text on the string variable itself (not a local
+. * macro): apostrophes in responses (e.g. "aren't") break Stata's
+. * compound-quote macro expansion if round-tripped through locals.
+. local oq = char(96) + char(96)
+
+. local cq = char(39) + char(39)
+
+. 
+. gen strL example_text = debrief_about
+
+. 
+. * Normalize embedded newlines / <NL> tokens to a single space
+. replace example_text = subinstr(example_text, char(10), " ", .)
+(0 real changes made)
+
+. replace example_text = subinstr(example_text, " <NL> ", " ", .)
+(0 real changes made)
+
+. replace example_text = subinstr(example_text, "<NL>", " ", .)
+(0 real changes made)
+
+. 
+. * LaTeX-escape special characters
+. replace example_text = subinstr(example_text, "&", "\&", .)
+(0 real changes made)
+
+. replace example_text = subinstr(example_text, "%", "\%", .)
+(0 real changes made)
+
+. replace example_text = subinstr(example_text, "$", "\$", .)
+(0 real changes made)
+
+. replace example_text = subinstr(example_text, "#", "\#", .)
+(0 real changes made)
+
+. replace example_text = subinstr(example_text, "_", "\_", .)
+(0 real changes made)
+
+. 
+. * Collapse repeated whitespace introduced by newline normalization
+. forvalues r = 1/5 {
+  2.     replace example_text = subinstr(example_text, "  ", " ", .)
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. replace example_text = strtrim(example_text)
+(0 real changes made)
+
+. replace example_text = "`oq'" + example_text + "`cq'"
+(12 real changes made)
+
+. 
+. capture file close whatabout
+
+. file open whatabout using "output/tables/debrief_examples.tex", write replace
+
+. forvalues p = 1/12 {
+  2.     if `p' < 12 {
+  3.         file write whatabout (pattern_label[`p']) " & " (example_text[`p']
+> ) " \\" _n
+  4.     }
+  5.     else {
+  6.         file write whatabout (pattern_label[`p']) " & " (example_text[`p']
+> )
+  7.     }
+  8. }
+
+. file close whatabout
+
+. 
+. capture log close

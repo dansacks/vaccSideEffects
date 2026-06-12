@@ -9,11 +9,11 @@ Use semantic interpretation. If you cannot point to specific meaning in the expl
 
 For the response, provide the following classifications:
 - about_flu: =1 if the response mentions flu or vaccine. 
+- about_attitude: =1 if response mentions feelings, views, attitudes, opinions, perceptions, viewpoints
 - about_info: =1 if the response mentions information provision, including research or studies. Should not =1 if the repsondent only says the stud was about gathering information. 
-- about_risk: =1 if the response mentions risks, side effects, or related ideas about vaccines
-- about_beliefs: =1 if the response mentions beliefs about vaccines 
-- about_intent: =1  if the response mentions vaccine intentions or preferences 
-- about_change: =1 if the response mentions changing behavior or beliefs
-- unclear: =1 if response cannot be classified, including blanks, unclassifiable, or single words. Unclear =0  if any other classification =1. 
+- about_beliefs: =1 if the response mentions risks, side effects,effects of vaccines, or effectiveness
+- about_intent: =1  if the response mentions vaccine intentions or interest in vaccination, or whether people will vaccinate 
+- about_change: =1 if the response mentions changing behavior, attitudes,  or beliefs
+- unclear: =1 if response cannot be classified, including blanks, unclassifiable, or single words. Unclear =0  if any other response is equal to 1. 
 
-Afterwards, we will infer understood-intent from if response includes flu AND change AND information AND (intent or beliefs)
+Afterwards, we will infer understood-intent from if response includes flu AND change AND information AND (attitude or beliefs or intents)

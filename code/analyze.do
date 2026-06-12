@@ -2,7 +2,7 @@
 * Run interactively: do "code/analyze.do"
 
 
-
+do "code/check_classification"
 do "code/balance_table.do"
 do "code/balance_tables_full.do"
 
@@ -16,12 +16,14 @@ do "code/heterogeneous_treatment_effects"
 do "code/hte_flu_vacc_experience"
 do "code/pca_lasso_hte"
 
+do "code/treatment_effects_demand"
 
 
 do "code/pca_lasso_hte"
 
 do "code/explore_persistence.do"
 do "code/explore_beliefs.do"
+do "code/explore_what_about.do"
 do "code/plot_beliefs_by_arm.do"
 
 do "code/plot_info_by_hes.do"

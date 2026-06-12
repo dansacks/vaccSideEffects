@@ -1,10 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  5 MAR 2026 12:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  12 JUN 2026 10:37
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex
-(/Users/sacks/Projects/VaccSideEffects/output/exhibits.tex
+**exhibits.tex
+(./exhibits.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
@@ -23,14 +22,18 @@ File: size11.clo 2024/06/29 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen141
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
- (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks17
-) (/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
- (/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/iftex.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 ))
 \Gm@cnth=\count270
@@ -45,25 +48,34 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \Gm@layouthoffset=\dimen148
 \Gm@layoutvoffset=\dimen149
 \Gm@dimlist=\toks18
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/pdflscape/pdflscape.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pdflscape/pdflscape.sty
 Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
- (/usr/local/texlive/2025/texmf-dist/tex/latex/pdflscape/pdflscape-nometadata.sty
-Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PDF (HO)
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pdflscape/pdflscape-nometadata.st
+y
+Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PD
+F (HO)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/lscape.sty
 Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
- (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphics.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphics.sty
 Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
- (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/trig.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/trig.sty
 Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 106.
- (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-def/pdftex.def
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-def/pdftex.def
 File: pdftex.def 2024/04/13 v1.2c Graphics/color driver for pdftex
 )))
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
-)) (/usr/local/texlive/2025/texmf-dist/tex/latex/booktabs/booktabs.sty
+))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \heavyrulewidth=\dimen150
 \lightrulewidth=\dimen151
@@ -82,9 +94,11 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \@thisruleclass=\count275
 \@lastruleclass=\count276
 \@thisrulewidth=\dimen162
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/tabularx.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/tabularx.sty
 Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
- (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/array.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/array.sty
 Package: array 2024/10/17 v2.6g Tabular extension package (FMi)
 \col@sep=\dimen163
 \ar@mcellbox=\box52
@@ -101,13 +115,15 @@ Package: array 2024/10/17 v2.6g Tabular extension package (FMi)
 \TX@delta=\dimen169
 \TX@cols=\count277
 \TX@ftn=\toks20
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/multirow/multirow.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 \multirow@colwidth=\skip53
 \multirow@cntb=\count278
 \multirow@dima=\skip54
 \bigstrutjot=\dimen170
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/longtable.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/longtable.sty
 Package: longtable 2024-10-27 v4.22 Multi-page Table package (DPC)
 \LTleft=\skip55
 \LTright=\skip56
@@ -125,22 +141,27 @@ Package: longtable 2024-10-27 v4.22 Multi-page Table package (DPC)
 \c@LT@tables=\count282
 \c@LT@chunks=\count283
 \LT@p@ftn=\toks21
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphicx.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 \Gin@req@height=\dimen172
 \Gin@req@width=\dimen173
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/float/float.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count284
 \float@exts=\toks22
 \float@box=\box59
 \@float@everytoks=\toks23
 \@floatcapt=\box60
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/setspace/setspace.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/setspace/setspace.sty
 Package: setspace 2022/12/04 v6.7b set line spacing
-) (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption.sty
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
- (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption3.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@tempdima=\dimen174
 \captionmargin=\dimen175
@@ -156,14 +177,16 @@ Package caption Info: Standard document class detected.
 \c@continuedfloat=\count286
 Package caption Info: float package is loaded.
 Package caption Info: longtable package is loaded.
- (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/caption/ltcaption.sty
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
-)) (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count287
 \l__pdf_internal_box=\box61
 )
-No file exhibits.aux.
+(./exhibits.aux)
 \openout1 = `exhibits.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
@@ -180,6 +203,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
 LaTeX Font Info:    ... okay on input line 42.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
 LaTeX Font Info:    ... okay on input line 42.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -229,9 +253,12 @@ LaTeX Font Info:    ... okay on input line 42.
 \everyMPtoPDFconversion=\toks25
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
- (/usr/local/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
 ))
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
@@ -242,7 +269,10 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 44.
 
-No file exhibits.toc.
+(./exhibits.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 3.
+)
 \tf@toc=\write3
 \openout3 = `exhibits.toc'.
 
@@ -251,36 +281,32 @@ No file exhibits.toc.
 [1
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 56.
- (./tables/balance_table.tex)
 
-[2] (./tables/balance_prior_beliefs.tex)
-
-LaTeX Warning: Reference `tab:balance_main' on page 3 undefined on input line 137.
+[2] (./tables/balance_table.tex)
+Overfull \hbox (16.85509pt too wide) in paragraph at lines 101--114
+ [][] 
+ []
 
 
 
-[3] (./tables/balance_vacc.tex)
+[3] (./tables/balance_prior_beliefs.tex)
 
-LaTeX Warning: Reference `tab:balance_main' on page 4 undefined on input line 158.
-
-
+[4] (./tables/balance_vacc.tex)
 Overfull \hbox (31.1205pt too wide) in paragraph at lines 147--160
  [][] 
  []
 
 
 
-[4]
-
 [5]
+
+[6]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 172.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 172.
  (./tables/balance_demographics.tex
-./tables/balance_demographics.tex:11: Missing $ inserted.
+! Missing $ inserted.
 <inserted text> 
                 $
 l.11 Income: Under $25k &
@@ -291,7 +317,7 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-./tables/balance_demographics.tex:12: Missing $ inserted.
+! Missing $ inserted.
 <inserted text> 
                 $
 l.12 Income: $25--50k &
@@ -302,7 +328,7 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-./tables/balance_demographics.tex:13: Missing $ inserted.
+! Missing $ inserted.
 <inserted text> 
                 $
 l.13 Income: $50--75k &
@@ -313,7 +339,7 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-./tables/balance_demographics.tex:14: Missing $ inserted.
+! Missing $ inserted.
 <inserted text> 
                 $
 l.14 Income: $75--100k &
@@ -324,7 +350,7 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-./tables/balance_demographics.tex:15: Missing $ inserted.
+! Missing $ inserted.
 <inserted text> 
                 $
 l.15 Income: Over $100k &
@@ -337,28 +363,17 @@ my insertion and my current dilemma will both disappear.
 
 )
 
-LaTeX Warning: Reference `tab:balance_main' on page 6 undefined on input line 183.
+[7
 
-
-
-[6
-
-] (./tables/balance_trust.tex)
-
-LaTeX Warning: Reference `tab:balance_main' on page 7 undefined on input line 206.
-
-(./tables/balance_health.tex)
-
-LaTeX Warning: Reference `tab:balance_main' on page 7 undefined on input line 227.
-
+] (./tables/balance_trust.tex) (./tables/balance_health.tex)
 (./tables/balance_omnibus.tex) (./tables/treatment_effects.tex)
 
-[7
+[8
 
 ] (./tables/persistence_attrition.tex) (./tables/persistence_recall.tex)
 
-[8] (./tables/persistence_adverse.tex)
-<figures/beliefs_pooled.png, id=39, 1756.5625pt x 752.8125pt>
+[9] (./tables/persistence_adverse.tex)
+<figures/beliefs_pooled.png, id=41, 1756.5625pt x 752.8125pt>
 File: figures/beliefs_pooled.png Graphic file (type png)
 <use figures/beliefs_pooled.png>
 Package pdftex.def Info: figures/beliefs_pooled.png  used on input line 366.
@@ -367,64 +382,86 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <9> on input line 372.
 
 
-[9]
-<figures/delta_by_vacc_reaction.png, id=43, 1756.5625pt x 1003.75pt>
+[10]
+<figures/delta_by_vacc_reaction.png, id=45, 1756.5625pt x 1003.75pt>
 File: figures/delta_by_vacc_reaction.png Graphic file (type png)
 <use figures/delta_by_vacc_reaction.png>
-Package pdftex.def Info: figures/delta_by_vacc_reaction.png  used on input line 382.
+Package pdftex.def Info: figures/delta_by_vacc_reaction.png  used on input line
+ 382.
 (pdftex.def)             Requested size: 375.80544pt x 214.74524pt.
-<figures/delta_by_trust.png, id=44, 1756.5625pt x 1003.75pt>
+<figures/delta_by_trust.png, id=46, 1756.5625pt x 1003.75pt>
 File: figures/delta_by_trust.png Graphic file (type png)
 <use figures/delta_by_trust.png>
 Package pdftex.def Info: figures/delta_by_trust.png  used on input line 398.
 (pdftex.def)             Requested size: 375.80544pt x 214.74524pt.
 
 
-[10 <./figures/beliefs_pooled.png> <./figures/delta_by_vacc_reaction.png>]
-<figures/belief_cdf_by_arm.png, id=48, 1756.5625pt x 1003.75pt>
+[11 <./figures/beliefs_pooled.png> <./figures/delta_by_vacc_reaction.png>]
+<figures/belief_cdf_by_arm.png, id=50, 1756.5625pt x 1003.75pt>
 File: figures/belief_cdf_by_arm.png Graphic file (type png)
 <use figures/belief_cdf_by_arm.png>
 Package pdftex.def Info: figures/belief_cdf_by_arm.png  used on input line 414.
+
 (pdftex.def)             Requested size: 469.75502pt x 268.42772pt.
 
 
-[11 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex)
+[12 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex)
 
-[12 <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
+[13 <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
 Overfull \hbox (4.61304pt too wide) in paragraph at lines 459--472
  [][] 
  []
 
 (./tables/het_high_trust.tex)
 
-[13] (./tables/het_high_relevance.tex)
+[14] (./tables/het_high_relevance.tex)
+<figures/debrief_what_about.png, id=63, 1505.625pt x 941.01563pt>
+File: figures/debrief_what_about.png Graphic file (type png)
+<use figures/debrief_what_about.png>
+Package pdftex.def Info: figures/debrief_what_about.png  used on input line 530
+.
+(pdftex.def)             Requested size: 375.80544pt x 234.88pt.
 
-[14] (./exhibits.aux)
+
+[15] (./tables/debrief_examples.tex) (./tables/debrief_examples.tex)
+(./tables/debrief_examples.tex)
+
+[16 <./figures/debrief_what_about.png>]
+
+[17] (./exhibits.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 
 
-LaTeX Warning: There were undefined references.
-
-
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 3983 strings out of 473190
- 71412 string characters out of 5715801
- 478832 words of memory out of 5000000
- 27167 multiletter control sequences out of 15000+600000
- 565919 words of font info for 59 fonts, out of 8000000 for 9000
+ 4007 strings out of 473190
+ 72016 string characters out of 5715801
+ 478318 words of memory out of 5000000
+ 27182 multiletter control sequences out of 15000+600000
+ 565611 words of font info for 58 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,9n,95p,773b,346s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on exhibits.pdf (14 pages, 511229 bytes).
+ 89i,10n,95p,728b,331s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></u
+sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
+/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/l
+ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
+l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/t
+exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/te
+xlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texli
+ve/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
+Output written on exhibits.pdf (17 pages, 640637 bytes).
 PDF statistics:
- 119 PDF objects out of 1000 (max. 8388607)
- 72 compressed objects within 1 object stream
+ 126 PDF objects out of 1000 (max. 8388607)
+ 76 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 

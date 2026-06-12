@@ -4,6 +4,50 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-06-12: Debrief "What Was This Study About?" Classification Exhibits
+
+### Rewrote `code/explore_what_about.do`
+Produces two exhibits summarizing the claude-haiku-4.5 classification of
+`debrief_about` responses (categories defined in `code/classification_prompt.md`,
+results in `output/tables/debrief_classifications.csv`):
+
+1. **Figure** (`output/figures/debrief_what_about.png`): horizontal bar chart of
+   the % of the main sample whose response was classified into each of the 7
+   prompt categories (`about_flu`, `about_attitude`, `about_info`,
+   `about_beliefs`, `about_intent`, `about_change`, `unclear`), plus the % with
+   `understood_intent==1` (precomputed as flu AND info AND change AND
+   (attitude OR beliefs OR intent), per `classification_prompt.md` — confirmed
+   with Dan to use this existing definition rather than recompute).
+2. **Table** (`output/tables/debrief_examples.tex`): 12 example responses, one
+   per "understanding pattern" (e.g., mentions flu/vaccine only; understood
+   study's intent), using hand-picked `study_id`s verified against the
+   classification CSV.
+
+### Fixes to the merge/cleanup section
+- 13 responses are missing/`"n/a"` (not sent for classification) — these are
+  now uniformly set to `unclear=1`, all `about_*=0`, `understood_intent=0`
+  (old draft had a typo that skipped `about_beliefs`, omitted `about_change`,
+  and didn't handle truly-missing `debrief_about`).
+
+### Key debugging note: apostrophes break Stata local-macro round-tripping
+Extracting `debrief_about` text into a local macro and passing it through
+`subinstr(`"`macro'"', ...)` chains corrupts/empties strings containing
+apostrophes (e.g. "aren't") — Stata's compound-quote expansion mishandles the
+embedded `'`. **Fix:** do all text manipulation (newline normalization, LaTeX
+escaping `&%$#_`, quote-wrapping) via `replace` on a string *variable*, and
+write to file with `file write fh (strvar[`i'])` — never round-trip
+response text through a local macro.
+
+### Figure label note
+`graph hbar ... over(catvar, label(...))` truncates category labels at ~32
+characters regardless of `labsize`/`xsize`; `{break}` is not interpreted
+(prints literally). Shortened the 3 long category labels to fit instead.
+
+### Wired into `analyze.do`
+Added `do "code/explore_what_about.do"` after `explore_beliefs.do`.
+
+---
+
 ## 2026-03-10: Draft Review
 
 ### New file: `notes/draft_review_output.md`
