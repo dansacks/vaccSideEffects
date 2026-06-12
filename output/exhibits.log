@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  12 JUN 2026 10:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  12 JUN 2026 11:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -281,26 +281,25 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 [1
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-
-[2] (./tables/balance_table.tex)
+(./tables/balance_table.tex)
 Overfull \hbox (16.85509pt too wide) in paragraph at lines 101--114
  [][] 
  []
 
 
 
-[3] (./tables/balance_prior_beliefs.tex)
+[2] (./tables/balance_prior_beliefs.tex)
 
-[4] (./tables/balance_vacc.tex)
+[3] (./tables/balance_vacc.tex)
 Overfull \hbox (31.1205pt too wide) in paragraph at lines 147--160
  [][] 
  []
 
 
 
-[5]
+[4]
 
-[6]
+[5]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 172.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -363,17 +362,17 @@ my insertion and my current dilemma will both disappear.
 
 )
 
-[7
+[6
 
 ] (./tables/balance_trust.tex) (./tables/balance_health.tex)
 (./tables/balance_omnibus.tex) (./tables/treatment_effects.tex)
 
-[8
+[7
 
 ] (./tables/persistence_attrition.tex) (./tables/persistence_recall.tex)
 
-[9] (./tables/persistence_adverse.tex)
-<figures/beliefs_pooled.png, id=41, 1756.5625pt x 752.8125pt>
+[8] (./tables/persistence_adverse.tex)
+<figures/beliefs_pooled.png, id=38, 1756.5625pt x 752.8125pt>
 File: figures/beliefs_pooled.png Graphic file (type png)
 <use figures/beliefs_pooled.png>
 Package pdftex.def Info: figures/beliefs_pooled.png  used on input line 366.
@@ -382,22 +381,22 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <9> on input line 372.
 
 
-[10]
-<figures/delta_by_vacc_reaction.png, id=45, 1756.5625pt x 1003.75pt>
+[9]
+<figures/delta_by_vacc_reaction.png, id=42, 1756.5625pt x 1003.75pt>
 File: figures/delta_by_vacc_reaction.png Graphic file (type png)
 <use figures/delta_by_vacc_reaction.png>
 Package pdftex.def Info: figures/delta_by_vacc_reaction.png  used on input line
  382.
 (pdftex.def)             Requested size: 375.80544pt x 214.74524pt.
-<figures/delta_by_trust.png, id=46, 1756.5625pt x 1003.75pt>
+<figures/delta_by_trust.png, id=43, 1756.5625pt x 1003.75pt>
 File: figures/delta_by_trust.png Graphic file (type png)
 <use figures/delta_by_trust.png>
 Package pdftex.def Info: figures/delta_by_trust.png  used on input line 398.
 (pdftex.def)             Requested size: 375.80544pt x 214.74524pt.
 
 
-[11 <./figures/beliefs_pooled.png> <./figures/delta_by_vacc_reaction.png>]
-<figures/belief_cdf_by_arm.png, id=50, 1756.5625pt x 1003.75pt>
+[10 <./figures/beliefs_pooled.png> <./figures/delta_by_vacc_reaction.png>]
+<figures/belief_cdf_by_arm.png, id=47, 1756.5625pt x 1003.75pt>
 File: figures/belief_cdf_by_arm.png Graphic file (type png)
 <use figures/belief_cdf_by_arm.png>
 Package pdftex.def Info: figures/belief_cdf_by_arm.png  used on input line 414.
@@ -405,30 +404,18 @@ Package pdftex.def Info: figures/belief_cdf_by_arm.png  used on input line 414.
 (pdftex.def)             Requested size: 469.75502pt x 268.42772pt.
 
 
-[12 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex)
+[11 <./figures/delta_by_trust.png>] (./tables/het_high_prior.tex)
 
-[13 <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
+[12 <./figures/belief_cdf_by_arm.png>] (./tables/het_bad_experience.tex)
 Overfull \hbox (4.61304pt too wide) in paragraph at lines 459--472
  [][] 
  []
 
 (./tables/het_high_trust.tex)
 
-[14] (./tables/het_high_relevance.tex)
-<figures/debrief_what_about.png, id=63, 1505.625pt x 941.01563pt>
-File: figures/debrief_what_about.png Graphic file (type png)
-<use figures/debrief_what_about.png>
-Package pdftex.def Info: figures/debrief_what_about.png  used on input line 530
-.
-(pdftex.def)             Requested size: 375.80544pt x 234.88pt.
+[13] (./tables/het_high_relevance.tex)
 
-
-[15] (./tables/debrief_examples.tex) (./tables/debrief_examples.tex)
-(./tables/debrief_examples.tex)
-
-[16 <./figures/debrief_what_about.png>]
-
-[17] (./exhibits.aux)
+[14] (./exhibits.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -439,13 +426,13 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 4007 strings out of 473190
- 72016 string characters out of 5715801
- 478318 words of memory out of 5000000
- 27182 multiletter control sequences out of 15000+600000
+ 3986 strings out of 473190
+ 71362 string characters out of 5715801
+ 478273 words of memory out of 5000000
+ 27168 multiletter control sequences out of 15000+600000
  565611 words of font info for 58 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,10n,95p,728b,331s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 89i,9n,95p,728b,311s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
@@ -458,10 +445,10 @@ exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/te
 xlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texl
 ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texli
 ve/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on exhibits.pdf (17 pages, 640637 bytes).
+Output written on exhibits.pdf (14 pages, 504815 bytes).
 PDF statistics:
- 126 PDF objects out of 1000 (max. 8388607)
- 76 compressed objects within 1 object stream
+ 114 PDF objects out of 1000 (max. 8388607)
+ 69 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

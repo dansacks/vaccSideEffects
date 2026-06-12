@@ -54,7 +54,7 @@ ADO_REGRESSION := $(CODE)/ado/regression_table.ado
 #-------------------------------------------------------------------------------
 # Phony Targets (convenience commands)
 #-------------------------------------------------------------------------------
-.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte hte-plot hte-forest hte-flu-vacc pca-lasso-hte persistence beliefs intro-figs exhibits dirs clean-data clean-all help
+.PHONY: all prescreen main followup merge prolific counts balance balance-full analysis hte hte-plot hte-forest hte-flu-vacc pca-lasso-hte persistence beliefs intro-figs exhibits outsheet-responses check-classification demand-robustness classify-submit classify-collect dirs clean-data clean-all help
 
 all: prescreen main followup prolific counts balance
 
@@ -78,6 +78,11 @@ help:
 	@echo "  beliefs      - Generate belief distribution figures"
 	@echo "  intro-figs   - Generate intro slide figures (vacc_trends)"
 	@echo "  exhibits     - Compile exhibits.pdf (all tables/figures)"
+	@echo "  outsheet-responses - Outsheet open-ended responses for classification"
+	@echo "  check-classification - Compare hand-coded to API classifications"
+	@echo "  demand-robustness - Treatment effects excluding respondents who understood study intent"
+	@echo "  classify-submit - Submit open responses to Claude API for classification (slow, costly; not in 'all')"
+	@echo "  classify-collect - Collect results from a submitted classification batch (not in 'all')"
 	@echo "  all          - Run prescreen, main, followup, and prolific pipelines"
 	@echo "  dirs         - Create output subdirectories"
 	@echo "  clean-data   - Remove .dta files only (force rebuild)"
@@ -309,6 +314,43 @@ pca-lasso-hte: $(HTE_PCA_TEX)
 $(HTE_PCA_TEX) $(HTE_PCA_FIG) &: $(MERGED_ALL) $(CODE)/pca_lasso_hte.do \
     $(CODE)/_config.do $(CODE)/_set_controls.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/pca_lasso_hte.do && mv pca_lasso_hte.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# OPEN-ENDED RESPONSE CLASSIFICATION
+#-------------------------------------------------------------------------------
+OPEN_RESPONSES := $(DERIVED)/open_responses.tsv
+OPEN_RESPONSES_TEST := $(DERIVED)/open_responses_test.tsv
+DEBRIEF_CLASSIFICATIONS := $(OUT_TABLES)/debrief_classifications.csv
+DAN_HAND_CLASSIFICATIONS := $(OUT_TABLES)/dan_hand_classifications.xlsx
+TREATMENT_EFFECTS_DEMAND := $(OUT_TABLES)/treatment_effects_demand.tex
+
+# Outsheet open-ended responses (TSV) for classification
+outsheet-responses: $(OPEN_RESPONSES)
+
+$(OPEN_RESPONSES) $(OPEN_RESPONSES_TEST) &: $(MERGED_ALL) $(CODE)/outsheet_responses.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/outsheet_responses.do && mv outsheet_responses.log $(OUT_LOGS)/
+
+# Compare hand-coded classifications (dan_hand_classifications.xlsx) to the
+# API-derived classifications (debrief_classifications.csv)
+check-classification: $(DEBRIEF_CLASSIFICATIONS) $(DAN_HAND_CLASSIFICATIONS) $(CODE)/check_classification.do $(CODE)/_config.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/check_classification.do && mv check_classification.log $(OUT_LOGS)/
+
+# Robustness: treatment effects excluding respondents who understood the study's intent
+demand-robustness: $(TREATMENT_EFFECTS_DEMAND)
+
+$(TREATMENT_EFFECTS_DEMAND): $(MERGED_ALL) $(DEBRIEF_CLASSIFICATIONS) $(CODE)/treatment_effects_demand.do $(CODE)/_config.do $(CODE)/_set_controls.do
+	cd $(PROJDIR) && $(STATA) -e do $(CODE)/treatment_effects_demand.do && mv treatment_effects_demand.log $(OUT_LOGS)/
+
+#-------------------------------------------------------------------------------
+# CLASSIFY OPEN RESPONSES VIA CLAUDE API (slow + costly: NOT part of `all`)
+#-------------------------------------------------------------------------------
+# Step 1: submit batch (run once; saves batch id to output/tables/.debrief_batch_id)
+classify-submit: $(OPEN_RESPONSES)
+	cd $(PROJDIR) && $(PYTHON) $(CODE)/classify_open_responses.py --prompt $(CODE)/classification_prompt.md --data $(OPEN_RESPONSES) --submit
+
+# Step 2: collect results once the batch has finished (re-run later if not done yet)
+classify-collect:
+	cd $(PROJDIR) && $(PYTHON) $(CODE)/classify_open_responses.py --prompt $(CODE)/classification_prompt.md --data $(OPEN_RESPONSES) --collect --output $(DEBRIEF_CLASSIFICATIONS)
 
 #-------------------------------------------------------------------------------
 # PERSISTENCE ANALYSIS

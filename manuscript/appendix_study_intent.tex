@@ -1,0 +1,91 @@
+\clearpage
+
+%==============================================================================
+% Appendix Section: Participant Perceptions of Study Intent
+%==============================================================================
+
+\section{Participant Perceptions of Study Intent}
+\label{sec:appendix_study_intent}
+
+%------------------------------------------------------------------------------
+% Table A.5: Robustness excluding respondents who understood the study's intent
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Treatment effects excluding respondents who understood the study's intent}
+\label{tab:treatment_effects_demand}
+\begin{tabular}{l ccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) \\
+ & SE (trial) & Delta & Vacc Intent & Link Click & Vaccinated \\ \midrule
+\input{../output/tables/treatment_effects_demand.tex} \\
+\bottomrule
+\end{tabular}
+\tabnote{\linewidth}{Notes: Each column is a separate OLS regression of the
+indicated outcome on treatment arm indicators for Industry, Academic, and
+Personal arms, with Control as the omitted category. Pre-specified controls
+are included but not shown. Robust standard errors in parentheses. The sample
+is restricted to main-sample respondents whose response to ``What do you think
+this study was about?'' was not classified as indicating they understood the
+study's intent (Figure~\ref{fig:debrief_what_about}; classification described
+in code/classification\_prompt.md). See Table~\ref{tab:treat_effects} for
+outcome definitions.}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------------------------------------
+% Figure A.3: Classification of "what was this study about" responses
+%------------------------------------------------------------------------------
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{../output/figures/debrief_what_about.png}
+\caption{Classification of Open-Ended ``What Was This Study About?'' Responses}
+\label{fig:debrief_what_about}
+\fignote{\linewidth}{Notes: Bars show, for the main sample, the percent of
+responses to ``What do you think this study was about?'' classified by
+claude-haiku-4.5 (prompt in code/classification\_prompt.md) as mentioning each
+category. Categories are not mutually exclusive. ``Understood study's intent''
+indicates the response was classified as mentioning flu/vaccine, information,
+and change, and at least one of attitudes, beliefs, or intentions.}
+\end{figure}
+
+%------------------------------------------------------------------------------
+% Table A.6: Example responses by classification pattern
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Example Responses by Classification Pattern}
+\label{tab:debrief_examples}
+{\setlength{\extrarowheight}{3pt}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.4\textwidth} >{\raggedright\arraybackslash}X}
+\toprule
+Classification pattern & Example response \\
+\midrule
+\input{../output/tables/debrief_examples.tex}
+\\
+\bottomrule
+\end{tabularx}}
+\tabnote{\linewidth}{Notes: Each row shows one participant's verbatim response
+to ``What do you think this study was about?'', illustrating a pattern of
+categories (defined in code/classification\_prompt.md) assigned by the
+claude-haiku-4.5 classifier.}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------------------------------------
+% Classification prompt (verbatim)
+%------------------------------------------------------------------------------
+\subsection*{Classification Prompt}
+\label{sec:classification_prompt}
+
+\begin{sloppypar}
+\noindent The following prompt was used (via
+\path{code/classify_open_responses.py}) to classify each open-ended
+``What do you think this study was about?'' response with claude-haiku-4.5
+(\path{code/classification_prompt.md}):
+\end{sloppypar}
+
+\vspace{0.5em}
+\lstinputlisting[basicstyle=\ttfamily\small, breaklines=true, breakindent=0pt]{../code/classification_prompt.md}

@@ -1,6 +1,6 @@
 
 clear all
-global scriptname "treatment_effects"
+global scriptname "treatment_effects_demand"
 do "code/_config.do"
 
 /*------------------------------------------------------------------------------

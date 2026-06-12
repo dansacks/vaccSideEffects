@@ -69,13 +69,21 @@ label define catlbl ///
     8 "Understood study's intent"
 label values cat catlbl
 
+* Split into two series so "Understood study's intent" can be highlighted
+* with a distinct, more intense color while the other categories are
+* lightened -- distinguishable in both color and grayscale.
+gen pct_other     = pct if cat <= 7
+gen pct_highlight = pct if cat == 8
+
 #delimit ;
-graph hbar pct,
+graph hbar pct_other pct_highlight,
     over(cat, label(labsize(medium)))
     blabel(bar, format(%4.1f) size(medsmall))
     ytitle("Percent of main sample", size(medlarge))
     ylabel(0(20)100, labsize(medium))
     legend(off)
+    bar(1, color(gs12))
+    bar(2, color(navy))
     xsize(8) ysize(5)
 ;
 #delimit cr

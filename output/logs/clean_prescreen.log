@@ -154,7 +154,7 @@ Notes:
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_prescreen.
 > log
   log type:  text
- opened on:  16 Feb 2026, 20:51:48
+ opened on:  12 Jun 2026, 11:11:47
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_prescreen ===
 .     di "Log: output/logs/$scriptname.log"
@@ -838,7 +838,7 @@ end of do-file
 . * Final sample flag (prescreen-specific criteria: consent + attn + anonymous 
 > + first attempt)
 . gen final_sample = (consent == 1 & failed_attn == 0 & _distchannel == "anonym
-> ous" & ~is_preview & first_attempt == 1)
+> ous" & ~is_preview & first_attempt == 1 & vacc_intent <= 2)
 
 . label var final_sample "Final analysis sample (consent, passed attention, fir
 > st attempt)"
@@ -1082,17 +1082,17 @@ end of do-file
 . 
 . * --- Vaccine Reaction indicators ---
 . * covid_vacc_reaction (0=no vaccine, 1=none/don't remember, 2=mild, 3=severe)
-. gen covid_react_none = (covid_vacc_reaction == 1) if had_prior_covid_vacc == 
-> 1
-(2,007 missing values generated)
+. gen covid_react_none = (covid_vacc_reaction == 1) if  ~missing(covid_vacc_rea
+> ction) 
+(127 missing values generated)
 
-. gen covid_react_mild = (covid_vacc_reaction == 2) if had_prior_covid_vacc == 
-> 1
-(2,007 missing values generated)
+. gen covid_react_mild = (covid_vacc_reaction == 2) if  ~missing(covid_vacc_rea
+> ction) 
+(127 missing values generated)
 
-. gen covid_react_severe = (covid_vacc_reaction == 3) if had_prior_covid_vacc =
-> = 1
-(2,007 missing values generated)
+. gen covid_react_severe = (covid_vacc_reaction == 3) if  ~missing(covid_vacc_r
+> eaction) 
+(127 missing values generated)
 
 . 
 . label var covid_react_none "COVID reaction: None/don't remember"
@@ -1103,14 +1103,17 @@ end of do-file
 
 . 
 . * flu_vacc_reaction
-. gen flu_react_none = (flu_vacc_reaction == 1) if had_prior_flu_vacc == 1
-(2,016 missing values generated)
+. 
+. gen flu_react_none = (flu_vacc_reaction == 1) if ~missing(flu_vacc_reaction) 
+(129 missing values generated)
 
-. gen flu_react_mild = (flu_vacc_reaction == 2) if had_prior_flu_vacc == 1
-(2,016 missing values generated)
+. gen flu_react_mild = (flu_vacc_reaction == 2) if  ~missing(flu_vacc_reaction)
+>  
+(129 missing values generated)
 
-. gen flu_react_severe = (flu_vacc_reaction == 3) if had_prior_flu_vacc == 1
-(2,016 missing values generated)
+. gen flu_react_severe = (flu_vacc_reaction == 3) if  ~missing(flu_vacc_reactio
+> n) 
+(129 missing values generated)
 
 . 
 . label var flu_react_none "Flu reaction: None/don't remember"
@@ -1388,10 +1391,10 @@ Total variables: 79
 Total observations: 8198
 
 . count if final_sample == 1
-  8,003
+  4,525
 
 . di "Final sample: " r(N)
-Final sample: 8003
+Final sample: 4525
 
 . count if incomplete == 1
   86
@@ -1473,7 +1476,6 @@ end of do-file
   (1,000,156 bytes saved)
 
 . save "derived/prescreen_clean.dta", replace
-(file derived/prescreen_clean.dta not found)
 file derived/prescreen_clean.dta saved
 
 . 

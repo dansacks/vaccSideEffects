@@ -152,7 +152,7 @@ Notes:
       name:  <unnamed>
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/clean_main.log
   log type:  text
- opened on:  16 Feb 2026, 20:51:49
+ opened on:  12 Jun 2026, 11:11:47
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: clean_main ===
 .     di "Log: output/logs/$scriptname.log"
@@ -578,13 +578,8 @@ trust_acad~c |      1,780    6.874719    2.373389          1         11
 relevant_a~c |      1,780    5.897753    3.061978          1         11
 (1,780 real changes made)
 
-. label values trust_trial scale10_lbl
-
-. label values relevant_trial scale10_lbl
-
-. label values trust_academic scale10_lbl
-
-. label values relevant_academic scale10_lbl
+. label values trust_trial relevant_trial trust_academic relevant_academic scal
+> e10_lbl
 
 . 
 . * --- Vaccination intentions (already numeric from SPSS) ---
@@ -731,7 +726,6 @@ post_a_trial: all characters numeric; replaced as double
 post_p_trial: contains nonnumeric characters; replaced as double
 (2763 missing values generated)
 
-. 
 . gen post_trial = .
 (3,658 missing values generated)
 
@@ -890,7 +884,9 @@ end of do-file
 . * Final sample flag (main survey requires non-missing outcomes)
 . gen final_sample = (consent == 1 & failed_attn == 0 ///
 >     & _distchannel == "anonymous" & is_preview == 0 ///
->                 & n_missing == 0 & first_attempt == 1)
+>                 & n_missing == 0 & posterior_vacc != -99 & posterior_novacc !
+> = -99 ///
+>                 & first_attempt == 1)
 
 . 
 . label var final_sample "Final analysis sample (consent, passed attn, non-miss
@@ -1559,7 +1555,6 @@ end of do-file
   (698,678 bytes saved)
 
 . save "derived/main_clean.dta", replace
-(file derived/main_clean.dta not found)
 file derived/main_clean.dta saved
 
 . 

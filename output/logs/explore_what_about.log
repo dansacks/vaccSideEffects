@@ -3,7 +3,7 @@
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/explore_what_abo
 > ut.log
   log type:  text
- opened on:  12 Jun 2026, 10:03:51
+ opened on:  12 Jun 2026, 11:02:36
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: explore_what_about ===
 .     di "Log: output/logs/$scriptname.log"
@@ -28,7 +28,7 @@ end of do-file
 . tempfile classifications
 
 . save `classifications'
-file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St84056.000001 saved
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St84813.000001 saved
     as .dta format
 
 . 
@@ -155,14 +155,26 @@ Number of observations (_N) was 0, now 8.
 . label values cat catlbl
 
 . 
+. * Split into two series so "Understood study's intent" can be highlighted
+. * with a distinct, more intense color while the other categories are
+. * lightened -- distinguishable in both color and grayscale.
+. gen pct_other     = pct if cat <= 7
+(1 missing value generated)
+
+. gen pct_highlight = pct if cat == 8
+(7 missing values generated)
+
+. 
 . #delimit ;
 delimiter now ;
-. graph hbar pct,
+. graph hbar pct_other pct_highlight,
 >     over(cat, label(labsize(medium)))
 >     blabel(bar, format(%4.1f) size(medsmall))
 >     ytitle("Percent of main sample", size(medlarge))
 >     ylabel(0(20)100, labsize(medium))
 >     legend(off)
+>     bar(1, color(gs12))
+>     bar(2, color(navy))
 >     xsize(8) ysize(5)
 > ;
 

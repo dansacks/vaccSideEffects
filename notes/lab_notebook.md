@@ -4,6 +4,47 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-06-12: Appendix Section for Study-Intent Classification + Makefile Targets
+
+### Figure refinement: `code/explore_what_about.do`
+In `debrief_what_about.png`, "Understood study's intent" (cat==8) is now
+visually distinct from the other 7 categories: split into two series
+(`pct_other` for cat<=7, `pct_highlight` for cat==8) plotted with
+`bar(1, color(gs12)) bar(2, color(navy))`. The 7 standard categories are
+light gray, "Understood study's intent" is navy — distinguishable in both
+color and grayscale.
+
+### New manuscript appendix: `manuscript/appendix_study_intent.tex`
+Added `\section{Participant Perceptions of Study Intent}`, input after
+`appendix_figures` in `main.tex` (table/figure counters already in `A.x` mode,
+so numbering continues automatically as Table A.5, Figure A.3, Table A.6):
+- Table A.5: shell for `output/tables/treatment_effects_demand.tex`
+  (robustness excluding respondents classified as having understood the
+  study's intent).
+- Figure A.3: `debrief_what_about.png` (moved from `output/exhibits.tex`).
+- Table A.6: `debrief_examples.tex` (moved from `output/exhibits.tex`), with
+  `\extrarowheight=3pt` for readability between wrapped rows.
+- Verbatim `\lstinputlisting` of `code/classification_prompt.md`.
+
+Added `array`, `tabularx`, `listings` to `manuscript/preamble.tex`. Removed
+the now-relocated "Open-Ended Response Classification" section from
+`output/exhibits.tex`.
+
+### Makefile: classification pipeline targets
+Added `outsheet-responses` (`outsheet_responses.do`), `check-classification`
+(`check_classification.do`, hand-coded vs. API classifications), and
+`demand-robustness` (`treatment_effects_demand.do`, feeds Table A.5). Also
+added `classify-submit` / `classify-collect` (`classify_open_responses.py`,
+Claude API batch classification) — these two are intentionally NOT part of
+`all` since the API step is slow and costly.
+
+Fixed a copy-paste bug in `treatment_effects_demand.do`
+(`global scriptname "treatment_effects"` -> `"treatment_effects_demand"`) and
+added the standard `_config.do`/log-close boilerplate to
+`check_classification.do`.
+
+---
+
 ## 2026-06-12: Debrief "What Was This Study About?" Classification Exhibits
 
 ### Rewrote `code/explore_what_about.do`
