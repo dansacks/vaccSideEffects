@@ -43,10 +43,10 @@ local keyvars arm_industry arm_academic arm_personal
 eststo clear
 
 qui foreach y in post_trial delta main_intent link_click vacc_post {
-    regress `y' `keyvars' $controls if understood_intent==0, robust 
+    regress `y' `keyvars' $controls if understood_intent==0, robust
+    sum `y' if arm_control==1 & understood_intent==0
     estadd scalar cm = r(mean)
     eststo m_`y'
-		
 }
 
 

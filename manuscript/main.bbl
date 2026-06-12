@@ -14,6 +14,10 @@ Alsan, M. and S.~Eichmeyer (2024).
 \newblock {\em American Economic Journal: Economic Policy\/}~{\em 16\/}(1),
   394--414.
 
+\bibitem[\protect\citeauthoryear{Anthropic}{Anthropic}{2025}]{haiku45}
+Anthropic (2025, October).
+\newblock Claude haiku 4.5.
+
 \bibitem[\protect\citeauthoryear{Athey, Grabarz, Luca, and Wernerfelt}{Athey
   et~al.}{2023}]{athey2023digital}
 Athey, S., K.~Grabarz, M.~Luca, and N.~Wernerfelt (2023).
@@ -75,6 +79,12 @@ Chopra, F., C.~Roth, and J.~Wohlfart (2025).
 \newblock Home price expectations and spending: Evidence from a field
   experiment.
 \newblock {\em American Economic Review\/}~{\em 115\/}(7), 2267--2305.
+
+\bibitem[\protect\citeauthoryear{Haaland, Roth, Stantcheva, and
+  Wohlfart}{Haaland et~al.}{2025}]{haaland2025understanding}
+Haaland, I., C.~Roth, S.~Stantcheva, and J.~Wohlfart (2025).
+\newblock Understanding economic behavior using open-ended survey data.
+\newblock {\em Journal of Economic Literature\/}~{\em 63\/}(4), 1244--1280.
 
 \bibitem[\protect\citeauthoryear{Haaland, Roth, and Wohlfart}{Haaland
   et~al.}{2023}]{haaland2023designing}

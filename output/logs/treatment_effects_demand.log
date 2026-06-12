@@ -137,15 +137,12 @@ Notes:
 . if "`c(mode)'" == "batch" & "$scriptname" != "" {
 .     capture log close _all
 .     log using "output/logs/$scriptname.log", replace text
-(file
-    /Users/sacks/Projects/VaccSideEffects/output/logs/treatment_effects_deman
-    > d.log not found)
 -------------------------------------------------------------------------------
       name:  <unnamed>
        log:  /Users/sacks/Projects/VaccSideEffects/output/logs/treatment_effect
 > s_demand.log
   log type:  text
- opened on:  12 Jun 2026, 11:11:47
+ opened on:  12 Jun 2026, 14:21:03
 .     di "=== Running in batch mode: $scriptname ==="
 === Running in batch mode: treatment_effects_demand ===
 .     di "Log: output/logs/$scriptname.log"
@@ -219,7 +216,7 @@ end of do-file
 . tempfile classifications 
 
 . save `classifications'
-file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St85078.000001 saved
+file /var/folders/_y/_xwy4y390t9bgphz7ts4mj540000gn/T//St89290.000001 saved
     as .dta format
 
 . 

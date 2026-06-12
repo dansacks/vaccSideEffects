@@ -42,7 +42,7 @@ assert r(N) == 3525
 ------------------------------------------------------------------------------*/
 preserve
 
-local catvars about_flu about_attitude about_info about_beliefs about_intent about_change unclear understood_intent
+local catvars about_flu about_attitude about_beliefs about_info about_intent unclear about_change understood_intent
 local i = 0
 foreach v of local catvars {
     local ++i
@@ -61,11 +61,11 @@ forvalues i = 1/8 {
 label define catlbl ///
     1 "Mentions flu or vaccine" ///
     2 "Mentions attitudes or opinions" ///
-    3 "Mentions information or research" ///
-    4 "Side effects or effectiveness" ///
+    3 "Side effects or effectiveness" ///
+    4 "Mentions information or research" ///
     5 "Mentions vaccination intentions" ///
-    6 "Mentions changing behavior" ///
-    7 "Unclear / unclassifiable" ///
+    6 "Unclear / unclassifiable" ///
+    7 "Mentions changing behavior" ///
     8 "Understood study's intent"
 label values cat catlbl
 

@@ -4,6 +4,62 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-06-12: Appendix B cleanup -- exhibit order, category order, demand-robustness control mean, citations
+
+### `manuscript/appendix_study_intent.tex`
+Reordered the three Appendix B floats to match their prose mention order:
+`debrief_examples` -> `debrief_what_about` -> `treatment_effects_demand`,
+now Table B.1, Figure B.1, and Table B.2 respectively (numbering via existing
+`\label`/`\ref`, no \ref changes needed). Repositioned the two `\clearpage`
+commands to preserve the original pagination (1 exhibit / pagebreak /
+2 exhibits / pagebreak / classification prompt). Updated the stale
+"Table A.5/A.6, Figure A.3" comment headers (leftover from before this
+content was its own Appendix B) to the correct B.1/B.2 labels. Prose
+paragraphs and the classification-prompt section are unchanged.
+
+### `code/explore_what_about.do`
+Reordered `catvars` (line 45) and `catlbl` (lines 61-69) so
+`debrief_what_about.png` bars run most-to-least common: Mentions flu or
+vaccine (80.5%) -> Mentions attitudes or opinions (51.8%) -> Side effects or
+effectiveness (36.1%) -> Mentions information or research (25.0%) ->
+Mentions vaccination intentions (19.3%) -> Unclear / unclassifiable (18.8%)
+-> Mentions changing behavior (16.9%) -> Understood study's intent (9.6%,
+still last and highlighted in navy, cat==8). Pure reordering of category
+assignment -- no label text changes. The `flagvars`/example-table pattern
+definitions (separate local, used for Table B.1) are untouched, and no other
+file depends on the cat==1..8 ordering (`check_classification.do` and
+`classify_open_responses.py` reference categories by name).
+
+### `code/treatment_effects_demand.do`
+Fixed missing "Control mean" row (previously rendered as "." in
+`treatment_effects_demand.tex`/`.md`): added
+`sum \`y' if arm_control==1 & understood_intent==0` before
+`estadd scalar cm = r(mean)`, matching the `sum ... if arm_control==1`
+pattern in `treatment_effects.do` and the restricted-sample pattern in
+`explore_persistence.do`. Restricted to `understood_intent==0` (matching
+this table's regression sample) so the control mean is internally
+consistent with the rest of this robustness table. Reran via
+`make demand-robustness`; Control mean row now shows numeric values
+(e.g., 20.672, 15.480, 0.072, 0.015, 0.055).
+
+### `manuscript/references.bib` / bibliography rebuild
+The `haiku45` and `haaland2025understanding` entries/citations were already
+correctly keyed (`\citep{haiku45}`, `\citet{haaland2025understanding}`), but
+`main.bbl` predated both, so they rendered as "?". Reran
+`bibtex main && pdflatex main && pdflatex main`; both now render correctly
+("Anthropic, 2025" and "Haaland et al., 2025").
+
+### Verification
+- `output/tables/treatment_effects_demand.tex`/`.md`: Control mean row
+  numeric.
+- `output/figures/debrief_what_about.png`: bars reordered most-to-least
+  common, no label truncation.
+- `manuscript/main.pdf`: Appendix B order is Table B.1 (examples), Figure B.1
+  (category chart, new order), Table B.2 (demand robustness, numeric Control
+  mean); haiku45/haaland2025understanding citations render properly.
+
+---
+
 ## 2026-06-12: Standardize "side effects or effectiveness" category naming
 
 The `about_beliefs` category (cat==4) was labeled inconsistently across
