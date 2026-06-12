@@ -62,7 +62,7 @@ label define catlbl ///
     1 "Mentions flu or vaccine" ///
     2 "Mentions attitudes or opinions" ///
     3 "Mentions information or research" ///
-    4 "Mentions risks or effectiveness" ///
+    4 "Side effects or effectiveness" ///
     5 "Mentions vaccination intentions" ///
     6 "Mentions changing behavior" ///
     7 "Unclear / unclassifiable" ///
@@ -114,9 +114,9 @@ local pat3_id 349
 local pat3_lbl "Mentions information or research only"
 local pat3_flags "0 0 1 0 0 0 0 0"
 
-* Pattern 4: risks/effectiveness only
+* Pattern 4: side effects/effectiveness only
 local pat4_id 7441
-local pat4_lbl "Mentions risks, side effects, or effectiveness only"
+local pat4_lbl "Mentions side effects or effectiveness only"
 local pat4_flags "0 0 0 1 0 0 . ."
 
 * Pattern 5: vaccination intentions only
@@ -139,9 +139,9 @@ local pat8_id 1329
 local pat8_lbl "Mentions flu/vaccine and information"
 local pat8_flags "1 0 1 0 0 0 . ."
 
-* Pattern 9: flu/vaccine + risks/effectiveness
+* Pattern 9: flu/vaccine + side effects/effectiveness
 local pat9_id 126
-local pat9_lbl "Mentions flu/vaccine and risks/effectiveness"
+local pat9_lbl "Mentions flu/vaccine and side effects/effectiveness"
 local pat9_flags "1 0 0 1 0 0 . ."
 
 * Pattern 10: flu/vaccine + attitudes + information
@@ -156,7 +156,7 @@ local pat11_flags "1 0 0 0 0 1 . ."
 
 * Pattern 12: understood study's intent
 local pat12_id 89
-local pat12_lbl "Understood study's intent (flu/vaccine, information, change, and attitudes/beliefs/intentions)"
+local pat12_lbl "Understood study's intent (flu/vaccine, information, change, and attitudes, side effects/effectiveness, or intentions)"
 local pat12_flags "1 . 1 . . 1 0 1"
 
 * Pattern label and row order for each of the 12 example responses

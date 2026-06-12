@@ -7,6 +7,18 @@
 \section{Participant Perceptions of Study Intent}
 \label{sec:appendix_study_intent}
 
+
+We investigate participant perceptions of study intent. On the last screen of the main survey, participants were asked "In a few words, what do you think was the goal of th study?" We categorized these responses to determine whether participants recognized our study goal, which was to see whether and what type of side effect information could change beliefs about side effects and intent in vaccinating. 
+
+After manually reviewing a subset of responses, we settled on the following classification scheme. Responses are assigned to one or morenot mutually exclusive categories based on mentioning the following topics:  the flu or flu vaccine; attitudes, opinions, or view points; information provision or research, including clinical trials; side effects or effectiveness; intentions or plans to vaccinate; changing behavior; and unclear or unclassifiable. We said a participant understood the study if their response mentioned flu or vaccine, information, changing behavior, and at least one of attitudes, side effects or effectiveness, or intentions. Appendix Table \ref{tab:debrief_examples} provides examples of responses that fall into exactly one category as well as responses with multiple categories, and a response we classify as understanding study intent. 
+
+We used a large language model to implement this coding scheme. Specifically, we sent a prompt to Claude-Haiku-4.5 via its API \citep{anthropic2025claudehaiku45}. (The exact prompt is reported at the end of this section.) We used the lightweight Haiku model because we expected that classifying a small number of words did not require extended reasoning or other advanced capabilities. We set the temperature parameter to 0 to minimize randomness in classificaiton. We sent each participant's response separately to avoid any cross-response contaimination in the classification. 
+
+Appendix Figure \ref{fig:debrief_what_about} reports the share of responses in each category. A large majority of participants correctly recognized that the study was about the flu vaccine, consistent with generally high attention among Prolific participants.  Many participants also mentioned that it was about attitude, opinions, or viewpoints on the flu vaccine, and many also mentioned risk. However relatively few mentioned changing behavior and so overalll about 10 percent of responses indicated that participants understood the study's intent. 
+
+To show that these participants are not driving our results, we re-estimate our main model but excluding anyone classified as understanding the study's intent. The results in Appendix Table \ref{tab:treatment_effects_demand} are quite similar to our main results.  The estimted effects on beliefs are all within about 0.2 percentage poitns of the baseline estimate. The estimated effects of the industry and academic arm on intention are essentially identical. The effect of the personal arm on intention is about a quarter smaller. The effect on linked click remains precisely zero and the effect on vaccination is also essentially idetical (slgihtly larger effect of academic arm, sligtly smaller effect of personal arm).
+
+
 %------------------------------------------------------------------------------
 % Table A.5: Robustness excluding respondents who understood the study's intent
 %------------------------------------------------------------------------------
@@ -47,7 +59,8 @@ responses to ``What do you think this study was about?'' classified by
 claude-haiku-4.5 (prompt in code/classification\_prompt.md) as mentioning each
 category. Categories are not mutually exclusive. ``Understood study's intent''
 indicates the response was classified as mentioning flu/vaccine, information,
-and change, and at least one of attitudes, beliefs, or intentions.}
+and change, and at least one of attitudes, side effects or effectiveness, or
+intentions.}
 \end{figure}
 
 %------------------------------------------------------------------------------
