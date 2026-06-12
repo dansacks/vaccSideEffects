@@ -4,6 +4,25 @@ Development log for VaccSideEffects project.
 
 ---
 
+## 2026-06-12: Standardize "side effects or effectiveness" category naming
+
+The `about_beliefs` category (cat==4) was labeled inconsistently across
+`debrief_what_about.png`, `debrief_examples.tex`, and the appendix prose
+("risks or effectiveness" / "risks, side effects, or effectiveness" /
+"effectiveness/risks"). Standardized to "side effects or effectiveness"
+everywhere in `code/explore_what_about.do` (catlbl cat 4, pattern 4/9/12
+labels) and `manuscript/appendix_study_intent.tex` (intro prose, Figure A.3
+fignote). `code/classification_prompt.md` (the classifier's substantive
+definition of `about_beliefs`) is unchanged — this was purely a display-label
+change.
+
+**Figure label truncation**: `graph hbar ... over(cat, label(...))` truncates
+at ~32 chars (see note below). "Mentions side effects or effectiveness" (38
+chars) got cut to "Mentions side effects or effecti". Fixed by dropping
+"Mentions" for this bar only -> "Side effects or effectiveness" (29 chars).
+
+---
+
 ## 2026-06-12: Appendix Section for Study-Intent Classification + Makefile Targets
 
 ### Figure refinement: `code/explore_what_about.do`
