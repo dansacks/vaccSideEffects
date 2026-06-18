@@ -31,7 +31,7 @@ do "code/_config.do"
     1. Load data and define variable lists
 ------------------------------------------------------------------------------*/
 
-use "derived/merged_main_pre.dta", clear
+use "derived/merged_main_pre.dta" if main_sample, clear
 
 local prior_vars ""
 forvalues n = 1/7{ 

@@ -128,14 +128,18 @@ the identical questions twice, our before-information-provision version uses a
 likert scale for $\tilde{b}_i(1)$ and $\tilde{b}_i(0)$. These prior beliefs are a covariate 
 rather than an outcome. 
 
-\textbf{Secondary outcomes:} We also measure beliefs about what happened in the trial.
-After the information provision screen, we ask all arms (including control) 
-what they think is the severe side adverse event rate in the vaccine arm of the 
-manufacturer trial. We use this secondary outcome to assess the salience of the 
-information provided. We incentivize the elicitation of this belief, offering participants 
+\textbf{Secondary outcomes:} We also measure beliefs about what happened in the trial. 
+Before providing any information, we ask all arms (including control) what they think is 
+the severe adverse event rate in the placebo arm of the manufacturer trial. 
+We incentivize the elicitation of this belief, offering participants 
 an additional \$0.50 if their answer is within 1 percentage point of the truth. 
 Our elicitation of personal and objective beliefs is similar to that in 
-\citet{roth2024misperceived}.
+\citet{roth2024misperceived}. After the information provision screen, we ask all arms (including control) 
+what they think is the severe adverse event rate in the {\em vaccine} arm of the 
+manufacturer trial, again offering a reward of \$0.50 if their answer is within 1 percentage point of the truth. 
+We define the side effect rate in trial as the vaccine arm rate minus the placebo arm rate. 
+We use this secondary outcome to assess the salience of the 
+information provided.
 
 We collected three additional secondary outcome metrics related to vaccination behavior. 
 At the end of the main survey we ask participants if they intend to vaccinate against the flu. 
@@ -195,3 +199,6 @@ health conditions (asthma, lung disease, heart disease, diabetes, kidney disease
 have a condition but prefer not to say which). 
 We include separate indicators for missing covariate values. 
  
+\textbf{Participants are humans:} Large language models are capable of answering surveys in human-like ways and avoiding some bot-detection tools, raising concerns that some participants in online panels may be AI agents rather than humans \citep{westwood2025potential}. However, \citet{gordon2026ai} conduct a study of participants in many online panels and find that less than half a percent of Prolific participants are flagged as AI Agents (using a detection tool with 100 percent sensitivty and specificity in test cases). Thus the technical feasibility of AI Agents inflitrating possibilities has not yet transalted into widespread AI Agents in surveys. Prolific employs ongoing to participant quality control to mitigate this concern.%
+\footnote{We caution that the study was conducted by Prolific researchers, although it was also preregstered and its data are publicly available.}  The current study did not employ AI detection techniques but ex post analysis (not preregistered) provides further support for the view that AI use was low. This study included multiple incentivized questions about side effect prevalence. Current LLMs consistently give the correct answer to these questions, yet only 3.6 percent of participants answered both questions correctly. 
+
