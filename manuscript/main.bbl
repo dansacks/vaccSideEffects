@@ -60,13 +60,6 @@ Chang, T.~Y., M.~Jacobson, M.~Shah, M.~Kopetsky, R.~Pramanik, and S.~B. Shah
 \newblock {\em Proceedings of the National Academy of Sciences\/}~{\em
   120\/}(31), e2302725120.
 
-\bibitem[\protect\citeauthoryear{Chang, Jacobson, Shah, Pramanik, and
-  Shah}{Chang et~al.}{2026}]{chang2026impact}
-Chang, T.~Y., M.~Jacobson, M.~Shah, R.~Pramanik, and S.~B. Shah (2026).
-\newblock Impact of reminder messages, with and without financial incentives,
-  on influenza vaccination: A randomized trial in a california health system.
-\newblock {\em Vaccine\/}~{\em 75}, 128263.
-
 \bibitem[\protect\citeauthoryear{Chapman and Coups}{Chapman and
   Coups}{1999}]{chapman1999predictors}
 Chapman, G.~B. and E.~J. Coups (1999).
@@ -79,6 +72,13 @@ Chopra, F., C.~Roth, and J.~Wohlfart (2025).
 \newblock Home price expectations and spending: Evidence from a field
   experiment.
 \newblock {\em American Economic Review\/}~{\em 115\/}(7), 2267--2305.
+
+\bibitem[\protect\citeauthoryear{Gordon, Rothschild, Affonso, Sulik, Hauser,
+  Pepin, and Jones}{Gordon et~al.}{2026}]{gordon2026ai}
+Gordon, A., D.~Rothschild, F.~M. Affonso, J.~Sulik, D.~J. Hauser, K.~Pepin, and
+  S.~Jones (2026).
+\newblock Ai agent prevalence and data quality across multiple online sample
+  providers.
 
 \bibitem[\protect\citeauthoryear{Haaland, Roth, Stantcheva, and
   Wohlfart}{Haaland et~al.}{2025}]{haaland2025understanding}
@@ -194,5 +194,12 @@ Tsutsui, Y., U.~Benzion, and S.~Shahrabani (2012).
   use: Prescribing information.
 \newblock \url{https://www.fda.gov/media/74537/download}.
 \newblock Package insert for FLULAVAL influenza vaccine; accessed 2026-03-05.
+
+\bibitem[\protect\citeauthoryear{Westwood}{Westwood}{2025}]{westwood2025potential}
+Westwood, S.~J. (2025).
+\newblock The potential existential threat of large language models to online
+  survey research.
+\newblock {\em Proceedings of the National Academy of Sciences\/}~{\em
+  122\/}(47), e2518075122.
 
 \end{thebibliography}

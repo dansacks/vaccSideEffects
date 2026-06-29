@@ -20,8 +20,9 @@ reliability of several sources for obtaining  health care information
 
 Our main survey wave, run the week after the conclusion of our baseline survey, was administered 
 to baseline wave participants who indicated flu vaccine hesitancy,
-meaning they said they “may or may not” or “do not intend” to get the flu vaccine.  In the 
-main survey, we randomly assigned participants to treatment arms, 
+meaning they said they “may or may not” or “do not intend” to get the flu vaccine. We think of these
+two responses as indicating either moderate or strong vaccine hesitancy. 
+In the  main survey, we randomly assigned participants to treatment arms, 
 elicited prior and posterior beliefs about side effect risk, asked about intentions to 
 vaccinate, and asked whether participants found the described study trustworthy and 
 (separately) relevant to their vaccination decision. We gave participants the opportunity 
@@ -44,14 +45,17 @@ The main risk is an adverse event such as headache, muscle ache, tiredness,
 joint pain, fever, chills, or general discomfort, in the days after vaccination. 
 “Severe” adverse events are ones that are bad enough to disrupt daily activity. 
 \end{quote}
-Our definition of severe adverse events corresponds roughly to a grade 3 adverse event rate.
 We focus on severe events because they represent a substantial cost - a loss of work or leisure
 - and are measured in clinical trials. 
 
 Participants are then told that, to measure benefits and risks, vaccine manufacturers 
 conduct clinical trials with a placebo arm and a vaccine arm, and in the clinical trial 
 for Fluarix,  the placebo arm had a severe adverse event rate of 3 percent in the next few 
-days. The control arm sees no further information. In the treatment arms, participants see 
+days \citep{fda_fluzone_quadrivalent_package_insert}.  Specifically, this is the grade 3 adverse reaction rate fir the placebo arm, cumulating adverse reactions across
+all reported reaction types. The exact definition of a grade 3 reaction varies by reaction type; 
+for pain, muscle aches, fatigue, arthralgia, and shivering it is defined as preventing normal activity,
+corresponding to our general definition. For redness and swelling the definition is $>$50 mm and 
+for fever it is $>102.2^\circ F$. The control arm sees no further information. In the treatment arms, participants see 
 additional information on the same screen. We test three treatment arms: 
 
 \begin{enumerate}
@@ -144,7 +148,7 @@ information provided.
 We collected three additional secondary outcome metrics related to vaccination behavior. 
 At the end of the main survey we ask participants if they intend to vaccinate against the flu. 
 We code participants as intending to vaccinate if they answer that they are already vaccinated or 
-intend to vaccinate (other possible answer: may or may not vaccinate, intend to vaccinate). 
+intend to vaccinate (other possible answers: may or may not vaccinate, intend to vaccinate). 
 We provide links for participants to click on to schedule a vaccination, and we track whether 
 they click on the link. Third, in our follow up survey we ask participants if they have vaccinated 
 in the last month.
@@ -189,16 +193,16 @@ arm on outcomes with the following linear regression, estimated by ordinary leas
 Here $\beta_1, \beta_2$ and $\beta_3$ give the effect of industry, academic, and representative 
 arm relative to control,  and $X_i$ is a vector of prespecified covariates, included to improve 
 power.  Specifically, we include indicators for each level of the following categorical 
-variables: prior beliefs; baseline vaccine intentions; reported vaccine experiences (separately 
-for flu and COVID), with possible experiences unvaccinated, vaccinated without remembered side 
+variables: prior beliefs; baseline vaccine intentions; reported vaccine experiences, separately 
+for flu and COVID (possible experiences: unvaccinated, vaccinated without remembered side 
 effects, vaccinated with mild side effects, or vaccinated with moderate side effects, or 
 vaccinated with severe side effects); demographics (age, gender, education, income, race, 
-ethnicity), political views) trust in 
+ethnicity), political views (from extremely conservative to extremely liberal, seven-point scale); trust in 
 government on vaccines (ranging from strongly disagree to strongly agree), and reported 
 health conditions (asthma, lung disease, heart disease, diabetes, kidney disease, or 
 have a condition but prefer not to say which). 
 We include separate indicators for missing covariate values. 
  
-\textbf{Participants are humans:} Large language models are capable of answering surveys in human-like ways and avoiding some bot-detection tools, raising concerns that some participants in online panels may be AI agents rather than humans \citep{westwood2025potential}. However, \citet{gordon2026ai} conduct a study of participants in many online panels and find that less than half a percent of Prolific participants are flagged as AI Agents (using a detection tool with 100 percent sensitivty and specificity in test cases). Thus the technical feasibility of AI Agents inflitrating possibilities has not yet transalted into widespread AI Agents in surveys. Prolific employs ongoing to participant quality control to mitigate this concern.%
-\footnote{We caution that the study was conducted by Prolific researchers, although it was also preregstered and its data are publicly available.}  The current study did not employ AI detection techniques but ex post analysis (not preregistered) provides further support for the view that AI use was low. This study included multiple incentivized questions about side effect prevalence. Current LLMs consistently give the correct answer to these questions, yet only 3.6 percent of participants answered both questions correctly. 
+\textbf{Participants are humans:} Large language models are capable of answering surveys in human-like ways and avoiding some bot-detection tools, raising concerns that some participants in online panels may be AI agents rather than humans \citep{westwood2025potential}. However, \citet{gordon2026ai} conduct a study of participants in many online panels and find that less than half a percent of Prolific participants are flagged as AI Agents (using a detection tool with 100 percent sensitivity and specificity in test cases). Thus the technical feasibility of AI Agents infiltrating online surveys has not yet translated into widespread AI Agents in surveys. Prolific employs ongoing to participant quality control to mitigate this concern.%
+\footnote{We caution that the study, \citet{gordon2026ai} was conducted by Prolific researchers, although it was also preregstered and its data are publicly available.}  The current study did not employ AI detection techniques but ex post analysis (not preregistered) provides further support for the view that AI use was low. This study included multiple incentivized questions about side effect prevalence. Current LLMs consistently give the correct answer to these questions, yet only 3.6 percent of participants answered both questions correctly. 
 
