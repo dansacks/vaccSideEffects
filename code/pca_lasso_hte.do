@@ -236,7 +236,7 @@ local title_personal "Personal"
 
 foreach outcm in delta main_intent {
     if "`outcm'" == "delta"       local yn "side effect belief"
-    if "`outcm'" == "main_intent" local ytitle "vacc. intent"
+    if "`outcm'" == "main_intent" local yn "vacc. intent"
 
 		if "`outcm'" == "delta" local yl -10(5)10
 		if "`outcm'" == "main_intent" local yl -0.07(0.07)0.14
@@ -289,13 +289,19 @@ gen trust_rel_sum = trust_trial + relevant_trial
 
 eststo clear
 
-foreach y in delta main_intent {
-    foreach q in trust_trial relevant_trial trust_rel_sum {
-        gen quality = `q'
-        regress `y' arm_industry arm_academic arm_personal c.quality ///
+* Abbreviated quality-measure suffixes avoid the 32-char _est_* name limit
+foreach y in delta intent {
+    if "`y'" == "delta"  local yvar "delta"
+    if "`y'" == "intent" local yvar "main_intent"
+    foreach q in trust relev sum {
+        if "`q'" == "trust" local qvar "trust_trial"
+        if "`q'" == "relev" local qvar "relevant_trial"
+        if "`q'" == "sum"   local qvar "trust_rel_sum"
+        gen quality = `qvar'
+        regress `yvar' arm_industry arm_academic arm_personal c.quality ///
             c.quality#c.arm_industry c.quality#c.arm_academic c.quality#c.arm_personal ///
             $controls if main_sample == 1, robust
-        sum `y' if arm_control == 1 & main_sample == 1
+        sum `yvar' if arm_control == 1 & main_sample == 1
         estadd scalar cm = r(mean)
         eststo m_`y'_`q'
         drop quality
@@ -307,8 +313,8 @@ local keep_vars "`keep_vars' arm_academic c.quality#c.arm_academic"
 local keep_vars "`keep_vars' arm_personal c.quality#c.arm_personal"
 local keep_vars "`keep_vars' quality"
 
-esttab m_delta_trust_trial m_delta_relevant_trial m_delta_trust_rel_sum ///
-       m_main_intent_trust_trial m_main_intent_relevant_trial m_main_intent_trust_rel_sum ///
+esttab m_delta_trust m_delta_relev m_delta_sum ///
+       m_intent_trust m_intent_relev m_intent_sum ///
     using output/tables/hte_direct.tex, ///
     b(%9.3f) se(%9.3f) keep(`keep_vars') nostar ///
     varlabels(arm_industry "Industry arm" ///
