@@ -306,12 +306,13 @@ $(HTE_FLU_VACC): $(MERGED_ALL) $(CODE)/hte_flu_vacc_experience.do \
 #-------------------------------------------------------------------------------
 # PCA + LASSO + HTE (TRUST/RELEVANCE INDEX)
 #-------------------------------------------------------------------------------
-HTE_PCA_TEX := $(OUT_TABLES)/hte_pca.tex
-HTE_PCA_FIG := $(OUT_FIGURES)/hte_pca.png
+HTE_PCA_TEX    := $(OUT_TABLES)/hte_pca.tex
+HTE_PCA_FIG    := $(OUT_FIGURES)/hte_pca.png
+HTE_DIRECT_TEX := $(OUT_TABLES)/hte_direct.tex
 
 pca-lasso-hte: $(HTE_PCA_TEX)
 
-$(HTE_PCA_TEX) $(HTE_PCA_FIG) &: $(MERGED_ALL) $(CODE)/pca_lasso_hte.do \
+$(HTE_PCA_TEX) $(HTE_PCA_FIG) $(HTE_DIRECT_TEX) &: $(MERGED_ALL) $(CODE)/pca_lasso_hte.do \
     $(CODE)/_config.do $(CODE)/_set_controls.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/pca_lasso_hte.do && mv pca_lasso_hte.log $(OUT_LOGS)/
 

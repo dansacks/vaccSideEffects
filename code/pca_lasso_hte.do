@@ -170,12 +170,24 @@ foreach y in delta main_intent {
 }
 
 
-local keep_vars "arm_industry arm_academic arm_personal pca1_hat"
-local keep_vars "`keep_vars' c.pca1_hat#c.arm_industry c.pca1_hat#c.arm_academic c.pca1_hat#c.arm_personal"
+local keep_vars "arm_industry c.pca1_hat#c.arm_industry"
+local keep_vars "`keep_vars' arm_academic c.pca1_hat#c.arm_academic"
+local keep_vars "`keep_vars' arm_personal c.pca1_hat#c.arm_personal"
+local keep_vars "`keep_vars' pca1_hat"
+
+local x = char(36)
+local times "`x'\times`x'"
 
 esttab m_delta m_main_intent ///
     using output/tables/hte_pca.tex, ///
-    b(%9.3f) se(%9.3f) keep(`keep_vars') label nostar ///
+    b(%9.3f) se(%9.3f) keep(`keep_vars') nostar ///
+    varlabels(arm_industry "Industry arm" ///
+              c.pca1_hat#c.arm_industry "Industry arm `times' predicted quality" ///
+              arm_academic "Academic arm" ///
+              c.pca1_hat#c.arm_academic "Academic arm `times' predicted quality" ///
+              arm_personal "Representative arm" ///
+              c.pca1_hat#c.arm_personal "Representative arm `times' predicted quality" ///
+              pca1_hat "Predicted quality") ///
     stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
     fragment replace nomtitles nonotes nonumbers nolines nogaps
 
@@ -260,5 +272,55 @@ graph combine ///
 graph export "output/figures/hte_pca.png", width(2400) height(1600) replace
 
 di as text "Saved: output/figures/hte_pca.png"
+
+/*==============================================================================
+    Section 3e: HTE by direct quality scores
+    Moderators: trust_trial, relevant_trial, trust+relevance sum
+    Outcomes:   delta, main_intent
+    6 columns: (delta×trust, delta×rel, delta×sum, intent×trust, intent×rel, intent×sum)
+
+    A temporary variable "quality" is used in each regression so that all
+    stored estimates share consistent coefficient names across moderators.
+==============================================================================*/
+
+use "derived/merged_all.dta", clear
+
+gen trust_rel_sum = trust_trial + relevant_trial
+
+eststo clear
+
+foreach y in delta main_intent {
+    foreach q in trust_trial relevant_trial trust_rel_sum {
+        gen quality = `q'
+        regress `y' arm_industry arm_academic arm_personal c.quality ///
+            c.quality#c.arm_industry c.quality#c.arm_academic c.quality#c.arm_personal ///
+            $controls if main_sample == 1, robust
+        sum `y' if arm_control == 1 & main_sample == 1
+        estadd scalar cm = r(mean)
+        eststo m_`y'_`q'
+        drop quality
+    }
+}
+
+local keep_vars "arm_industry c.quality#c.arm_industry"
+local keep_vars "`keep_vars' arm_academic c.quality#c.arm_academic"
+local keep_vars "`keep_vars' arm_personal c.quality#c.arm_personal"
+local keep_vars "`keep_vars' quality"
+
+esttab m_delta_trust_trial m_delta_relevant_trial m_delta_trust_rel_sum ///
+       m_main_intent_trust_trial m_main_intent_relevant_trial m_main_intent_trust_rel_sum ///
+    using output/tables/hte_direct.tex, ///
+    b(%9.3f) se(%9.3f) keep(`keep_vars') nostar ///
+    varlabels(arm_industry "Industry arm" ///
+              c.quality#c.arm_industry "Industry arm `times' quality" ///
+              arm_academic "Academic arm" ///
+              c.quality#c.arm_academic "Academic arm `times' quality" ///
+              arm_personal "Representative arm" ///
+              c.quality#c.arm_personal "Representative arm `times' quality" ///
+              quality "Quality score") ///
+    stats(cm N, labels("Control mean" "N") fmt(%9.3f %9.0fc)) ///
+    fragment replace nomtitles nonotes nonumbers nolines nogaps
+
+di as text "Saved: output/tables/hte_direct.tex"
 
 capture log close

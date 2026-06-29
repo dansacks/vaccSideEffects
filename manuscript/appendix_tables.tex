@@ -100,9 +100,41 @@ Representative), a predicted trust/relevance index (\texttt{pca1\_hat}), and
 interactions of each arm indicator with the index. \texttt{pca1\_hat} is the
 first principal component of post-treatment trust in the clinical trial and
 perceived relevance of the trial, predicted from pre-experiment covariates
-using lasso selected in the control group. Rows labeled ``Fitted values,
-penalized'' report the coefficient on \texttt{pca1\_hat}; interaction rows
-report the coefficient on the arm-by-index interaction. Pre-specified controls
-are included but not shown. Robust standard errors in parentheses. See
+using lasso selected in the control group. The ``Predicted quality'' row
+reports the coefficient on \texttt{pca1\_hat}; interaction rows report the
+coefficient on the arm-by-index interaction. Pre-specified controls are
+included but not shown. Robust standard errors in parentheses. See
 Table~\ref{tab:treat_effects} for outcome definitions.}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------------------------------------
+% Table A.5: Heterogeneous treatment effects by direct trial quality perceptions
+%------------------------------------------------------------------------------
+\begin{table}[htbp]
+\centering
+\caption{Heterogeneous treatment effects by trial quality perceptions}
+\label{tab:hte_direct}
+\begin{tabular}{l cccccc}
+\toprule
+ & \multicolumn{3}{c}{Personal SE belief} & \multicolumn{3}{c}{Vacc.\ intention} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+ & (1) & (2) & (3) & (4) & (5) & (6) \\
+ & Trust & Relevance & Trust + rel.\ & Trust & Relevance & Trust + rel.\ \\ \midrule
+\input{../output/tables/hte_direct.tex} \\
+\bottomrule
+\end{tabular}
+\tabnote{\linewidth}{Notes: Each column is a separate OLS regression of the
+indicated outcome on treatment arm indicators (Industry, Academic,
+Representative), a measure of reported trial quality, and interactions
+of each arm indicator with that quality measure. Columns 1 and 4 use
+reported trust in the trial information (0--10 scale); columns 2 and 5 use
+reported relevance of the trial information (0--10 scale); columns 3 and 6
+use the sum of trust and relevance (0--20 scale). These quality measures
+are collected after the treatment is administered. The ``Quality score''
+row reports the coefficient on the quality measure; interaction rows report
+the coefficient on the arm-by-quality-score interaction. Pre-specified
+controls are included but not shown. Robust standard errors in parentheses.
+See Table~\ref{tab:treat_effects} for outcome definitions.}
 \end{table}
