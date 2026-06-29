@@ -114,7 +114,7 @@ $(PRESCREEN_CLEAN): $(PRESCREEN_SPSS) $(CODE)/clean_prescreen.do $(CODE)/_config
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_prescreen.do && mv clean_prescreen.log $(OUT_LOGS)/
 
 # Step 2: Generate summary statistics (both outputs from single run)
-$(PRESCREEN_STATS_CONT) $(PRESCREEN_STATS_CAT) &: $(PRESCREEN_CLEAN) $(CODE)/summary_stats_prescreen.do $(CODE)/_config.do
+$(PRESCREEN_STATS_CONT) $(PRESCREEN_STATS_CAT): $(PRESCREEN_CLEAN) $(CODE)/summary_stats_prescreen.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/summary_stats_prescreen.do && mv summary_stats_prescreen.log $(OUT_LOGS)/
 
 # Step 3: Build codebook with statistics
@@ -139,7 +139,7 @@ $(MAIN_CLEAN): $(MAIN_SPSS) $(CODE)/clean_main.do $(CODE)/_config.do $(INCLUDE_F
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_main.do && mv clean_main.log $(OUT_LOGS)/
 
 # Step 2: Generate summary statistics (both outputs from single run)
-$(MAIN_STATS_CONT) $(MAIN_STATS_CAT) &: $(MAIN_CLEAN) $(CODE)/summary_stats_main.do $(CODE)/_config.do
+$(MAIN_STATS_CONT) $(MAIN_STATS_CAT): $(MAIN_CLEAN) $(CODE)/summary_stats_main.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/summary_stats_main.do && mv summary_stats_main.log $(OUT_LOGS)/
 
 # Step 3: Build codebook with statistics
@@ -176,7 +176,7 @@ $(COUNTS): $(PRESCREEN_CLEAN) $(MAIN_CLEAN) $(FOLLOWUP_CLEAN) \
 # Balance table (main)
 balance: $(BALANCE_CSV)
 
-$(BALANCE_CSV) $(BALANCE_TEX) &: $(MERGED_PRE) $(CODE)/balance_table.do $(CODE)/_config.do $(ADO_BALANCE)
+$(BALANCE_CSV) $(BALANCE_TEX): $(MERGED_PRE) $(CODE)/balance_table.do $(CODE)/_config.do $(ADO_BALANCE)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_table.do && mv balance_table.log $(OUT_LOGS)/
 
 # Full balance tables by domain
@@ -189,7 +189,7 @@ BALANCE_OMNI := $(OUT_TABLES)/balance_omnibus.tex
 
 balance-full: $(BALANCE_OMNI)
 
-$(BALANCE_PRIOR) $(BALANCE_VACC) $(BALANCE_DEMO) $(BALANCE_TRUST_FULL) $(BALANCE_HEALTH) $(BALANCE_OMNI) &: $(MERGED_PRE) $(CODE)/balance_tables_full.do $(CODE)/_config.do $(ADO_BALANCE)
+$(BALANCE_PRIOR) $(BALANCE_VACC) $(BALANCE_DEMO) $(BALANCE_TRUST_FULL) $(BALANCE_HEALTH) $(BALANCE_OMNI): $(MERGED_PRE) $(CODE)/balance_tables_full.do $(CODE)/_config.do $(ADO_BALANCE)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/balance_tables_full.do && mv balance_tables_full.log $(OUT_LOGS)/
 	@# Escape $ followed by digits for LaTeX (e.g., $25k -> \$25k)
 	sed -i '' 's/\$$\([0-9]\)/\\$$\1/g' $(OUT_TABLES)/balance_demographics.tex
@@ -212,7 +212,7 @@ $(FOLLOWUP_CLEAN): $(FOLLOWUP_SPSS) $(CODE)/clean_followup.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_followup.do && mv clean_followup.log $(OUT_LOGS)/
 
 # Step 2: Generate summary statistics (both outputs from single run)
-$(FOLLOWUP_STATS_CONT) $(FOLLOWUP_STATS_CAT) &: $(FOLLOWUP_CLEAN) $(CODE)/summary_stats_followup.do $(CODE)/_config.do
+$(FOLLOWUP_STATS_CONT) $(FOLLOWUP_STATS_CAT): $(FOLLOWUP_CLEAN) $(CODE)/summary_stats_followup.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/summary_stats_followup.do && mv summary_stats_followup.log $(OUT_LOGS)/
 
 # Step 3: Build codebook with statistics
@@ -235,7 +235,7 @@ PROLIFIC_FU := $(DERIVED)/prolific_demographics_followup.dta
 prolific: $(PROLIFIC_PRE) $(PROLIFIC_MAIN) $(PROLIFIC_MAIN_MP) $(PROLIFIC_FU)
 
 # All four outputs from single run
-$(PROLIFIC_PRE) $(PROLIFIC_MAIN) $(PROLIFIC_MAIN_MP) $(PROLIFIC_FU) &: \
+$(PROLIFIC_PRE) $(PROLIFIC_MAIN) $(PROLIFIC_MAIN_MP) $(PROLIFIC_FU): \
 		$(PROLIFIC_PRE_CSV) $(PROLIFIC_MAIN_CSV) $(PROLIFIC_MAIN_MP_CSV) $(PROLIFIC_FU_CSV) \
 		$(CODE)/clean_prolific_demographics.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/clean_prolific_demographics.do && mv clean_prolific_demographics.log $(OUT_LOGS)/
@@ -269,7 +269,7 @@ HTE_HIGH_REL := $(OUT_TABLES)/het_high_relevance.tex
 
 hte: $(HTE_HIGH_PRIOR)
 
-$(HTE_HIGH_PRIOR) $(HTE_BAD_EXP) $(HTE_HIGH_TRUST) $(HTE_HIGH_REL) &: $(MERGED_ALL) $(CODE)/heterogeneous_treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do
+$(HTE_HIGH_PRIOR) $(HTE_BAD_EXP) $(HTE_HIGH_TRUST) $(HTE_HIGH_REL): $(MERGED_ALL) $(CODE)/heterogeneous_treatment_effects.do $(CODE)/_config.do $(CODE)/_set_controls.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/heterogeneous_treatment_effects.do && mv heterogeneous_treatment_effects.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
@@ -312,7 +312,7 @@ HTE_DIRECT_TEX := $(OUT_TABLES)/hte_direct.tex
 
 pca-lasso-hte: $(HTE_PCA_TEX)
 
-$(HTE_PCA_TEX) $(HTE_PCA_FIG) $(HTE_DIRECT_TEX) &: $(MERGED_ALL) $(CODE)/pca_lasso_hte.do \
+$(HTE_PCA_TEX) $(HTE_PCA_FIG) $(HTE_DIRECT_TEX): $(MERGED_ALL) $(CODE)/pca_lasso_hte.do \
     $(CODE)/_config.do $(CODE)/_set_controls.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/pca_lasso_hte.do && mv pca_lasso_hte.log $(OUT_LOGS)/
 
@@ -328,7 +328,7 @@ TREATMENT_EFFECTS_DEMAND := $(OUT_TABLES)/treatment_effects_demand.tex
 # Outsheet open-ended responses (TSV) for classification
 outsheet-responses: $(OPEN_RESPONSES)
 
-$(OPEN_RESPONSES) $(OPEN_RESPONSES_TEST) &: $(MERGED_ALL) $(CODE)/outsheet_responses.do $(CODE)/_config.do
+$(OPEN_RESPONSES) $(OPEN_RESPONSES_TEST): $(MERGED_ALL) $(CODE)/outsheet_responses.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/outsheet_responses.do && mv outsheet_responses.log $(OUT_LOGS)/
 
 # Compare hand-coded classifications (dan_hand_classifications.xlsx) to the
@@ -362,7 +362,7 @@ PERSIST_ADVERSE := $(OUT_TABLES)/persistence_adverse.tex
 
 persistence: $(PERSIST_ATTRITION)
 
-$(PERSIST_ATTRITION) $(PERSIST_RECALL) $(PERSIST_ADVERSE) &: $(MERGED_ALL) $(CODE)/explore_persistence.do $(CODE)/_config.do $(CODE)/_set_controls.do $(ADO_REGRESSION)
+$(PERSIST_ATTRITION) $(PERSIST_RECALL) $(PERSIST_ADVERSE): $(MERGED_ALL) $(CODE)/explore_persistence.do $(CODE)/_config.do $(CODE)/_set_controls.do $(ADO_REGRESSION)
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/explore_persistence.do && mv explore_persistence.log $(OUT_LOGS)/
 
 #-------------------------------------------------------------------------------
@@ -376,7 +376,7 @@ BELIEFS_BY_ARM := $(OUT_FIGURES)/belief_cdf_by_arm.png
 beliefs: $(BELIEFS_POOLED) $(BELIEFS_BY_ARM)
 
 # explore_beliefs.do produces pooled CDF, vaccine reaction, and trust figures
-$(BELIEFS_POOLED) $(BELIEFS_VACC) $(BELIEFS_TRUST) &: $(MERGED_PRE) $(CODE)/explore_beliefs.do $(CODE)/_config.do
+$(BELIEFS_POOLED) $(BELIEFS_VACC) $(BELIEFS_TRUST): $(MERGED_PRE) $(CODE)/explore_beliefs.do $(CODE)/_config.do
 	cd $(PROJDIR) && $(STATA) -e do $(CODE)/explore_beliefs.do && mv explore_beliefs.log $(OUT_LOGS)/
 
 # plot_beliefs_by_arm.do produces CDF by treatment arm
