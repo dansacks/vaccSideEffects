@@ -28,6 +28,7 @@ do "code/plot_beliefs_by_arm.do"
 
 do "code/plot_info_by_hes.do"
 do "code/plot_peds_flu_vacc.do"
+do code/expost_power
 
 ** not used in paper:
 do "code/te_by_polviews"

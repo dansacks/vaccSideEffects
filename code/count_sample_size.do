@@ -121,8 +121,7 @@ file write fout "Main, randomized,`=_N'" _n
 
 
 * Non-missing delta and no -99 values in posteriors
-keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99  ///
-	& ~missing(post_trial)
+keep if ~missing(delta) & posterior_vacc != -99 & posterior_novacc != -99
 local n_outcome = _N
 count 
 file write fout "Main,Non-missing delta (valid posteriors),`=_N'" _n

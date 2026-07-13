@@ -195,7 +195,7 @@ global attn_check_val = $ATTN_CHECK_MAIN
 do "code/include/_create_quality_flags.do"
 
 * Count missing outcomes
-egen n_missing = rowmiss(posterior_vacc posterior_novacc post_trial)
+egen n_missing = rowmiss(posterior_vacc posterior_novacc)
 
 * Final sample flag (main survey requires non-missing outcomes)
 gen final_sample = (consent == 1 & failed_attn == 0 ///

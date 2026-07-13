@@ -110,6 +110,7 @@ recode consent (1=1) (2 $UNSELECTED_VALUE=0)
 label values consent yesno
 
 * --- Attention check ---
+gen attn_check_s = attn_check 
 destring attn_check, replace force
 
 * --- Pharmacy factor (already numeric from SPSS) ---
@@ -125,6 +126,7 @@ recode got_glp1 (1=1) (2=0) (3=.)
 label values got_glp1 yesno
 
 * --- Flu vaccine (SPSS codes: 1=Yes, 2=No, 3=Prefer not to say -> missing) ---
+gen flu_vacc_no_reply = got_flu_vacc==3
 tab got_flu_vacc, m nolabel
 recode got_flu_vacc (1=1) (2=0) (3=.)
 label values got_flu_vacc yesno

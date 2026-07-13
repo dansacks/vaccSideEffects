@@ -7,11 +7,11 @@ in the preregistration, we describe them as such.
 
 \subsection{Trial protocol}
 
-We collected data over three waves, indicated in Figure \ref{fig:study_flow}.
+We collected data over three waves, indicated in Figure \ref{fig:survey_flow}.
 All participants were recruited via the online platform 
 Prolific and participants took surveys on Qualtrics.  The study was advertised
 as an academic survey asking about experiences, views, and backgrounds. We avoided
-signalling our intentions or study goals. Our baseline wave measured flu vaccine 
+signaling our intentions or study goals. Our baseline wave measured flu vaccine 
 intentions, and we collected information on health conditions predicting vulnerability to flu, 
 as well as several covariates: prior vaccine experiences, trust in government vaccine 
 information, whether participants follow doctor’s advice on vaccines, and the use and 
@@ -122,7 +122,7 @@ Call this
 $\tilde{b}_i(0)$, the believed side effect rate absent vaccination.  Then we ask the 
 same question but assuming they do vaccinate tomorrow. Call this $\tilde{b}_i(1)$, 
 the believed side effect rate given vaccination.  Then the short run personal side effect 
-belief is $\tilde{\Delta}_i = \tilde{y}_i(1) - \tilde{y}_i(0)$. 
+belief is $\tilde{\Delta}_i = \tilde{b}_i(1) - \tilde{b}_i(0)$. 
 This measure is person-specific, limited to a short time horizon, and a causal contrast.%
 \footnote{Designing the measure as a causal contrast is consistent with the recommendations
 of \citet{smith2021participants}.}
@@ -204,5 +204,5 @@ have a condition but prefer not to say which).
 We include separate indicators for missing covariate values. 
  
 \textbf{Participants are humans:} Large language models are capable of answering surveys in human-like ways and avoiding some bot-detection tools, raising concerns that some participants in online panels may be AI agents rather than humans \citep{westwood2025potential}. However, \citet{gordon2026ai} conduct a study of participants in many online panels and find that less than half a percent of Prolific participants are flagged as AI Agents (using a detection tool with 100 percent sensitivity and specificity in test cases). Thus the technical feasibility of AI Agents infiltrating online surveys has not yet translated into widespread AI Agents in surveys. Prolific employs ongoing to participant quality control to mitigate this concern.%
-\footnote{We caution that the study, \citet{gordon2026ai} was conducted by Prolific researchers, although it was also preregstered and its data are publicly available.}  The current study did not employ AI detection techniques but ex post analysis (not preregistered) provides further support for the view that AI use was low. This study included multiple incentivized questions about side effect prevalence. Current LLMs consistently give the correct answer to these questions, yet only 3.6 percent of participants answered both questions correctly. 
+\footnote{We caution that the study, \citet{gordon2026ai} was conducted by Prolific researchers, although it was also preregistered and its data are publicly available.}  The current study did not employ AI detection techniques but ex post analysis (not preregistered) provides further support for the view that AI use was low. This study included multiple incentivized questions about side effect prevalence. Current LLMs consistently give the correct answer to these questions, yet only 3.6 percent of participants answered both questions correctly. 
 
